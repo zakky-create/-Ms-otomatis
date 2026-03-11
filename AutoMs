@@ -1,0 +1,824 @@
+-- ============================================================================
+-- MARSHMALLOW FARM AUTOMATION SCRIPT
+-- ============================================================================
+-- Features: Auto-cooking, Auto-buying, Teleportation, UI Management, Anti-Kick
+-- Updated with custom coordinates
+-- ============================================================================
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local mouse = player:GetMouse()
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- ============================================================================
+-- CONFIGURATION
+-- ============================================================================
+
+local CONFIG = {
+    -- NPC Locations (Updated dengan koordinat yang benar)
+    STOVE_LOCATION = Vector3.new(1202, 3, -182),  -- Kompor
+    NPC_SELLER_LOCATION = Vector3.new(510, 3, 597), -- NPC yang jual marshmallow
+    APT_1_LOCATION = Vector3.new(200, 50, 100), -- Adjust to actual apartment location
+    
+    -- Timings (in seconds)
+    STOVE_WAIT_TIME = 21,
+    SECOND_COOK_WAIT_TIME = 46,
+    TELEPORT_WAIT_TIME = 3,
+    
+    -- Anti-Kick Settings
+    ANTI_KICK_ENABLED = true,
+    RANDOM_MOVEMENT_INTERVAL = 30, -- seconds
+    RANDOM_MOUSE_MOVEMENT = true,
+}
+
+-- ============================================================================
+-- STATE MANAGEMENT
+-- ============================================================================
+
+local State = {
+    isCooking = false,
+    isAutoMSEnabled = false,
+    materialsToMake = 0,
+    currentMarshmallows = 0,
+    materials = {
+        Water = 0,
+        SugarBlockBag = 0,
+        Gelatin = 0
+    },
+    ownedApartments = {
+        APT_1 = false
+    },
+    uiOpen = false,
+    lastActivityTime = tick()
+}
+
+-- ============================================================================
+-- UI CREATION
+-- ============================================================================
+
+local function createMainUI()
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "MarshmallowFarmUI"
+    screenGui.ResetOnSpawn = false
+    screenGui.Parent = playerGui
+    
+    -- Main Box (Draggable)
+    local mainBox = Instance.new("Frame")
+    mainBox.Name = "MainBox"
+    mainBox.Size = UDim2.new(0, 150, 0, 60)
+    mainBox.Position = UDim2.new(0, 20, 0.5, -30)
+    mainBox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    mainBox.BorderSizePixel = 2
+    mainBox.BorderColor3 = Color3.fromRGB(100, 200, 255)
+    mainBox.Parent = screenGui
+    
+    -- Draggable functionality
+    local dragging = false
+    local dragInput
+    local dragStart
+    local startPos
+    
+    mainBox.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then return end
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = mainBox.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input, gameProcessed)
+        if dragging and input.UserInputType == Enum.UserInputType.Mouse then
+            local delta = input.Position - dragStart
+            mainBox.Position = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+    
+    -- Title Label
+    local title = Instance.new("TextLabel")
+    title.Name = "Title"
+    title.Size = UDim2.new(1, 0, 0.6, 0)
+    title.Position = UDim2.new(0, 0, 0, 0)
+    title.BackgroundTransparency = 1
+    title.Text = "MS Farm"
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.TextSize = 14
+    title.Font = Enum.Font.GothamBold
+    title.Parent = mainBox
+    
+    -- Open Button
+    local openButton = Instance.new("TextButton")
+    openButton.Name = "OpenButton"
+    openButton.Size = UDim2.new(1, 0, 0.4, 0)
+    openButton.Position = UDim2.new(0, 0, 0.6, 0)
+    openButton.BackgroundColor3 = Color3.fromRGB(100, 200, 255)
+    openButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    openButton.TextSize = 12
+    openButton.Font = Enum.Font.Gotham
+    openButton.Text = "Open"
+    openButton.Parent = mainBox
+    
+    return screenGui, mainBox, openButton
+end
+
+local function createMenuUI()
+    local menuGui = Instance.new("ScreenGui")
+    menuGui.Name = "MarshmallowMenu"
+    menuGui.ResetOnSpawn = false
+    menuGui.Parent = playerGui
+    
+    -- Background
+    local background = Instance.new("Frame")
+    background.Name = "Background"
+    background.Size = UDim2.new(1, 0, 1, 0)
+    background.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    background.BackgroundTransparency = 0.5
+    background.Parent = menuGui
+    
+    -- Menu Panel
+    local menuPanel = Instance.new("Frame")
+    menuPanel.Name = "MenuPanel"
+    menuPanel.Size = UDim2.new(0, 300, 0, 500)
+    menuPanel.Position = UDim2.new(0.5, -150, 0.5, -250)
+    menuPanel.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    menuPanel.BorderSizePixel = 2
+    menuPanel.BorderColor3 = Color3.fromRGB(100, 200, 255)
+    menuPanel.Parent = background
+    
+    -- Scroll Frame for menu items
+    local scrollFrame = Instance.new("ScrollingFrame")
+    scrollFrame.Name = "ScrollFrame"
+    scrollFrame.Size = UDim2.new(1, -10, 1, -10)
+    scrollFrame.Position = UDim2.new(0, 5, 0, 5)
+    scrollFrame.BackgroundTransparency = 1
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 500)
+    scrollFrame.Parent = menuPanel
+    
+    local function addMenuLabel(text, order)
+        local label = Instance.new("TextLabel")
+        label.Name = "Label_" .. order
+        label.Size = UDim2.new(1, -10, 0, 30)
+        label.Position = UDim2.new(0, 5, 0, order * 35)
+        label.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.TextSize = 12
+        label.Font = Enum.Font.Gotham
+        label.Text = text
+        label.BorderSizePixel = 1
+        label.Parent = scrollFrame
+        return label
+    end
+    
+    local function addMenuButton(text, order, callback)
+        local button = Instance.new("TextButton")
+        button.Name = "Button_" .. order
+        button.Size = UDim2.new(1, -10, 0, 35)
+        button.Position = UDim2.new(0, 5, 0, order * 40)
+        button.BackgroundColor3 = Color3.fromRGB(100, 200, 255)
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        button.TextSize = 12
+        button.Font = Enum.Font.GothamBold
+        button.Text = text
+        button.BorderSizePixel = 1
+        button.Parent = scrollFrame
+        button.MouseButton1Click:Connect(callback)
+        return button
+    end
+    
+    -- Marshmallow Count
+    addMenuLabel("MS Count: " .. State.currentMarshmallows, 0)
+    
+    -- Start Auto MS Button
+    addMenuButton("Start Auto MS", 1, function()
+        State.isAutoMSEnabled = true
+        menuGui:Destroy()
+        State.uiOpen = false
+    end)
+    
+    -- Materials Section
+    addMenuLabel("Water: " .. State.materials.Water, 2)
+    addMenuLabel("Sugar Bag: " .. State.materials.SugarBlockBag, 3)
+    addMenuLabel("Gelatin: " .. State.materials.Gelatin, 4)
+    
+    -- Buy Materials Button
+    addMenuButton("Buy Materials", 5, function()
+        createBuyMaterialsMenu(menuGui)
+    end)
+    
+    -- Teleport Button
+    addMenuButton("Teleport", 6, function()
+        createTeleportMenu(menuGui)
+    end)
+    
+    -- Sell Marshmallow Button
+    addMenuButton("Sell Marshmallow", 7, function()
+        createSellMenu(menuGui)
+    end)
+    
+    -- Close Button
+    addMenuButton("Close", 8, function()
+        menuGui:Destroy()
+        State.uiOpen = false
+    end)
+    
+    return menuGui
+end
+
+local function createBuyMaterialsMenu(parentMenu)
+    parentMenu:Destroy()
+    
+    local buyGui = Instance.new("ScreenGui")
+    buyGui.Name = "BuyMaterialsMenu"
+    buyGui.ResetOnSpawn = false
+    buyGui.Parent = playerGui
+    
+    local background = Instance.new("Frame")
+    background.Size = UDim2.new(1, 0, 1, 0)
+    background.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    background.BackgroundTransparency = 0.5
+    background.Parent = buyGui
+    
+    local panel = Instance.new("Frame")
+    panel.Size = UDim2.new(0, 300, 0, 200)
+    panel.Position = UDim2.new(0.5, -150, 0.5, -100)
+    panel.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    panel.BorderSizePixel = 2
+    panel.BorderColor3 = Color3.fromRGB(100, 200, 255)
+    panel.Parent = background
+    
+    -- Title
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0, 40)
+    title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.TextSize = 14
+    title.Font = Enum.Font.GothamBold
+    title.Text = "Buy Materials (Max 100)"
+    title.Parent = panel
+    
+    -- Input Box
+    local inputBox = Instance.new("TextBox")
+    inputBox.Name = "QuantityInput"
+    inputBox.Size = UDim2.new(0.8, 0, 0, 40)
+    inputBox.Position = UDim2.new(0.1, 0, 0, 50)
+    inputBox.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    inputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    inputBox.TextSize = 14
+    inputBox.Font = Enum.Font.Gotham
+    inputBox.PlaceholderText = "Enter amount (1-100)"
+    inputBox.Parent = panel
+    
+    -- Buy Button
+    local buyButton = Instance.new("TextButton")
+    buyButton.Size = UDim2.new(0.4, 0, 0, 35)
+    buyButton.Position = UDim2.new(0.1, 0, 0, 100)
+    buyButton.BackgroundColor3 = Color3.fromRGB(100, 200, 255)
+    buyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    buyButton.TextSize = 12
+    buyButton.Font = Enum.Font.GothamBold
+    buyButton.Text = "Buy"
+    buyButton.Parent = panel
+    
+    buyButton.MouseButton1Click:Connect(function()
+        local quantity = tonumber(inputBox.Text) or 1
+        quantity = math.min(math.max(quantity, 1), 100)
+        State.materialsToMake = quantity
+        buyGui:Destroy()
+        buyMaterialsRoutine(quantity)
+    end)
+    
+    -- Back Button
+    local backButton = Instance.new("TextButton")
+    backButton.Size = UDim2.new(0.4, 0, 0, 35)
+    backButton.Position = UDim2.new(0.5, 0, 0, 100)
+    backButton.BackgroundColor3 = Color3.fromRGB(150, 50, 50)
+    backButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    backButton.TextSize = 12
+    backButton.Font = Enum.Font.GothamBold
+    backButton.Text = "Back"
+    backButton.Parent = panel
+    
+    backButton.MouseButton1Click:Connect(function()
+        buyGui:Destroy()
+        if State.uiOpen then
+            createMenuUI()
+        end
+    end)
+end
+
+local function createTeleportMenu(parentMenu)
+    parentMenu:Destroy()
+    
+    local tpGui = Instance.new("ScreenGui")
+    tpGui.Name = "TeleportMenu"
+    tpGui.ResetOnSpawn = false
+    tpGui.Parent = playerGui
+    
+    local background = Instance.new("Frame")
+    background.Size = UDim2.new(1, 0, 1, 0)
+    background.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    background.BackgroundTransparency = 0.5
+    background.Parent = tpGui
+    
+    local panel = Instance.new("Frame")
+    panel.Size = UDim2.new(0, 300, 0, 200)
+    panel.Position = UDim2.new(0.5, -150, 0.5, -100)
+    panel.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    panel.BorderSizePixel = 2
+    panel.BorderColor3 = Color3.fromRGB(100, 200, 255)
+    panel.Parent = background
+    
+    -- Title
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0, 40)
+    title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.TextSize = 14
+    title.Font = Enum.Font.GothamBold
+    title.Text = "Teleport"
+    title.Parent = panel
+    
+    -- TP to APT 1 Button
+    local aptButton = Instance.new("TextButton")
+    aptButton.Size = UDim2.new(0.8, 0, 0, 40)
+    aptButton.Position = UDim2.new(0.1, 0, 0, 50)
+    aptButton.BackgroundColor3 = Color3.fromRGB(100, 200, 255)
+    aptButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    aptButton.TextSize = 12
+    aptButton.Font = Enum.Font.GothamBold
+    aptButton.Text = "TP TO APT 1"
+    aptButton.Parent = panel
+    
+    aptButton.MouseButton1Click:Connect(function()
+        if State.ownedApartments.APT_1 then
+            tpGui:Destroy()
+            teleportWithAnimation(CONFIG.APT_1_LOCATION)
+        else
+            aptButton.Text = "NOT OWNED"
+            aptButton.BackgroundColor3 = Color3.fromRGB(150, 50, 50)
+            task.wait(2)
+            aptButton.Text = "TP TO APT 1"
+            aptButton.BackgroundColor3 = Color3.fromRGB(100, 200, 255)
+        end
+    end)
+    
+    -- TP to NPC Seller Button
+    local npcButton = Instance.new("TextButton")
+    npcButton.Size = UDim2.new(0.8, 0, 0, 40)
+    npcButton.Position = UDim2.new(0.1, 0, 0, 100)
+    npcButton.BackgroundColor3 = Color3.fromRGB(100, 200, 255)
+    npcButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    npcButton.TextSize = 12
+    npcButton.Font = Enum.Font.GothamBold
+    npcButton.Text = "TP TO NPC SELLER"
+    npcButton.Parent = panel
+    
+    npcButton.MouseButton1Click:Connect(function()
+        tpGui:Destroy()
+        teleportWithAnimation(CONFIG.NPC_SELLER_LOCATION)
+    end)
+    
+    -- Back Button
+    local backButton = Instance.new("TextButton")
+    backButton.Size = UDim2.new(0.8, 0, 0, 40)
+    backButton.Position = UDim2.new(0.1, 0, 0, 150)
+    backButton.BackgroundColor3 = Color3.fromRGB(150, 50, 50)
+    backButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    backButton.TextSize = 12
+    backButton.Font = Enum.Font.GothamBold
+    backButton.Text = "Back"
+    backButton.Parent = panel
+    
+    backButton.MouseButton1Click:Connect(function()
+        tpGui:Destroy()
+        if State.uiOpen then
+            createMenuUI()
+        end
+    end)
+end
+
+local function createSellMenu(parentMenu)
+    parentMenu:Destroy()
+    
+    local sellGui = Instance.new("ScreenGui")
+    sellGui.Name = "SellMenu"
+    sellGui.ResetOnSpawn = false
+    sellGui.Parent = playerGui
+    
+    local background = Instance.new("Frame")
+    background.Size = UDim2.new(1, 0, 1, 0)
+    background.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    background.BackgroundTransparency = 0.5
+    background.Parent = sellGui
+    
+    local panel = Instance.new("Frame")
+    panel.Size = UDim2.new(0, 300, 0, 250)
+    panel.Position = UDim2.new(0.5, -150, 0.5, -125)
+    panel.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    panel.BorderSizePixel = 2
+    panel.BorderColor3 = Color3.fromRGB(100, 200, 255)
+    panel.Parent = background
+    
+    -- Title
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0, 40)
+    title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.TextSize = 14
+    title.Font = Enum.Font.GothamBold
+    title.Text = "Sell Marshmallow"
+    title.Parent = panel
+    
+    local bags = {
+        {name = "Small Marshmallow Bag", order = 0},
+        {name = "Medium Marshmallow Bag", order = 1},
+        {name = "Large Marshmallow Bag", order = 2}
+    }
+    
+    for _, bag in ipairs(bags) do
+        local button = Instance.new("TextButton")
+        button.Size = UDim2.new(0.8, 0, 0, 40)
+        button.Position = UDim2.new(0.1, 0, 0, 50 + (bag.order * 50))
+        button.BackgroundColor3 = Color3.fromRGB(100, 200, 255)
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        button.TextSize = 11
+        button.Font = Enum.Font.GothamBold
+        button.Text = bag.name
+        button.Parent = panel
+        
+        button.MouseButton1Click:Connect(function()
+            sellGui:Destroy()
+            sellMarshmallowRoutine(bag.name)
+        end)
+    end
+    
+    -- Back Button
+    local backButton = Instance.new("TextButton")
+    backButton.Size = UDim2.new(0.8, 0, 0, 40)
+    backButton.Position = UDim2.new(0.1, 0, 0, 200)
+    backButton.BackgroundColor3 = Color3.fromRGB(150, 50, 50)
+    backButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    backButton.TextSize = 12
+    backButton.Font = Enum.Font.GothamBold
+    backButton.Text = "Back"
+    backButton.Parent = panel
+    
+    backButton.MouseButton1Click:Connect(function()
+        sellGui:Destroy()
+        if State.uiOpen then
+            createMenuUI()
+        end
+    end)
+end
+
+-- ============================================================================
+-- TELEPORTATION WITH ANIMATION
+-- ============================================================================
+
+local function teleportWithAnimation(targetLocation)
+    local character = player.Character
+    if not character then return end
+    
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    if not humanoidRootPart then return end
+    
+    -- Black screen animation
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "TeleportScreen"
+    screenGui.ResetOnSpawn = false
+    screenGui.Parent = playerGui
+    
+    local blackFrame = Instance.new("Frame")
+    blackFrame.Size = UDim2.new(1, 0, 1, 0)
+    blackFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    blackFrame.BorderSizePixel = 0
+    blackFrame.Parent = screenGui
+    
+    local waitText = Instance.new("TextLabel")
+    waitText.Size = UDim2.new(1, 0, 1, 0)
+    waitText.BackgroundTransparency = 1
+    waitText.TextColor3 = Color3.fromRGB(255, 255, 255)
+    waitText.TextSize = 48
+    waitText.Font = Enum.Font.GothamBold
+    waitText.Text = "Wait"
+    waitText.Parent = blackFrame
+    
+    task.wait(CONFIG.TELEPORT_WAIT_TIME)
+    
+    -- Teleport
+    humanoidRootPart.CFrame = CFrame.new(targetLocation + Vector3.new(0, 3, 0))
+    
+    task.wait(1)
+    screenGui:Destroy()
+    
+    updateActivity()
+end
+
+-- ============================================================================
+-- AUTO BUY MATERIALS ROUTINE
+-- ============================================================================
+
+local function buyMaterialsRoutine(quantity)
+    teleportWithAnimation(CONFIG.NPC_SELLER_LOCATION)
+    task.wait(2)
+    
+    local character = player.Character
+    if not character then return end
+    
+    for i = 1, quantity do
+        if not (player.Character and player.Character:FindFirstChild("HumanoidRootPart")) then break end
+        
+        -- Press Water
+        local waterButton = findInventoryItem("Water")
+        if waterButton then waterButton.Position = Vector3.new(0, 0, 0) end
+        task.wait(0.5)
+        
+        -- Press Sugar Block Bag
+        local sugarButton = findInventoryItem("Sugar Block Bag")
+        if sugarButton then sugarButton.Position = Vector3.new(0, 0, 0) end
+        task.wait(0.5)
+        
+        -- Press Gelatin
+        local gelatinButton = findInventoryItem("Gelatin")
+        if gelatinButton then gelatinButton.Position = Vector3.new(0, 0, 0) end
+        task.wait(0.5)
+        
+        updateActivity()
+        
+        if i % 10 == 0 then
+            task.wait(2) -- Brief pause every 10 purchases
+        end
+    end
+end
+
+-- ============================================================================
+-- AUTO COOKING ROUTINE
+-- ============================================================================
+
+local function autoCookMarshmallows()
+    if State.isCooking then return end
+    State.isCooking = true
+    
+    local marshmallowsMade = 0
+    local targetMarshmallows = State.materialsToMake
+    
+    while State.isAutoMSEnabled and marshmallowsMade < targetMarshmallows do
+        local character = player.Character
+        if not character or not character:FindFirstChild("HumanoidRootPart") then break end
+        
+        -- Step 1: Press Water in inventory
+        local waterItem = findInventoryItem("Water")
+        if not waterItem then break end
+        task.wait(0.5)
+        updateActivity()
+        
+        -- Step 2: Press Interact on the stove
+        interactWithStove()
+        task.wait(0.5)
+        updateActivity()
+        
+        -- Step 3: Wait 21 seconds
+        task.wait(CONFIG.STOVE_WAIT_TIME)
+        updateActivity()
+        
+        -- Step 4: Press Sugar Block Bag
+        local sugarItem = findInventoryItem("Sugar Block Bag")
+        if not sugarItem then break end
+        task.wait(0.5)
+        updateActivity()
+        
+        -- Step 5: Press Gelatin
+        local gelatinItem = findInventoryItem("Gelatin")
+        if not gelatinItem then break end
+        task.wait(0.5)
+        updateActivity()
+        
+        -- Step 6: Press Interact on the stove again
+        interactWithStove()
+        task.wait(0.5)
+        updateActivity()
+        
+        -- Step 7: Wait 46 seconds
+        task.wait(CONFIG.SECOND_COOK_WAIT_TIME)
+        updateActivity()
+        
+        -- Step 8: Press Blank Bag in inventory
+        local blankBag = findInventoryItem("Blank Bag")
+        if not blankBag then break end
+        task.wait(0.5)
+        updateActivity()
+        
+        marshmallowsMade = marshmallowsMade + 1
+        State.currentMarshmallows = marshmallowsMade
+        
+        task.wait(1) -- Small delay between batches
+    end
+    
+    State.isCooking = false
+    State.isAutoMSEnabled = false
+end
+
+-- ============================================================================
+-- SELL MARSHMALLOW ROUTINE
+-- ============================================================================
+
+local function sellMarshmallowRoutine(bagType)
+    local character = player.Character
+    if not character then return end
+    
+    -- Find and click the marshmallow bag in inventory
+    local bag = findInventoryItem(bagType)
+    if not bag then
+        print("Bag not found: " .. bagType)
+        return
+    end
+    
+    task.wait(0.5)
+    
+    -- Interact with NPC seller
+    interactWithNPC()
+    task.wait(1)
+    
+    updateActivity()
+end
+
+-- ============================================================================
+-- HELPER FUNCTIONS
+-- ============================================================================
+
+local function findInventoryItem(itemName)
+    -- This function should search the player's inventory and return the item
+    -- Adjust based on your specific game's inventory structure
+    local backpack = player:FindFirstChild("Backpack")
+    if not backpack then return nil end
+    
+    return backpack:FindFirstChild(itemName)
+end
+
+local function interactWithStove()
+    -- Find the stove in the game and interact with it
+    local character = player.Character
+    if not character then return end
+    
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    if not humanoidRootPart then return end
+    
+    -- Move to stove location
+    humanoidRootPart.CFrame = CFrame.new(CONFIG.STOVE_LOCATION + Vector3.new(0, 0, 5))
+    task.wait(0.5)
+    
+    -- Find and interact with stove
+    local stove = workspace:FindFirstChild("Stove") or workspace:FindFirstChild("CookingStove")
+    if stove then
+        -- Try to find interaction component
+        local clickDetector = stove:FindFirstChild("ClickDetector")
+        local proximityPrompt = stove:FindFirstChild("ProximityPrompt")
+        
+        if clickDetector then
+            mouse.Target = stove
+            mouse:TriggerButton1Down()
+            task.wait(0.1)
+            mouse:TriggerButton1Up()
+        elseif proximityPrompt then
+            fireproximityprompt(proximityPrompt)
+        end
+    end
+    
+    updateActivity()
+end
+
+local function interactWithNPC()
+    -- Find the NPC and interact with it
+    local character = player.Character
+    if not character then return end
+    
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    if not humanoidRootPart then return end
+    
+    -- Move to NPC location
+    humanoidRootPart.CFrame = CFrame.new(CONFIG.NPC_SELLER_LOCATION + Vector3.new(0, 0, 5))
+    task.wait(0.5)
+    
+    -- Find and interact with NPC
+    local npc = workspace:FindFirstChild("NPCSeller") or workspace:FindFirstChild("MarshmallowSeller")
+    if npc then
+        local clickDetector = npc:FindFirstChild("ClickDetector")
+        local proximityPrompt = npc:FindFirstChild("ProximityPrompt")
+        
+        if clickDetector then
+            mouse.Target = npc
+            mouse:TriggerButton1Down()
+            task.wait(0.1)
+            mouse:TriggerButton1Up()
+        elseif proximityPrompt then
+            fireproximityprompt(proximityPrompt)
+        end
+    end
+    
+    updateActivity()
+end
+
+-- ============================================================================
+-- ANTI-KICK / ANTI-BAN PROTECTION
+-- ============================================================================
+
+local function updateActivity()
+    State.lastActivityTime = tick()
+end
+
+local function antiKickProtection()
+    while true do
+        task.wait(CONFIG.RANDOM_MOVEMENT_INTERVAL)
+        
+        if not CONFIG.ANTI_KICK_ENABLED then continue end
+        
+        local character = player.Character
+        if not character then continue end
+        
+        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+        if not humanoidRootPart then continue end
+        
+        -- Random small movement
+        local randomOffset = Vector3.new(
+            math.random(-5, 5),
+            0,
+            math.random(-5, 5)
+        )
+        humanoidRootPart.CFrame = humanoidRootPart.CFrame + randomOffset
+        
+        -- Random mouse movement
+        if CONFIG.RANDOM_MOUSE_MOVEMENT then
+            mouse.Move = mouse.X + math.random(-20, 20)
+        end
+        
+        updateActivity()
+    end
+end
+
+-- ============================================================================
+-- MAIN SCRIPT INITIALIZATION
+-- ============================================================================
+
+local function initialize()
+    -- Fetch player data (ownership, materials, marshmallows)
+    -- This should connect to your game's data system
+    
+    State.ownedApartments.APT_1 = true -- Example: Set this based on actual game data
+    State.materials.Water = 10
+    State.materials.SugarBlockBag = 10
+    State.materials.Gelatin = 10
+    State.currentMarshmallows = 5
+    
+    -- Create main UI
+    local screenGui, mainBox, openButton = createMainUI()
+    
+    -- Open menu on click
+    openButton.MouseButton1Click:Connect(function()
+        if not State.uiOpen then
+            State.uiOpen = true
+            createMenuUI()
+        end
+    end)
+    
+    -- Start auto cooking loop
+    task.spawn(function()
+        while true do
+            task.wait(1)
+            if State.isAutoMSEnabled then
+                autoCookMarshmallows()
+            end
+        end
+    end)
+    
+    -- Start anti-kick protection
+    if CONFIG.ANTI_KICK_ENABLED then
+        task.spawn(antiKickProtection)
+    end
+    
+    -- Handle character respawn
+    player.CharacterAdded:Connect(function(character)
+        character:WaitForChild("HumanoidRootPart")
+        updateActivity()
+    end)
+    
+    print("✅ Marshmallow Farm Automation Script Loaded!")
+    print("📍 NPC Location: X=" .. CONFIG.NPC_SELLER_LOCATION.X .. " Y=" .. CONFIG.NPC_SELLER_LOCATION.Y .. " Z=" .. CONFIG.NPC_SELLER_LOCATION.Z)
+    print("📍 Stove Location: X=" .. CONFIG.STOVE_LOCATION.X .. " Y=" .. CONFIG.STOVE_LOCATION.Y .. " Z=" .. CONFIG.STOVE_LOCATION.Z)
+end
+
+-- Run initialization
+initialize()
+
