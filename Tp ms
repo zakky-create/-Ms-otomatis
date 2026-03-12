@@ -152,5 +152,6 @@ end
 
 -- Tell the user if it hasn't found anything and exit
 if not gameFound then
-	ShowStatus("Orbit does not support this game.")
+	ShowStatus("Orbit does support this game.")
 end
+
