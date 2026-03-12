@@ -1,0 +1,463 @@
+‎-- Script Requirements
+‎
+‎-- LocalScript
+‎local ReplicatedStorage = game:GetService("ReplicatedStorage")
+‎local UserInputService = game:GetService("UserInputService")
+‎local RunService = game:GetService("RunService")
+‎local Players = game:GetService("Players")
+‎local Player = Players.LocalPlayer
+‎local Character = Player.Character
+‎local Backpack = Player.Backpack
+‎
+‎-- GUI Setup
+‎local Gui = Instance.new("ScreenGui")
+‎Gui.Name = "MarshmallowGui"
+‎Gui.Parent = Player.PlayerGui
+‎Gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+‎
+‎local MainFrame = Instance.new("Frame")
+‎MainFrame.Name = "MainFrame"
+‎MainFrame.Parent = Gui
+‎MainFrame.BackgroundTransparency = 1
+‎MainFrame.Size = UDim2.new(0, 200, 0, 400)
+‎MainFrame.Position = UDim2.new(0, 0, 0, 0)
+‎
+‎local DraggableBox = Instance.new("Frame")
+‎DraggableBox.Name = "DraggableBox"
+‎DraggableBox.Parent = MainFrame
+‎DraggableBox.Size = UDim2.new(0, 200, 0, 50)
+‎DraggableBox.BackgroundTransparency = 0
+‎DraggableBox.BackgroundColor3 = Color3.new(1, 1, 1)
+‎DraggableBox.Position = UDim2.new(0, 0, 0, 0)
+‎
+‎local DragLock = false
+‎local Mouse = UserInputService:GetMouse()
+‎Mouse.Button1Down:Connect(function()
+‎    DragLock = true
+‎end)
+‎Mouse.Button1Up:Connect(function()
+‎    DragLock = false
+‎end)
+‎UserInputService.InputBegan:Connect(function(Input)
+‎    if Input.UserInputType == Enum.UserInputType.MouseMovement and DragLock then
+‎        local CurrentMousePosition = Mouse.Position
+‎        local CurrentScreenGuiPosition = Gui.AbsolutePosition
+‎        local CurrentScreenGuiSize = Gui.AbsoluteSize
+‎        MainFrame.Position = UDim2.new(0, CurrentMousePosition.X - CurrentScreenGuiPosition.X - CurrentScreenGuiSize.X / 2, 0, CurrentMousePosition.Y - CurrentScreenGuiPosition.Y - CurrentScreenGuiSize.Y / 2)
+‎    end
+‎end)
+‎
+‎-- Menu Panel
+‎local MenuPanel = Instance.new("Frame")
+‎MenuPanel.Name = "MenuPanel"
+‎MenuPanel.Parent = MainFrame
+‎MenuPanel.BackgroundTransparency = 0
+‎MenuPanel.BackgroundColor3 = Color3.new(1, 1, 1)
+‎MenuPanel.Size = UDim2.new(0, 200, 0, 350)
+‎MenuPanel.Position = UDim2.new(0, 0, 0, 50)
+‎
+‎local CurrentMarshmallowCount = Instance.new("TextLabel")
+‎CurrentMarshmallowCount.Name = "CurrentMarshmallowCount"
+‎CurrentMarshmallowCount.Parent = MenuPanel
+‎CurrentMarshmallowCount.Size = UDim2.new(0, 200, 0, 25)
+‎CurrentMarshmallowCount.BackgroundTransparency = 1
+‎CurrentMarshmallowCount.FontSize = Enum.FontSize.Size14
+‎CurrentMarshmallowCount.Text = "Current Marshmallow Count: 0"
+‎
+‎local CurrentWaterAmount = Instance.new("TextLabel")
+‎CurrentWaterAmount.Name = "CurrentWaterAmount"
+‎CurrentWaterAmount.Parent = MenuPanel
+‎CurrentWaterAmount.Size = UDim2.new(0, 200, 0, 25)
+‎CurrentWaterAmount.BackgroundTransparency = 1
+‎CurrentWaterAmount.FontSize = Enum.FontSize.Size14
+‎CurrentWaterAmount.Text = "Current Water Amount: 0"
+‎
+‎local CurrentSugarBlockBagAmount = Instance.new("TextLabel")
+‎CurrentSugarBlockBagAmount.Name = "CurrentSugarBlockBagAmount"
+‎CurrentSugarBlockBagAmount.Parent = MenuPanel
+‎CurrentSugarBlockBagAmount.Size = UDim2.new(0, 200, 0, 25)
+‎CurrentSugarBlockBagAmount.BackgroundTransparency = 1
+‎CurrentSugarBlockBagAmount.FontSize = Enum.FontSize.Size14
+‎CurrentSugarBlockBagAmount.Text = "Current Sugar Block Bag Amount: 0"
+‎
+‎local CurrentGelatinAmount = Instance.new("TextLabel")
+‎CurrentGelatinAmount.Name = "CurrentGelatinAmount"
+‎CurrentGelatinAmount.Parent = MenuPanel
+‎CurrentGelatinAmount.Size = UDim2.new(0, 200, 0, 25)
+‎CurrentGelatinAmount.BackgroundTransparency = 1
+‎CurrentGelatinAmount.FontSize = Enum.FontSize.Size14
+‎CurrentGelatinAmount.Text = "Current Gelatin Amount: 0"
+‎
+‎-- Automation Controls
+‎local StartAutomation = Instance.new("TextButton")
+‎StartAutomation.Name = "StartAutomation"
+‎StartAutomation.Parent = MenuPanel
+‎StartAutomation.Size = UDim2.new(0, 200, 0, 25)
+‎StartAutomation.BackgroundTransparency = 0
+‎StartAutomation.BackgroundColor3 = Color3.new(1, 1, 1)
+‎StartAutomation.FontSize = Enum.FontSize.Size14
+‎StartAutomation.Text = "Start Auto Marshmallow"
+‎StartAutomation.MouseButton1Click:Connect(function()
+‎    StartAutoMarshmallow()
+‎end)
+‎
+‎-- NPC Teleportation
+‎local NPCIngredientSeller = Instance.new("Model")
+‎NPCIngredientSeller.Name = "NPCIngredientSeller"
+‎NPCIngredientSeller.Parent = workspace
+‎NPCIngredientSeller.Position = Vector3.new(510, 3, 597)
+‎
+‎local TeleportToNPC = Instance.new("TextButton")
+‎TeleportToNPC.Name = "TeleportToNPC"
+‎TeleportToNPC.Parent = MenuPanel
+‎TeleportToNPC.Size = UDim2.new(0, 200, 0, 25)
+‎TeleportToNPC.BackgroundTransparency = 0
+‎TeleportToNPC.BackgroundColor3 = Color3.new(1, 1, 1)
+‎TeleportToNPC.FontSize = Enum.FontSize.Size14
+‎TeleportToNPC.Text = "Teleport to NPC"
+‎TeleportToNPC.MouseButton1Click:Connect(function()
+‎    TeleportToNPCLocation()
+‎end)
+‎
+‎-- Automation Script
+‎local function StartAutoMarshmallow()
+‎    local Player = game.Players.LocalPlayer
+‎    local Character = Player.Character
+‎    local Backpack = Player.Backpack
+‎    local Water = Backpack:FindFirstChild("Water")
+‎    local SugarBlockBag = Backpack:FindFirstChild("Sugar Block Bag")
+‎    local Gelatin = Backpack:FindFirstChild("Gelatin")
+‎    local MarshmallowCount = 0
+‎    local WaterAmount = 0
+‎    local SugarBlockBagAmount = 0
+‎    local GelatinAmount = 0
+‎
+‎    while true do
+‎        if Water and SugarBlockBag and Gelatin then
+‎            if WaterAmount < 1 then
+‎                Water:Activate()
+‎                WaterAmount = WaterAmount + 1
+‎            end
+‎            if SugarBlockBagAmount < 1 then
+‎                SugarBlockBag:Activate()
+‎                SugarBlockBagAmount = SugarBlockBagAmount + 1
+‎            end
+‎            if GelatinAmount < 1 then
+‎                Gelatin:Activate()
+‎                GelatinAmount = GelatinAmount + 1
+‎            end
+‎            if WaterAmount >= 1 and SugarBlockBagAmount >= 1 and GelatinAmount >= 1 then
+‎                print("Marshmallow cooked!")
+‎                break
+‎            end
+‎        end
+‎        wait(1)
+‎    end
+‎end
+‎
+‎local function TeleportToNPCLocation()
+‎    local Player = game.Players.LocalPlayer
+‎    local Character = Player.Character
+‎    local NPCIngredientSeller = workspace.NPCIngredientSeller
+‎    Character.HumanoidRootPart.CFrame = NPCIngredientSeller.HumanoidRootPart.CFrame
+‎end
+‎
+‎-- Update GUI
+‎local function UpdateGUI()
+‎    local Player = game.Players.LocalPlayer
+‎    local Backpack = Player.Backpack
+‎    local CurrentMarshmallowCount = Backpack:FindFirstChild("Marshmallow")
+‎    local CurrentWaterAmount = Backpack:FindFirstChild("Water")
+‎    local CurrentSugarBlockBagAmount = Backpack:FindFirstChild("Sugar Block Bag")
+‎    local CurrentGelatinAmount = Backpack:FindFirstChild("Gelatin")
+‎
+‎    CurrentMarshmallowCount.Text = "Current Marshmallow Count: " .. tostring(CurrentMarshmallowCount.Value)
+‎    CurrentWaterAmount.Text = "Current Water Amount: " .. tostring(CurrentWaterAmount.Value)
+‎    CurrentSugarBlockBagAmount.Text = "Current Sugar Block Bag Amount: " .. tostring(CurrentSugarBlockBagAmount.Value)
+‎    CurrentGelatinAmount.Text = "Current Gelatin Amount: " .. tostring(CurrentGelatinAmount.Value)
+‎end
+‎
+‎UpdateGUI()
+‎while true do
+‎    UpdateGUI()
+‎    wait(1)
+‎end
+‎
+‎-- Teleport Menu
+‎local function createTeleportMenu()
+‎    local teleportMenu = {
+‎        name = "Teleport Options",
+‎        buttons = {
+‎            {
+‎                name = "TP TO APT 1",
+‎                action = function()
+‎                    if player:hasApartment(1) then
+‎                        teleportPlayerToApartment(1)
+‎                    else
+‎                        print("You do not own Apartment 1.")
+‎                    end
+‎                end
+‎            }
+‎        }
+‎    }
+‎    return teleportMenu
+‎end
+‎
+‎-- Teleport Functions
+‎local function teleportPlayerToApartment(apartmentNumber)
+‎    local apartmentStoveLocation = {
+‎        x = 1202,
+‎        y = 3,
+‎        z = -182
+‎    }
+‎    screenFadeToBlack()
+‎    print("Wait...")
+‎    wait(2)
+‎    teleportPlayer(apartmentStoveLocation.x, apartmentStoveLocation.y, apartmentStoveLocation.z)
+‎end
+‎
+‎-- Stove Location
+‎local function getStoveLocation()
+‎    return {
+‎        x = 1202,
+‎        y = 3,
+‎        z = -182
+‎    }
+‎end
+‎
+‎-- Teleport Effects
+‎local function teleportEffects()
+‎    screenFadeToBlack()
+‎    print("Wait...")
+‎    wait(2)
+‎end
+‎
+‎-- Cooking Process Automation
+‎local function cookMarshmallow()
+‎    -- Step 1
+‎    useItemFromBackpack("Water")
+‎    interactWithStove()
+‎    wait(21)
+‎
+‎    -- Step 2
+‎    useItemFromBackpack("Sugar Block Bag")
+‎    useItemFromBackpack("Gelatin")
+‎    interactWithStove()
+‎    wait(46)
+‎
+‎    -- Step 3
+‎    useItemFromBackpack("Empty Bag")
+‎end
+‎
+‎-- Selling System
+‎local function sellMarshmallow()
+‎    -- Sell one of the following items from the Backpack
+‎    local items = {
+‎        "Small Marshmallow Bag",
+‎        "Medium Marshmallow Bag",
+‎        "Large Marshmallow Bag"
+‎    }
+‎    for _, item in ipairs(items) do
+‎        if player:hasItem(item) then
+‎            interactWithMarshmallowNPCVendor()
+‎            return
+‎        end
+‎    end
+‎end
+‎
+‎-- Main Function
+‎local function main()
+‎    local teleportMenu = createTeleportMenu()
+‎    -- Add teleport menu to GUI
+‎    -- Create event listeners for buttons
+‎end
+‎
+‎-- Import required modules
+‎local ReplicatedStorage = game:GetService("ReplicatedStorage")
+‎local UserInputService = game:GetService("UserInputService")
+‎local RunService = game:GetService("RunService")
+‎local Players = game:GetService("Players")
+‎local Workspace = game:GetService("Workspace")
+‎
+‎-- Create a new script and attach it to a LocalScript or Script
+‎local GUI = script.Parent
+‎
+‎-- Create a new UI ScreenGui
+‎local ScreenGui = Instance.new("ScreenGui")
+‎ScreenGui.Parent = Players.LocalPlayer.PlayerGui
+‎
+‎-- Create a new UI Frame
+‎local Frame = Instance.new("Frame")
+‎Frame.Parent = ScreenGui
+‎Frame.Size = UDim2.new(0, 200, 0, 200)
+‎Frame.Position = UDim2.new(0, 0, 0, 0)
+‎Frame.BackgroundTransparency = 0.5
+‎
+‎-- Create a new UI Button
+‎local Button = Instance.new("TextButton")
+‎Button.Parent = Frame
+‎Button.Size = UDim2.new(0, 50, 0, 20)
+‎Button.Position = UDim2.new(0, 10, 0, 10)
+‎Button.Text = "Menu"
+‎Button.BackgroundColor3 = Color3.new(0, 0, 0)
+‎Button.TextColor3 = Color3.new(1, 1, 1)
+‎Button.Font = Enum.Font.SourceSans
+‎Button.FontSize = Enum.FontSize.Size14
+‎
+‎-- Create a new UI Panel
+‎local Panel = Instance.new("Frame")
+‎Panel.Parent = Frame
+‎Panel.Size = UDim2.new(0, 200, 0, 150)
+‎Panel.Position = UDim2.new(0, 0, 0, 30)
+‎Panel.BackgroundTransparency = 0.5
+‎
+‎-- Create a new UI Button for automation controls
+‎local AutomationButton = Instance.new("TextButton")
+‎AutomationButton.Parent = Panel
+‎AutomationButton.Size = UDim2.new(0, 50, 0, 20)
+‎AutomationButton.Position = UDim2.new(0, 10, 0, 10)
+‎AutomationButton.Text = "Automation"
+‎AutomationButton.BackgroundColor3 = Color3.new(0, 0, 0)
+‎AutomationButton.TextColor3 = Color3.new(1, 1, 1)
+‎AutomationButton.Font = Enum.Font.SourceSans
+‎AutomationButton.FontSize = Enum.FontSize.Size14
+‎
+‎-- Create a new UI Button for backpack item detection
+‎local BackpackButton = Instance.new("TextButton")
+‎BackpackButton.Parent = Panel
+‎BackpackButton.Size = UDim2.new(0, 50, 0, 20)
+‎BackpackButton.Position = UDim2.new(0, 10, 0, 40)
+‎BackpackButton.Text = "Backpack"
+‎BackpackButton.BackgroundColor3 = Color3.new(0, 0, 0)
+‎BackpackButton.TextColor3 = Color3.new(1, 1, 1)
+‎BackpackButton.Font = Enum.Font.SourceSans
+‎BackpackButton.FontSize = Enum.FontSize.Size14
+‎
+‎-- Create a new UI Button for teleport options
+‎local TeleportButton = Instance.new("TextButton")
+‎TeleportButton.Parent = Panel
+‎TeleportButton.Size = UDim2.new(0, 50, 0, 20)
+‎TeleportButton.Position = UDim2.new(0, 10, 0, 70)
+‎TeleportButton.Text = "Teleport"
+‎TeleportButton.BackgroundColor3 = Color3.new(0, 0, 0)
+‎TeleportButton.TextColor3 = Color3.new(1, 1, 1)
+‎TeleportButton.Font = Enum.Font.SourceSans
+‎TeleportButton.FontSize = Enum.FontSize.Size14
+‎
+‎-- Create a new UI Button for cooking automation
+‎local CookingButton = Instance.new("TextButton")
+‎CookingButton.Parent = Panel
+‎CookingButton.Size = UDim2.new(0, 50, 0, 20)
+‎CookingButton.Position = UDim2.new(0, 10, 0, 100)
+‎CookingButton.Text = "Cooking"
+‎CookingButton.BackgroundColor3 = Color3.new(0, 0, 0)
+‎CookingButton.TextColor3 = Color3.new(1, 1, 1)
+‎CookingButton.Font = Enum.Font.SourceSans
+‎CookingButton.FontSize = Enum.FontSize.Size14
+‎
+‎-- Create a new UI Button for selling system
+‎local SellingButton = Instance.new("TextButton")
+‎SellingButton.Parent = Panel
+‎SellingButton.Size = UDim2.new(0, 50, 0, 20)
+‎SellingButton.Position = UDim2.new(0, 10, 0, 130)
+‎SellingButton.Text = "Selling"
+‎SellingButton.BackgroundColor3 = Color3.new(0, 0, 0)
+‎SellingButton.TextColor3 = Color3.new(1, 1, 1)
+‎SellingButton.Font = Enum.Font.SourceSans
+‎SellingButton.FontSize = Enum.FontSize.Size14
+‎
+‎-- Function to make the mini menu button draggable
+‎local function makeDraggable(button)
+‎    local input = UserInputService.InputBegan:Connect(function(input)
+‎        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+‎            local mousePosition = input.Position
+‎            local screenGui = button.Parent
+‎            local rect = screenGui.AbsoluteSize
+‎            local offset = button.AbsolutePosition
+‎            local x = mousePosition.X - offset.X
+‎            local y = mousePosition.Y - offset.Y
+‎            local size = button.Size
+‎            local newX = x
+‎            local newY = y
+‎            if x < 0 then
+‎                newX = 0
+‎            elseif x > rect.X - size.X + 1 then
+‎                newX = rect.X - size.X + 1
+‎            end
+‎            if y < 0 then
+‎                newY = 0
+‎            elseif y > rect.Y - size.Y + 1 then
+‎                newY = rect.Y - size.Y + 1
+‎            end
+‎            button.Position = UDim2.new(newX / rect.X, newY / rect.Y)
+‎        end
+‎    end)
+‎end
+‎
+‎makeDraggable(Button)
+‎
+‎-- Function to detect backpack items
+‎local function detectBackpackItems()
+‎    local player = Players.LocalPlayer
+‎    local backpack = player.Backpack
+‎    local items = backpack:GetChildren()
+‎    for i, item in pairs(items) do
+‎        print(item.Name)
+‎    end
+‎end
+‎
+‎AutomationButton.MouseButton1Click:Connect(function()
+‎    detectBackpackItems()
+‎end)
+‎
+‎-- Function to teleport to a location
+‎local function teleportToLocation()
+‎    local player = Players.LocalPlayer
+‎    local character = player.Character
+‎    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+‎    local teleportLocation = Vector3.new(0, 0, 0)
+‎    humanoidRootPart.CFrame = CFrame.new(teleportLocation)
+‎end
+‎
+‎TeleportButton.MouseButton1Click:Connect(function()
+‎    teleportToLocation()
+‎end)
+‎
+‎-- Function to automate cooking
+‎local function automateCooking()
+‎    local player = Players.LocalPlayer
+‎    local character = player.Character
+‎    local cookingStation = character:WaitForChild("CookingStation")
+‎    local cookingItem = cookingStation:WaitForChild("CookingItem")
+‎    cookingItem:Destroy()
+‎end
+‎
+‎CookingButton.MouseButton1Click:Connect(function()
+‎    automateCooking()
+‎end)
+‎
+‎-- Function to sell items
+‎local function sellItems()
+‎    local player = Players.LocalPlayer
+‎    local character = player.Character
+‎    local backpack = player.Backpack
+‎    local items = backpack:GetChildren()
+‎    for i, item in pairs(items) do
+‎        local itemName = item.Name
+‎        local itemPrice = 0
+‎        if itemName == "Item1" then
+‎            itemPrice = 10
+‎        elseif itemName == "Item2" then
+‎            itemPrice = 20
+‎        end
+‎        if itemPrice > 0 then
+‎            print("Selling " .. itemName .. " for $" .. itemPrice)
+‎            item:Destroy()
+‎        end
+‎    end
+‎end
+‎
+‎SellingButton.MouseButton1Click:Connect(function()
+‎    sellItems()
+‎end)
+‎
