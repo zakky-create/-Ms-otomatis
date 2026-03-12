@@ -1,0 +1,111 @@
+-- Auto Cook Marshmallow GUI
+
+local player = game.Players.LocalPlayer
+local backpack = player:WaitForChild("Backpack")
+
+-- GUI
+local gui = Instance.new("ScreenGui", player.PlayerGui)
+gui.Name = "AutoCookMS"
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0,200,0,120)
+frame.Position = UDim2.new(0.02,0,0.4,0)
+frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+frame.Active = true
+frame.Draggable = true
+
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1,0,0,30)
+title.BackgroundColor3 = Color3.fromRGB(40,40,40)
+title.Text = "Marshmallow AutoCook"
+title.TextColor3 = Color3.new(1,1,1)
+title.TextScaled = true
+
+local startBtn = Instance.new("TextButton", frame)
+startBtn.Size = UDim2.new(0.8,0,0,30)
+startBtn.Position = UDim2.new(0.1,0,0.4,0)
+startBtn.Text = "Start Auto Cook"
+startBtn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+startBtn.TextColor3 = Color3.new(1,1,1)
+
+local stopBtn = Instance.new("TextButton", frame)
+stopBtn.Size = UDim2.new(0.8,0,0,30)
+stopBtn.Position = UDim2.new(0.1,0,0.7,0)
+stopBtn.Text = "Stop"
+stopBtn.BackgroundColor3 = Color3.fromRGB(80,40,40)
+stopBtn.TextColor3 = Color3.new(1,1,1)
+
+-- equip tool
+local function useTool(name)
+
+    local tool = backpack:FindFirstChild(name)
+
+    if tool then
+        player.Character.Humanoid:EquipTool(tool)
+        task.wait(0.5)
+    end
+
+end
+
+-- tekan kompor
+local function pressCookingPot()
+
+    local root = player.Character:WaitForChild("HumanoidRootPart")
+
+    for _,v in pairs(workspace:GetDescendants()) do
+
+        if v:IsA("ProximityPrompt") and v.Parent:FindFirstAncestor("Cooking Pot") then
+
+            root.CFrame = v.Parent.CFrame + Vector3.new(0,3,0)
+
+            task.wait(0.3)
+
+            fireproximityprompt(v,2)
+
+            return
+        end
+
+    end
+
+end
+
+-- AutoCook
+local cooking = false
+
+local function autoCook()
+
+    cooking = true
+
+    while cooking do
+
+        useTool("Water")
+        pressCookingPot()
+
+        task.wait(21)
+
+        useTool("Sugar Block Bag")
+        useTool("Gelatin")
+
+        pressCookingPot()
+
+        task.wait(46)
+
+        useTool("Empty Bag")
+
+        print("Marshmallow Done")
+
+    end
+
+end
+
+-- tombol GUI
+startBtn.MouseButton1Click:Connect(function()
+    if not cooking then
+        autoCook()
+    end
+end)
+
+stopBtn.MouseButton1Click:Connect(function()
+    cooking = false
+end)
+
