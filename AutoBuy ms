@@ -1,9 +1,37 @@
--- AutoBuy Marshmallow (Press E)
+-- AutoBuy Marshmallow GUI
 
 local player = game.Players.LocalPlayer
 local vim = game:GetService("VirtualInputManager")
 
--- tekan E
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0,200,0,120)
+frame.Position = UDim2.new(0.02,0,0.55,0)
+frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1,0,0,30)
+title.Text = "AUTO BUY"
+title.BackgroundColor3 = Color3.fromRGB(40,40,40)
+title.TextColor3 = Color3.new(1,1,1)
+title.TextScaled = true
+title.Parent = frame
+
+local buy = Instance.new("TextButton")
+buy.Size = UDim2.new(0.8,0,0,35)
+buy.Position = UDim2.new(0.1,0,0.5,0)
+buy.Text = "BUY BAHAN"
+buy.BackgroundColor3 = Color3.fromRGB(60,60,60)
+buy.TextColor3 = Color3.new(1,1,1)
+buy.Parent = frame
+
+-- tekan tombol E
 local function pressE()
 
     vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
@@ -12,10 +40,10 @@ local function pressE()
 
 end
 
--- fungsi auto buy
+-- AutoBuy
 local function autoBuy()
 
-    -- buka shop
+    -- buka shop NPC
     pressE()
     task.wait(1)
 
@@ -23,17 +51,21 @@ local function autoBuy()
     pressE()
     task.wait(0.7)
 
-    -- beli Sugar
+    -- beli Sugar Block Bag
     pressE()
     task.wait(0.7)
 
     -- beli Gelatin
     pressE()
 
-    print("Bahan Marshmallow dibeli")
+    print("Water, Sugar, Gelatin berhasil dibeli")
 
 end
 
-autoBuy()
+-- tombol GUI
+buy.MouseButton1Click:Connect(function()
+    autoBuy()
+end)
+
 
 
