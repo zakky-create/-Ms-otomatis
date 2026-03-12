@@ -1,4 +1,6 @@
 ‎-- Script Requirements
+
+print("SCRIPT LOADED")
 ‎
 ‎-- LocalScript
 ‎local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -9,6 +11,7 @@
 ‎local Character = Player.Character or Player.CharacterAdded:Wait()
 local Backpack = Player:WaitForChild("Backpack")
 ‎local PlayerGui = Player:WaitForChild("PlayerGui")
+
 
 ‎-- GUI Setup
 ‎local Gui = Instance.new("ScreenGui")
@@ -640,4 +643,5 @@ TeleportTierButton.TextColor3 = Color3.new(1, 1, 1)
 TeleportTierButton.Parent = ControlButtons
 
 local AutoBuyButton = Instance.new("TextButton")
+
 
