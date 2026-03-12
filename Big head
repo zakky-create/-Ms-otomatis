@@ -1,0 +1,97 @@
+local player = game.Players.LocalPlayer
+
+local enabled = false
+
+-- GUI
+local gui = Instance.new("ScreenGui", player.PlayerGui)
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0,200,0,100)
+frame.Position = UDim2.new(0.02,0,0.4,0)
+frame.BackgroundColor3 = Color3.fromRGB(173,216,230)
+frame.Active = true
+frame.Draggable = true
+
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1,0,0,30)
+title.Text = "BIG HEAD"
+title.BackgroundColor3 = Color3.fromRGB(120,190,220)
+title.TextColor3 = Color3.new(1,1,1)
+title.TextScaled = true
+
+local toggle = Instance.new("TextButton", frame)
+toggle.Size = UDim2.new(0.8,0,0,40)
+toggle.Position = UDim2.new(0.1,0,0.45,0)
+toggle.Text = "ON"
+toggle.BackgroundColor3 = Color3.fromRGB(90,170,210)
+
+-- fungsi big head
+local function applyBigHead()
+
+	for _,v in pairs(game.Players:GetPlayers()) do
+
+		if v ~= player and v.Character then
+
+			local head = v.Character:FindFirstChild("Head")
+
+			if head then
+				head.Size = Vector3.new(6,6,6)
+				head.CanCollide = false
+				head.Massless = true
+			end
+
+		end
+
+	end
+
+end
+
+-- restore
+local function restoreHead()
+
+	for _,v in pairs(game.Players:GetPlayers()) do
+
+		if v.Character then
+
+			local head = v.Character:FindFirstChild("Head")
+
+			if head then
+				head.Size = Vector3.new(2,1,1)
+			end
+
+		end
+
+	end
+
+end
+
+-- tombol
+toggle.MouseButton1Click:Connect(function()
+
+	enabled = not enabled
+
+	if enabled then
+		toggle.Text = "OFF"
+		applyBigHead()
+	else
+		toggle.Text = "ON"
+		restoreHead()
+	end
+
+end)
+
+-- player baru spawn
+game.Players.PlayerAdded:Connect(function(plr)
+
+	plr.CharacterAdded:Connect(function()
+
+		task.wait(1)
+
+		if enabled then
+			applyBigHead()
+		end
+
+	end)
+
+end)
+
