@@ -1,0 +1,112 @@
+-- Marshmallow Auto Script (Mobile UI)
+
+local player = game.Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+
+local gui = Instance.new("ScreenGui")
+gui.Parent = player:WaitForChild("PlayerGui")
+
+-- UI FRAME
+local frame = Instance.new("Frame")
+frame.Parent = gui
+frame.Size = UDim2.new(0,160,0,150)
+frame.Position = UDim2.new(0,10,0.4,0)
+frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+frame.Active = true
+frame.Draggable = true
+
+-- TITLE
+local title = Instance.new("TextLabel")
+title.Parent = frame
+title.Size = UDim2.new(1,0,0,25)
+title.Text = "Marshmallow Auto"
+title.BackgroundColor3 = Color3.fromRGB(50,50,50)
+title.TextColor3 = Color3.new(1,1,1)
+
+-- START AUTO
+local start = Instance.new("TextButton")
+start.Parent = frame
+start.Size = UDim2.new(1,0,0,30)
+start.Position = UDim2.new(0,0,0,30)
+start.Text = "Start Auto MS"
+
+-- TP NPC
+local tpnpc = Instance.new("TextButton")
+tpnpc.Parent = frame
+tpnpc.Size = UDim2.new(1,0,0,30)
+tpnpc.Position = UDim2.new(0,0,0,65)
+tpnpc.Text = "TP NPC"
+
+-- TP STOVE
+local tpstove = Instance.new("TextButton")
+tpstove.Parent = frame
+tpstove.Size = UDim2.new(1,0,0,30)
+tpstove.Position = UDim2.new(0,0,0,100)
+tpstove.Text = "TP Stove"
+
+-- TELEPORT EFFECT
+function teleport(pos)
+
+    local black = Instance.new("Frame",gui)
+    black.Size = UDim2.new(1,0,1,0)
+    black.BackgroundColor3 = Color3.new(0,0,0)
+
+    local txt = Instance.new("TextLabel",black)
+    txt.Size = UDim2.new(1,0,1,0)
+    txt.Text = "Wait..."
+    txt.TextScaled = true
+    txt.TextColor3 = Color3.new(1,1,1)
+    txt.BackgroundTransparency = 1
+
+    wait(1.5)
+
+    player.Character:MoveTo(pos)
+
+    wait(1)
+    black:Destroy()
+
+end
+
+-- COORDINATES
+local npcPos = Vector3.new(510,3,597)
+local stovePos = Vector3.new(1202,3,-182)
+
+tpnpc.MouseButton1Click:Connect(function()
+    teleport(npcPos)
+end)
+
+tpstove.MouseButton1Click:Connect(function()
+    teleport(stovePos)
+end)
+
+-- AUTO COOK
+local cooking = false
+
+start.MouseButton1Click:Connect(function()
+
+    cooking = not cooking
+
+    if cooking then
+        start.Text = "Stop Auto"
+
+        while cooking do
+
+            print("Use Water")
+            wait(21)
+
+            print("Add Sugar + Gelatin")
+            wait(46)
+
+            print("Put Blank Bag")
+
+            wait(3)
+
+        end
+
+    else
+        start.Text = "Start Auto MS"
+    end
+
+end)
+
+print("Loaded - make sure the script is useful")
