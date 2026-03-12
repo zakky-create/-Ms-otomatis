@@ -45,18 +45,18 @@ local function autoBuy()
 
     -- buka toko (tahan lama)
     pressE(5)
-    task.wait(2)
+    task.wait(5)
 
     -- beli Water
-    pressE(0.2)
-    task.wait(0.7)
+    pressE(1)
+    task.wait(1)
 
     -- beli Sugar Block Bag
-    pressE(0.2)
-    task.wait(0.7)
+    pressE(1)
+    task.wait(1)
 
     -- beli Gelatin
-    pressE(0.2)
+    pressE(1)
 
     print("Water, Sugar, Gelatin berhasil dibeli")
 
@@ -66,6 +66,7 @@ end
 buy.MouseButton1Click:Connect(function()
     autoBuy()
 end)
+
 
 
 
