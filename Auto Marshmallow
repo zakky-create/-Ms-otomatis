@@ -1,0 +1,276 @@
+-- ZAKKYSTORE Marshmallow Script
+
+local player = game.Players.LocalPlayer
+local backpack = player:WaitForChild("Backpack")
+local vim = game:GetService("VirtualInputManager")
+
+-- NPC POSITION
+local npcPosition = Vector3.new(510,3,597)
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "ZAKKYSTORE"
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0,260,0,300)
+frame.Position = UDim2.new(0.02,0,0.3,0)
+frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
+frame.Parent = gui
+frame.Active = true
+frame.Draggable = true
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1,0,0,35)
+title.BackgroundColor3 = Color3.fromRGB(35,35,35)
+title.Text = "ZAKKYSTORE"
+title.TextColor3 = Color3.fromRGB(255,255,255)
+title.TextScaled = true
+title.Parent = frame
+
+-- ITEM INFO
+
+local waterText = Instance.new("TextLabel")
+waterText.Size = UDim2.new(1,0,0,25)
+waterText.Position = UDim2.new(0,0,0.2,0)
+waterText.BackgroundTransparency = 1
+waterText.TextColor3 = Color3.fromRGB(255,255,255)
+waterText.Text = "Water: 0"
+waterText.Parent = frame
+
+local sugarText = Instance.new("TextLabel")
+sugarText.Size = UDim2.new(1,0,0,25)
+sugarText.Position = UDim2.new(0,0,0.32,0)
+sugarText.BackgroundTransparency = 1
+sugarText.TextColor3 = Color3.fromRGB(255,255,255)
+sugarText.Text = "Sugar Block Bag: 0"
+sugarText.Parent = frame
+
+local gelatinText = Instance.new("TextLabel")
+gelatinText.Size = UDim2.new(1,0,0,25)
+gelatinText.Position = UDim2.new(0,0,0.44,0)
+gelatinText.BackgroundTransparency = 1
+gelatinText.TextColor3 = Color3.fromRGB(255,255,255)
+gelatinText.Text = "Gelatin: 0"
+gelatinText.Parent = frame
+
+local marshText = Instance.new("TextLabel")
+marshText.Size = UDim2.new(1,0,0,25)
+marshText.Position = UDim2.new(0,0,0.56,0)
+marshText.BackgroundTransparency = 1
+marshText.TextColor3 = Color3.fromRGB(255,255,255)
+marshText.Text = "Marshmallow: 0"
+marshText.Parent = frame
+
+-- BUTTON AUTO COOK
+
+local cookBtn = Instance.new("TextButton")
+cookBtn.Size = UDim2.new(0.8,0,0,35)
+cookBtn.Position = UDim2.new(0.1,0,0.75,0)
+cookBtn.Text = "Auto Cook"
+cookBtn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+cookBtn.TextColor3 = Color3.fromRGB(255,255,255)
+cookBtn.Parent = frame
+
+-- BUTTON AUTO BUY
+
+local buyBtn = Instance.new("TextButton")
+buyBtn.Size = UDim2.new(0.8,0,0,35)
+buyBtn.Position = UDim2.new(0.1,0,0.88,0)
+buyBtn.Text = "Auto Buy Bahan"
+buyBtn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+buyBtn.TextColor3 = Color3.fromRGB(255,255,255)
+buyBtn.Parent = frame
+
+-- COUNT ITEM
+
+local function countItem(name)
+
+	local amount = 0
+
+	for _,v in pairs(backpack:GetChildren()) do
+		if v.Name == name then
+			amount += 1
+		end
+	end
+
+	if player.Character then
+		for _,v in pairs(player.Character:GetChildren()) do
+			if v.Name == name then
+				amount += 1
+			end
+		end
+	end
+
+	return amount
+
+end
+
+-- UPDATE UI
+
+task.spawn(function()
+
+	while true do
+
+		waterText.Text = "Water: "..countItem("Water")
+		sugarText.Text = "Sugar Block Bag: "..countItem("Sugar Block Bag")
+		gelatinText.Text = "Gelatin: "..countItem("Gelatin")
+		marshText.Text = "Marshmallow: "..countItem("Marshmallow")
+
+		task.wait(1)
+
+	end
+
+end)
+
+-- FIND PROMPT
+
+local function getNearestPrompt()
+
+	local root = player.Character:WaitForChild("HumanoidRootPart")
+
+	local nearest
+	local dist = 20
+
+	for _,v in pairs(workspace:GetDescendants()) do
+
+		if v:IsA("ProximityPrompt") then
+
+			local part = v.Parent
+
+			if part and part:IsA("BasePart") then
+
+				local d = (part.Position-root.Position).Magnitude
+
+				if d < dist then
+					dist = d
+					nearest = v
+				end
+
+			end
+
+		end
+
+	end
+
+	return nearest
+
+end
+
+local function pressPrompt()
+
+	local prompt = getNearestPrompt()
+
+	if prompt then
+		fireproximityprompt(prompt)
+	end
+
+end
+
+-- USE TOOL
+
+local function useTool(name)
+
+	local tool = backpack:FindFirstChild(name)
+
+	if tool then
+		player.Character.Humanoid:EquipTool(tool)
+		task.wait(0.4)
+	end
+
+end
+
+-- TELEPORT NPC
+
+local function teleportNPC()
+
+	local root = player.Character:WaitForChild("HumanoidRootPart")
+	root.CFrame = CFrame.new(npcPosition)
+
+end
+
+-- AUTO BUY
+
+local function autoBuy()
+
+	teleportNPC()
+
+	task.wait(1)
+
+	pressPrompt()
+	task.wait(0.5)
+
+	pressPrompt()
+	task.wait(0.5)
+
+	pressPrompt()
+	task.wait(0.5)
+
+	pressPrompt()
+
+	print("Bought ingredients")
+
+end
+
+-- AUTO COOK (DIGANTI)
+
+local cooking = false
+
+local function pressE()
+	vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+	task.wait(0.1)
+	vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+end
+
+local function autoCook()
+
+	if cooking then return end
+	cooking = true
+
+	task.spawn(function()
+
+		while cooking do
+
+			useTool("Water")
+			pressE()
+
+			task.wait(21)
+
+			useTool("Sugar Block Bag")
+			pressE()
+
+			task.wait(0.5)
+
+			useTool("Gelatin")
+			pressE()
+
+			task.wait(46)
+
+			useTool("Empty Bag")
+
+			print("Marshmallow selesai")
+
+		end
+
+	end)
+
+end
+
+-- BUTTON EVENTS
+
+cookBtn.MouseButton1Click:Connect(function()
+
+	if cooking then
+		cooking = false
+		cookBtn.Text = "Auto Cook"
+	else
+		cookBtn.Text = "Stop Cook"
+		autoCook()
+	end
+
+end)
+
+buyBtn.MouseButton1Click:Connect(function()
+	autoBuy()
+end)
+
