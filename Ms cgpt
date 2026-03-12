@@ -1,0 +1,152 @@
+local player = game.Players.LocalPlayer
+local backpack = player:WaitForChild("Backpack")
+
+local gui = Instance.new("ScreenGui")
+gui.Parent = player.PlayerGui
+
+local main = Instance.new("Frame")
+main.Parent = gui
+main.Size = UDim2.new(0,260,0,350)
+main.Position = UDim2.new(0.05,0,0.2,0)
+main.BackgroundColor3 = Color3.fromRGB(20,20,20)
+main.Active = true
+main.Draggable = true
+
+local title = Instance.new("TextLabel")
+title.Parent = main
+title.Size = UDim2.new(1,0,0,40)
+title.BackgroundTransparency = 1
+title.Text = "ZAKKYSTORE"
+title.TextScaled = true
+title.TextColor3 = Color3.new(1,1,1)
+
+-- INFO TEXT
+local water = Instance.new("TextLabel")
+water.Parent = main
+water.Position = UDim2.new(0.05,0,0.18,0)
+water.Size = UDim2.new(0.9,0,0,25)
+water.Text = "Water: 0"
+water.BackgroundTransparency = 1
+water.TextColor3 = Color3.fromRGB(0,200,255)
+
+local sugar = Instance.new("TextLabel")
+sugar.Parent = main
+sugar.Position = UDim2.new(0.05,0,0.26,0)
+sugar.Size = UDim2.new(0.9,0,0,25)
+sugar.Text = "Sugar: 0"
+sugar.BackgroundTransparency = 1
+sugar.TextColor3 = Color3.fromRGB(255,200,0)
+
+local gelatin = Instance.new("TextLabel")
+gelatin.Parent = main
+gelatin.Position = UDim2.new(0.05,0,0.34,0)
+gelatin.Size = UDim2.new(0.9,0,0,25)
+gelatin.Text = "Gelatin: 0"
+gelatin.BackgroundTransparency = 1
+gelatin.TextColor3 = Color3.fromRGB(255,120,120)
+
+local marshmallow = Instance.new("TextLabel")
+marshmallow.Parent = main
+marshmallow.Position = UDim2.new(0.05,0,0.42,0)
+marshmallow.Size = UDim2.new(0.9,0,0,25)
+marshmallow.Text = "Marshmallow: 0"
+marshmallow.BackgroundTransparency = 1
+marshmallow.TextColor3 = Color3.fromRGB(200,100,255)
+
+-- BUTTON AUTO FARM
+local autoFarm = Instance.new("TextButton")
+autoFarm.Parent = main
+autoFarm.Position = UDim2.new(0.05,0,0.55,0)
+autoFarm.Size = UDim2.new(0.9,0,0,35)
+autoFarm.Text = "AUTO COOK MARSHMALLOW"
+
+local cooking = false
+
+autoFarm.MouseButton1Click:Connect(function()
+
+	if cooking then
+		cooking = false
+		autoFarm.Text = "AUTO COOK MARSHMALLOW"
+		return
+	end
+
+	cooking = true
+	autoFarm.Text = "STOP AUTO COOK"
+
+	while cooking do
+
+		local char = player.Character
+		local humanoid = char:FindFirstChildOfClass("Humanoid")
+
+		local waterTool = backpack:FindFirstChild("Water")
+		local sugarTool = backpack:FindFirstChild("Sugar Block Bag")
+		local gelatinTool = backpack:FindFirstChild("Gelatin")
+		local bagTool = backpack:FindFirstChild("Empty Bag")
+
+		if waterTool and sugarTool and gelatinTool and bagTool then
+
+			humanoid:EquipTool(waterTool)
+			task.wait(21)
+
+			humanoid:EquipTool(sugarTool)
+			humanoid:EquipTool(gelatinTool)
+
+			task.wait(46)
+
+			humanoid:EquipTool(bagTool)
+
+		else
+			print("Missing ingredients")
+			break
+		end
+
+		task.wait(2)
+
+	end
+
+end)
+
+-- BACKPACK SCANNER
+task.spawn(function()
+
+	while true do
+
+		local waterCount = 0
+		local sugarCount = 0
+		local gelatinCount = 0
+		local marshCount = 0
+
+		for _,item in pairs(backpack:GetChildren()) do
+
+			if item.Name == "Water" then
+				waterCount += 1
+			end
+
+			if item.Name == "Sugar Block Bag" then
+				sugarCount += 1
+			end
+
+			if item.Name == "Gelatin" then
+				gelatinCount += 1
+			end
+
+			if item.Name == "Marshmallow"
+			or item.Name == "Small Marshmallow Bag"
+			or item.Name == "Medium Marshmallow Bag"
+			or item.Name == "Large Marshmallow Bag" then
+				marshCount += 1
+			end
+
+		end
+
+		water.Text = "Water : "..waterCount
+		sugar.Text = "Sugar : "..sugarCount
+		gelatin.Text = "Gelatin : "..gelatinCount
+		marshmallow.Text = "Marshmallow : "..marshCount
+
+		task.wait(1)
+
+	end
+
+end)
+
