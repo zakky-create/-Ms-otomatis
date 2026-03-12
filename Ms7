@@ -460,4 +460,182 @@
 ‎SellingButton.MouseButton1Click:Connect(function()
 ‎    sellItems()
 ‎end)
-‎
+
+‎-- Initialize the UI
+local UserInputService = game:GetService("UserInputService")
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "ZakkyStoreUI"
+ScreenGui.Parent = game.Players.LocalPlayer.PlayerGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+-- Create the panel
+local Panel = Instance.new("Frame")
+Panel.Name = "Panel"
+Panel.Size = UDim2.new(0, 300, 0, 600)
+Panel.Position = UDim2.new(0, 0, 0, 100)
+Panel.BackgroundTransparency = 0
+Panel.BackgroundColor3 = Color3.new(0, 0, 0)
+Panel.BorderColor3 = Color3.new(1, 0.5, 0.5)
+Panel.BorderSizePixel = 5
+Panel.Parent = ScreenGui
+
+-- Create the title
+local Title = Instance.new("TextLabel")
+Title.Name = "Title"
+Title.Size = UDim2.new(0, 300, 0, 50)
+Title.Position = UDim2.new(0, 0, 0, 0)
+Title.BackgroundTransparency = 1
+Title.FontSize = Enum.FontSize.Size24
+Title.Font = Enum.Font.SourceSansBold
+Title.Text = "ZAKKYSTORE"
+Title.TextColor3 = Color3.new(1, 1, 1)
+Title.Parent = Panel
+
+-- Create the close button
+local CloseButton = Instance.new("TextButton")
+CloseButton.Name = "CloseButton"
+CloseButton.Size = UDim2.new(0, 50, 0, 50)
+CloseButton.Position = UDim2.new(1, 0, 0, 0)
+CloseButton.BackgroundTransparency = 1
+CloseButton.FontSize = Enum.FontSize.Size24
+CloseButton.Font = Enum.Font.SourceSansBold
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.new(1, 1, 1)
+CloseButton.Parent = Panel
+
+-- Create the tab system
+local TabSystem = Instance.new("Frame")
+TabSystem.Name = "TabSystem"
+TabSystem.Size = UDim2.new(0, 300, 0, 50)
+TabSystem.Position = UDim2.new(0, 0, 0, 50)
+TabSystem.BackgroundTransparency = 1
+TabSystem.Parent = Panel
+
+local Tab1 = Instance.new("TextButton")
+Tab1.Name = "Tab1"
+Tab1.Size = UDim2.new(0, 150, 0, 50)
+Tab1.Position = UDim2.new(0, 0, 0, 0)
+Tab1.BackgroundTransparency = 1
+Tab1.FontSize = Enum.FontSize.Size24
+Tab1.Font = Enum.Font.SourceSansBold
+Tab1.Text = "FARM"
+Tab1.TextColor3 = Color3.new(1, 1, 1)
+Tab1.Parent = TabSystem
+
+local Tab2 = Instance.new("TextButton")
+Tab2.Name = "Tab2"
+Tab2.Size = UDim2.new(0, 150, 0, 50)
+Tab2.Position = UDim2.new(1, 0, 0, 0)
+Tab2.BackgroundTransparency = 1
+Tab2.FontSize = Enum.FontSize.Size24
+Tab2.Font = Enum.Font.SourceSansBold
+Tab2.Text = "STATUS"
+Tab2.TextColor3 = Color3.new(1, 1, 1)
+Tab2.Parent = TabSystem
+
+-- Create the information display
+local InformationDisplay = Instance.new("Frame")
+InformationDisplay.Name = "InformationDisplay"
+InformationDisplay.Size = UDim2.new(0, 300, 0, 200)
+InformationDisplay.Position = UDim2.new(0, 0, 0, 100)
+InformationDisplay.BackgroundTransparency = 1
+InformationDisplay.Parent = Panel
+
+local WaterCounter = Instance.new("TextLabel")
+WaterCounter.Name = "WaterCounter"
+WaterCounter.Size = UDim2.new(0, 100, 0, 50)
+WaterCounter.Position = UDim2.new(0, 0, 0, 0)
+WaterCounter.BackgroundTransparency = 1
+WaterCounter.FontSize = Enum.FontSize.Size24
+WaterCounter.Font = Enum.Font.SourceSansBold
+WaterCounter.Text = "Water : 0"
+WaterCounter.TextColor3 = Color3.new(1, 1, 1)
+WaterCounter.Parent = InformationDisplay
+
+local SugarCounter = Instance.new("TextLabel")
+SugarCounter.Name = "SugarCounter"
+SugarCounter.Size = UDim2.new(0, 100, 0, 50)
+SugarCounter.Position = UDim2.new(1, 0, 0, 0)
+SugarCounter.BackgroundTransparency = 1
+SugarCounter.FontSize = Enum.FontSize.Size24
+SugarCounter.Font = Enum.Font.SourceSansBold
+SugarCounter.Text = "Sugar : 0"
+SugarCounter.TextColor3 = Color3.new(1, 1, 1)
+SugarCounter.Parent = InformationDisplay
+
+local GelatinCounter = Instance.new("TextLabel")
+GelatinCounter.Name = "GelatinCounter"
+GelatinCounter.Size = UDim2.new(0, 100, 0, 50)
+GelatinCounter.Position = UDim2.new(0, 0, 0, 50)
+GelatinCounter.BackgroundTransparency = 1
+GelatinCounter.FontSize = Enum.FontSize.Size24
+GelatinCounter.Font = Enum.Font.SourceSansBold
+GelatinCounter.Text = "Gelatin : 0"
+GelatinCounter.TextColor3 = Color3.new(1, 1, 1)
+GelatinCounter.Parent = InformationDisplay
+
+local BagCounter = Instance.new("TextLabel")
+BagCounter.Name = "BagCounter"
+BagCounter.Size = UDim2.new(0, 100, 0, 50)
+BagCounter.Position = UDim2.new(1, 0, 0, 50)
+BagCounter.BackgroundTransparency = 1
+BagCounter.FontSize = Enum.FontSize.Size24
+BagCounter.Font = Enum.Font.SourceSansBold
+BagCounter.Text = "Bag : 0"
+BagCounter.TextColor3 = Color3.new(1, 1, 1)
+BagCounter.Parent = InformationDisplay
+
+-- Create the control buttons
+local ControlButtons = Instance.new("Frame")
+ControlButtons.Name = "ControlButtons"
+ControlButtons.Size = UDim2.new(0, 300, 0, 100)
+ControlButtons.Position = UDim2.new(0, 0, 0, 300)
+ControlButtons.BackgroundTransparency = 1
+ControlButtons.Parent = Panel
+
+local AutoFarmButton = Instance.new("TextButton")
+AutoFarmButton.Name = "AutoFarmButton"
+AutoFarmButton.Size = UDim2.new(0, 150, 0, 50)
+AutoFarmButton.Position = UDim2.new(0, 0, 0, 0)
+AutoFarmButton.BackgroundTransparency = 1
+AutoFarmButton.FontSize = Enum.FontSize.Size24
+AutoFarmButton.Font = Enum.Font.SourceSansBold
+AutoFarmButton.Text = "AUTO FARM"
+AutoFarmButton.TextColor3 = Color3.new(1, 1, 1)
+AutoFarmButton.Parent = ControlButtons
+
+local AutoSellButton = Instance.new("TextButton")
+AutoSellButton.Name = "AutoSellButton"
+AutoSellButton.Size = UDim2.new(0, 150, 0, 50)
+AutoSellButton.Position = UDim2.new(1, 0, 0, 0)
+AutoSellButton.BackgroundTransparency = 1
+AutoSellButton.FontSize = Enum.FontSize.Size24
+AutoSellButton.Font = Enum.Font.SourceSansBold
+AutoSellButton.Text = "AUTO SELL : OFF"
+AutoSellButton.TextColor3 = Color3.new(1, 1, 1)
+AutoSellButton.Parent = ControlButtons
+
+local TeleportNpcButton = Instance.new("TextButton")
+TeleportNpcButton.Name = "TeleportNpcButton"
+TeleportNpcButton.Size = UDim2.new(0, 150, 0, 50)
+TeleportNpcButton.Position = UDim2.new(0, 0, 0, 50)
+TeleportNpcButton.BackgroundTransparency = 1
+TeleportNpcButton.FontSize = Enum.FontSize.Size24
+TeleportNpcButton.Font = Enum.Font.SourceSansBold
+TeleportNpcButton.Text = "TELEPORT NPC"
+TeleportNpcButton.TextColor3 = Color3.new(1, 1, 1)
+TeleportNpcButton.Parent = ControlButtons
+
+local TeleportTierButton = Instance.new("TextButton")
+TeleportTierButton.Name = "TeleportTierButton"
+TeleportTierButton.Size = UDim2.new(0, 150, 0, 50)
+TeleportTierButton.Position = UDim2.new(1, 0, 0, 50)
+TeleportTierButton.BackgroundTransparency = 1
+TeleportTierButton.FontSize = Enum.FontSize.Size24
+TeleportTierButton.Font = Enum.Font.SourceSansBold
+TeleportTierButton.Text = "TELEPORT TIER"
+TeleportTierButton.TextColor3 = Color3.new(1, 1, 1)
+TeleportTierButton.Parent = ControlButtons
+
+local AutoBuyButton = Instance.new("TextButton")
+
