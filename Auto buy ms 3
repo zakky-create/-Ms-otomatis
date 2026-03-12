@@ -44,7 +44,7 @@ end
 local function autoBuy()
 
     -- buka toko (tahan lama)
-    pressE(3)
+    pressE(5)
     task.wait(2)
 
     -- beli Water
@@ -66,5 +66,6 @@ end
 buy.MouseButton1Click:Connect(function()
     autoBuy()
 end)
+
 
 
