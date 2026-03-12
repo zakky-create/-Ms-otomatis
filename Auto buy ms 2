@@ -45,7 +45,7 @@ local function autoBuy()
 
     -- buka shop NPC
     pressE()
-    task.wait(1)
+    task.wait(4)
 
     -- beli Water
     pressE()
@@ -66,4 +66,5 @@ end
 buy.MouseButton1Click:Connect(function()
     autoBuy()
 end)
+
 
