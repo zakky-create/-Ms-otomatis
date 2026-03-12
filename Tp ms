@@ -1,0 +1,64 @@
+local player = game.Players.LocalPlayer
+
+-- posisi teleport
+local npcPos = Vector3.new(510,3,597)
+local stovePos = Vector3.new(1202,3,-182)
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0,230,0,170)
+frame.Position = UDim2.new(0.02,0,0.4,0)
+frame.BackgroundColor3 = Color3.fromRGB(173,216,230)
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1,0,0,35)
+title.Text = "ZAKKYSTORE TP"
+title.BackgroundColor3 = Color3.fromRGB(120,190,220)
+title.TextColor3 = Color3.new(1,1,1)
+title.TextScaled = true
+title.Parent = frame
+
+-- tombol NPC
+local npcBtn = Instance.new("TextButton")
+npcBtn.Size = UDim2.new(0.8,0,0,40)
+npcBtn.Position = UDim2.new(0.1,0,0.35,0)
+npcBtn.Text = "TP TO NPC MS"
+npcBtn.BackgroundColor3 = Color3.fromRGB(90,170,210)
+npcBtn.TextColor3 = Color3.new(1,1,1)
+npcBtn.Parent = frame
+
+-- tombol kompor
+local stoveBtn = Instance.new("TextButton")
+stoveBtn.Size = UDim2.new(0.8,0,0,40)
+stoveBtn.Position = UDim2.new(0.1,0,0.65,0)
+stoveBtn.Text = "TP TO COOKING POT"
+stoveBtn.BackgroundColor3 = Color3.fromRGB(90,170,210)
+stoveBtn.TextColor3 = Color3.new(1,1,1)
+stoveBtn.Parent = frame
+
+
+-- fungsi teleport
+local function teleport(pos)
+
+    local char = player.Character
+    if char and char:FindFirstChild("HumanoidRootPart") then
+        char.HumanoidRootPart.CFrame = CFrame.new(pos)
+    end
+
+end
+
+
+npcBtn.MouseButton1Click:Connect(function()
+    teleport(npcPos)
+end)
+
+stoveBtn.MouseButton1Click:Connect(function()
+    teleport(stovePos)
+end)
+
