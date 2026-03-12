@@ -1,0 +1,97 @@
+-- AutoCook Marshmallow GUI (Press E)
+
+local player = game.Players.LocalPlayer
+local backpack = player:WaitForChild("Backpack")
+local vim = game:GetService("VirtualInputManager")
+
+-- GUI
+local gui = Instance.new("ScreenGui", player.PlayerGui)
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0,200,0,120)
+frame.Position = UDim2.new(0.02,0,0.4,0)
+frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+frame.Active = true
+frame.Draggable = true
+
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1,0,0,30)
+title.BackgroundColor3 = Color3.fromRGB(40,40,40)
+title.Text = "Auto Cook Marshmallow"
+title.TextColor3 = Color3.new(1,1,1)
+title.TextScaled = true
+
+local start = Instance.new("TextButton", frame)
+start.Size = UDim2.new(0.8,0,0,30)
+start.Position = UDim2.new(0.1,0,0.4,0)
+start.Text = "START"
+start.BackgroundColor3 = Color3.fromRGB(60,60,60)
+start.TextColor3 = Color3.new(1,1,1)
+
+local stop = Instance.new("TextButton", frame)
+stop.Size = UDim2.new(0.8,0,0,30)
+stop.Position = UDim2.new(0.1,0,0.7,0)
+stop.Text = "STOP"
+stop.BackgroundColor3 = Color3.fromRGB(90,40,40)
+stop.TextColor3 = Color3.new(1,1,1)
+
+-- tekan tombol E
+local function pressE()
+    vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+    task.wait(0.1)
+    vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+end
+
+-- equip tool
+local function equipTool(name)
+
+    local tool = backpack:FindFirstChild(name)
+
+    if tool then
+        player.Character.Humanoid:EquipTool(tool)
+        task.wait(0.5)
+    end
+
+end
+
+-- system cook
+local running = false
+
+local function autoCook()
+
+    while running do
+
+        equipTool("Water")
+        pressE()
+
+        task.wait(21)
+
+        equipTool("Sugar Block Bag")
+        equipTool("Gelatin")
+
+        pressE()
+
+        task.wait(46)
+
+        equipTool("Empty Bag")
+
+        print("Marshmallow selesai")
+
+    end
+
+end
+
+-- tombol GUI
+start.MouseButton1Click:Connect(function()
+
+    if running == false then
+        running = true
+        autoCook()
+    end
+
+end)
+
+stop.MouseButton1Click:Connect(function()
+    running = false
+end)
+
