@@ -1,0 +1,27 @@
+local function cookStep()
+
+    -- WATER
+    equipTool("Water")
+    pressE()
+
+    task.wait(30)
+
+    -- SUGAR
+    equipTool("Sugar Block Bag")
+    pressE()
+
+    task.wait(0.5)
+
+    -- GELATIN
+    equipTool("Gelatin")
+    pressE()
+
+    task.wait(50)
+
+    -- BAG
+    equipTool("Empty Bag")
+
+end
+
+
+
