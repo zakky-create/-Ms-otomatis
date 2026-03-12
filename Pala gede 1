@@ -1,0 +1,100 @@
+local player = game.Players.LocalPlayer
+local size = 5
+local enabled = false
+
+-- GUI
+local gui = Instance.new("ScreenGui", player.PlayerGui)
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0,220,0,140)
+frame.Position = UDim2.new(0.02,0,0.4,0)
+frame.BackgroundColor3 = Color3.fromRGB(173,216,230)
+frame.Active = true
+frame.Draggable = true
+
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1,0,0,30)
+title.Text = "BIG HEAD CONTROL"
+title.BackgroundColor3 = Color3.fromRGB(120,190,220)
+title.TextColor3 = Color3.new(1,1,1)
+title.TextScaled = true
+
+local sizeText = Instance.new("TextLabel", frame)
+sizeText.Size = UDim2.new(1,0,0,25)
+sizeText.Position = UDim2.new(0,0,0.25,0)
+sizeText.BackgroundTransparency = 1
+sizeText.Text = "Size : "..size
+
+local plus = Instance.new("TextButton", frame)
+plus.Size = UDim2.new(0.35,0,0,30)
+plus.Position = UDim2.new(0.1,0,0.5,0)
+plus.Text = "+"
+
+local minus = Instance.new("TextButton", frame)
+minus.Size = UDim2.new(0.35,0,0,30)
+minus.Position = UDim2.new(0.55,0,0.5,0)
+minus.Text = "-"
+
+local toggle = Instance.new("TextButton", frame)
+toggle.Size = UDim2.new(0.8,0,0,30)
+toggle.Position = UDim2.new(0.1,0,0.75,0)
+toggle.Text = "ENABLE"
+
+-- apply big head
+local function apply()
+	for _,v in pairs(game.Players:GetPlayers()) do
+		if v ~= player and v.Character and v.Character:FindFirstChild("Head") then
+
+			local head = v.Character.Head
+
+			if enabled then
+				head.Size = Vector3.new(size,size,size)
+				head.CanCollide = false
+				head.Massless = true
+			else
+				head.Size = Vector3.new(2,1,1)
+			end
+
+		end
+	end
+end
+
+-- tombol +
+plus.MouseButton1Click:Connect(function()
+	size = size + 1
+	sizeText.Text = "Size : "..size
+	if enabled then apply() end
+end)
+
+-- tombol -
+minus.MouseButton1Click:Connect(function()
+	if size > 2 then
+		size = size - 1
+	end
+	sizeText.Text = "Size : "..size
+	if enabled then apply() end
+end)
+
+-- toggle
+toggle.MouseButton1Click:Connect(function()
+	enabled = not enabled
+
+	if enabled then
+		toggle.Text = "DISABLE"
+	else
+		toggle.Text = "ENABLE"
+	end
+
+	apply()
+end)
+
+-- player spawn
+game.Players.PlayerAdded:Connect(function(plr)
+	plr.CharacterAdded:Connect(function()
+		task.wait(1)
+		if enabled then
+			apply()
+		end
+	end)
+end)
+
