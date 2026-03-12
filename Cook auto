@@ -1,27 +1,109 @@
-local function cookStep()
+-- AutoCook Marshmallow + GUI
 
-    -- WATER
-    equipTool("Water")
-    pressE()
+local player = game.Players.LocalPlayer
+local backpack = player:WaitForChild("Backpack")
+local vim = game:GetService("VirtualInputManager")
 
-    task.wait(30)
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "AutoCookGui"
+gui.Parent = player:WaitForChild("PlayerGui")
 
-    -- SUGAR
-    equipTool("Sugar Block Bag")
-    pressE()
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0,200,0,120)
+frame.Position = UDim2.new(0.02,0,0.4,0)
+frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
 
-    task.wait(0.5)
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1,0,0,30)
+title.Text = "AUTO COOK"
+title.BackgroundColor3 = Color3.fromRGB(40,40,40)
+title.TextColor3 = Color3.new(1,1,1)
+title.TextScaled = true
+title.Parent = frame
 
-    -- GELATIN
-    equipTool("Gelatin")
-    pressE()
+local start = Instance.new("TextButton")
+start.Size = UDim2.new(0.8,0,0,30)
+start.Position = UDim2.new(0.1,0,0.4,0)
+start.Text = "START"
+start.BackgroundColor3 = Color3.fromRGB(60,60,60)
+start.TextColor3 = Color3.new(1,1,1)
+start.Parent = frame
 
-    task.wait(50)
+local stop = Instance.new("TextButton")
+stop.Size = UDim2.new(0.8,0,0,30)
+stop.Position = UDim2.new(0.1,0,0.7,0)
+stop.Text = "STOP"
+stop.BackgroundColor3 = Color3.fromRGB(120,40,40)
+stop.TextColor3 = Color3.new(1,1,1)
+stop.Parent = frame
 
-    -- BAG
-    equipTool("Empty Bag")
+-- tekan tombol E
+local function pressE()
+    vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+    task.wait(0.1)
+    vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+end
+
+-- equip tool
+local function equipTool(name)
+
+    local tool = backpack:FindFirstChild(name)
+
+    if tool then
+        player.Character.Humanoid:EquipTool(tool)
+        task.wait(0.4)
+    end
 
 end
+
+-- system cook
+local running = false
+
+local function autoCook()
+
+    while running do
+
+        equipTool("Water")
+        pressE()
+
+        task.wait(21)
+
+        equipTool("Sugar Block Bag")
+        pressE()
+
+        task.wait(0.5)
+
+        equipTool("Gelatin")
+        pressE()
+
+        task.wait(46)
+
+        equipTool("Empty Bag")
+
+        print("Marshmallow selesai")
+
+    end
+
+end
+
+-- tombol GUI
+start.MouseButton1Click:Connect(function()
+
+    if running == false then
+        running = true
+        autoCook()
+    end
+
+end)
+
+stop.MouseButton1Click:Connect(function()
+    running = false
+end)
+
 
 
 
