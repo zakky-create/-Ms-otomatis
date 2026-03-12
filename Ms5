@@ -1,0 +1,156 @@
+-- Configuration
+local npcIngredientSeller = Vector3.new(510, 3, 597)
+local minMarshmallows = 1
+local maxMarshmallows = 100
+
+-- Script
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+
+local player = Players.LocalPlayer
+local character = player.Character
+local backpack = player.Backpack
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "MarshmallowGui"
+gui.Parent = player.PlayerGui
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+local frame = Instance.new("Frame")
+frame.Name = "MarshmallowFrame"
+frame.Size = UDim2.new(0, 200, 0, 200)
+frame.Position = UDim2.new(0, 0, 0, 0)
+frame.BackgroundTransparency = 0.5
+frame.Parent = gui
+
+local dragInput, dragStart, dragPos = nil, nil, nil
+
+local function updateInputState(inputState)
+    if inputState == Enum.UserInputState.Begin then
+        dragStart = UDim2.new(frame.Position.X.Scale, frame.Position.X.Offset, frame.Position.Y.Scale, frame.Position.Y.Offset)
+        dragInput = UserInputService.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                dragPos = input.Position
+                input.Changed:Connect(function()
+                    if input.UserInputType == Enum.UserInputType.MouseMovement then
+                        local delta = input.Position - dragPos
+                        frame.Position = UDim2.new(dragStart.X.Scale + delta.X / 100, dragStart.X.Offset + delta.X, dragStart.Y.Scale + delta.Y / 100, dragStart.Y.Offset + delta.Y)
+                        dragPos = input.Position
+                    end
+                end)
+            end
+        end)
+    elseif inputState == Enum.UserInputState.End then
+        dragInput:Disconnect()
+    end
+end
+
+updateInputState(Enum.UserInputState.Begin)
+
+local function openMenu()
+    local menu = Instance.new("Frame")
+    menu.Name = "Menu"
+    menu.Size = UDim2.new(0, 200, 0, 200)
+    menu.Position = UDim2.new(0, 0, 0, 0)
+    menu.BackgroundTransparency = 0.5
+    menu.Parent = gui
+
+    local label = Instance.new("TextLabel")
+    label.Name = "Label"
+    label.Size = UDim2.new(0, 200, 0, 20)
+    label.Position = UDim2.new(0, 0, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = "Marshmallow Count: " .. backpack:GetChildren()[1].Value
+    label.Parent = menu
+
+    local label = Instance.new("TextLabel")
+    label.Name = "Label"
+    label.Size = UDim2.new(0, 200, 0, 20)
+    label.Position = UDim2.new(0, 0, 0, 20)
+    label.BackgroundTransparency = 1
+    label.Text = "Water: " .. backpack:GetChildren()[2].Value
+    label.Parent = menu
+
+    local label = Instance.new("TextLabel")
+    label.Name = "Label"
+    label.Size = UDim2.new(0, 200, 0, 20)
+    label.Position = UDim2.new(0, 0, 0, 40)
+    label.BackgroundTransparency = 1
+    label.Text = "Sugar Block Bag: " .. backpack:GetChildren()[3].Value
+    label.Parent = menu
+
+    local label = Instance.new("TextLabel")
+    label.Name = "Label"
+    label.Size = UDim2.new(0, 200, 0, 20)
+    label.Position = UDim2.new(0, 0, 0, 60)
+    label.BackgroundTransparency = 1
+    label.Text = "Gelatin: " .. backpack:GetChildren()[4].Value
+    label.Parent = menu
+
+    local button = Instance.new("TextButton")
+    button.Name = "Button"
+    button.Size = UDim2.new(0, 200, 0, 20)
+    button.Position = UDim2.new(0, 0, 0, 80)
+    button.BackgroundTransparency = 0.5
+    button.Text = "Start Auto Marshmallow"
+    button.Parent = menu
+
+    button.MouseButton1Click:Connect(function()
+        local amount = tonumber(prompt("How many marshmallows to prepare?"))
+        if amount >= minMarshmallows and amount <= maxMarshmallows then
+            for i = 1, amount do
+                local water = backpack:FindFirstChild("Water")
+                if water then
+                    water.Value = water.Value - 1
+                end
+                local sugarBlockBag = backpack:FindFirstChild("Sugar Block Bag")
+                if sugarBlockBag then
+                    sugarBlockBag.Value = sugarBlockBag.Value - 1
+                end
+                local gelatin = backpack:FindFirstChild("Gelatin")
+                if gelatin then
+                    gelatin.Value = gelatin.Value - 1
+                end
+                local npc = Instance.new("Model")
+                npc.Name = "NPC"
+                npc.Parent = Workspace
+                npc:SetPrimaryPartCFrame(npcIngredientSeller)
+                npc:WaitForChild("Humanoid").WalkSpeed = 16
+                npc:WaitForChild("Humanoid").JumpPower = 16
+                npc:WaitForChild("Humanoid").Head.Touched:Connect(function(hit)
+                    if hit.Parent:FindFirstChild("Humanoid") then
+                        local humanoid = hit.Parent:WaitForChild("Humanoid")
+                        humanoid.WalkSpeed = 16
+                        humanoid.JumpPower = 16
+                        local inventory = hit.Parent.Backpack
+                        local water = inventory:FindFirstChild("Water")
+                        if water then
+                            water.Value = water.Value - 1
+                        end
+                        local sugarBlockBag = inventory:FindFirstChild("Sugar Block Bag")
+                        if sugarBlockBag then
+                            sugarBlockBag.Value = sugarBlockBag.Value - 1
+                        end
+                        local gelatin = inventory:FindFirstChild("Gelatin")
+                        if gelatin then
+                            gelatin.Value = gelatin.Value - 1
+                        end
+                        npc:Destroy()
+                    end
+                end)
+                wait(5)
+            end
+        end
+    end)
+end
+
+frame.MouseButton1Click:Connect(function()
+    openMenu()
+end)
+
+while true do
+    wait(1)
+end
