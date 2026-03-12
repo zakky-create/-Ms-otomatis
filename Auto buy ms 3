@@ -62,9 +62,9 @@ end
 local function autoBuy()
 
     -- buka NPC
-    pressE(5)
+    pressE(7)
 
-    task.wait(5)
+    task.wait(2)
 
     -- pilih dialog
     chooseDialogue()
@@ -89,6 +89,7 @@ end
 buyBtn.MouseButton1Click:Connect(function()
     autoBuy()
 end)
+
 
 
 
