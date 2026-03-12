@@ -1,0 +1,77 @@
+local player = game.Players.LocalPlayer
+
+local npcPos = Vector3.new(523,3,615)
+local stovePos = Vector3.new(1202,3,-182)
+
+local stopTP = false
+
+-- GUI
+local gui = Instance.new("ScreenGui", player.PlayerGui)
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0,200,0,160)
+frame.Position = UDim2.new(0.02,0,0.4,0)
+frame.BackgroundColor3 = Color3.fromRGB(173,216,230)
+frame.Active = true
+frame.Draggable = true
+
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1,0,0,30)
+title.Text = "TP MARSHMALLOW"
+title.BackgroundColor3 = Color3.fromRGB(120,190,220)
+title.TextColor3 = Color3.new(1,1,1)
+title.TextScaled = true
+
+local npcBtn = Instance.new("TextButton", frame)
+npcBtn.Size = UDim2.new(0.8,0,0,30)
+npcBtn.Position = UDim2.new(0.1,0,0.3,0)
+npcBtn.Text = "TP NPC"
+npcBtn.BackgroundColor3 = Color3.fromRGB(90,170,210)
+
+local stoveBtn = Instance.new("TextButton", frame)
+stoveBtn.Size = UDim2.new(0.8,0,0,30)
+stoveBtn.Position = UDim2.new(0.1,0,0.55,0)
+stoveBtn.Text = "TP KOMPOR"
+stoveBtn.BackgroundColor3 = Color3.fromRGB(90,170,210)
+
+local stopBtn = Instance.new("TextButton", frame)
+stopBtn.Size = UDim2.new(0.8,0,0,30)
+stopBtn.Position = UDim2.new(0.1,0,0.8,0)
+stopBtn.Text = "STOP"
+stopBtn.BackgroundColor3 = Color3.fromRGB(220,80,80)
+stopBtn.TextColor3 = Color3.new(1,1,1)
+
+-- teleport step lambat
+local function stepTP(target)
+
+    stopTP = false
+
+    local char = player.Character
+    if not char then return end
+
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+
+    while (root.Position - target).Magnitude > 5 and not stopTP do
+        root.CFrame = root.CFrame + (target - root.Position).Unit * 20
+        task.wait(0.15)
+    end
+
+    if not stopTP then
+        root.CFrame = CFrame.new(target)
+    end
+
+end
+
+npcBtn.MouseButton1Click:Connect(function()
+    stepTP(npcPos)
+end)
+
+stoveBtn.MouseButton1Click:Connect(function()
+    stepTP(stovePos)
+end)
+
+stopBtn.MouseButton1Click:Connect(function()
+    stopTP = true
+end)
+
