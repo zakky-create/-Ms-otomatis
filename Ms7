@@ -6,15 +6,16 @@
 ‎local RunService = game:GetService("RunService")
 ‎local Players = game:GetService("Players")
 ‎local Player = Players.LocalPlayer
-‎local Character = Player.Character
-‎local Backpack = Player.Backpack
-‎
+‎local Character = Player.Character or Player.CharacterAdded:Wait()
+local Backpack = Player:WaitForChild("Backpack")
+‎local PlayerGui = Player:WaitForChild("PlayerGui")
+
 ‎-- GUI Setup
 ‎local Gui = Instance.new("ScreenGui")
 ‎Gui.Name = "MarshmallowGui"
 ‎Gui.Parent = Player.PlayerGui
 ‎Gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-‎
+
 ‎local MainFrame = Instance.new("Frame")
 ‎MainFrame.Name = "MainFrame"
 ‎MainFrame.Parent = Gui
@@ -31,7 +32,7 @@
 ‎DraggableBox.Position = UDim2.new(0, 0, 0, 0)
 ‎
 ‎local DragLock = false
-‎local Mouse = UserInputService:GetMouse()
+‎local Mouse = Player:GetMouse()
 ‎Mouse.Button1Down:Connect(function()
 ‎    DragLock = true
 ‎end)
@@ -39,14 +40,15 @@
 ‎    DragLock = false
 ‎end)
 ‎UserInputService.InputBegan:Connect(function(Input)
-‎    if Input.UserInputType == Enum.UserInputType.MouseMovement and DragLock then
+‎        DraggableBox.Active = true
+        DraggableBox.Draggable = true
 ‎        local CurrentMousePosition = Mouse.Position
 ‎        local CurrentScreenGuiPosition = Gui.AbsolutePosition
 ‎        local CurrentScreenGuiSize = Gui.AbsoluteSize
 ‎        MainFrame.Position = UDim2.new(0, CurrentMousePosition.X - CurrentScreenGuiPosition.X - CurrentScreenGuiSize.X / 2, 0, CurrentMousePosition.Y - CurrentScreenGuiPosition.Y - CurrentScreenGuiSize.Y / 2)
 ‎    end
 ‎end)
-‎
+
 ‎-- Menu Panel
 ‎local MenuPanel = Instance.new("Frame")
 ‎MenuPanel.Name = "MenuPanel"
@@ -123,7 +125,7 @@
 ‎local function StartAutoMarshmallow()
 ‎    local Player = game.Players.LocalPlayer
 ‎    local Character = Player.Character
-‎    local Backpack = Player.Backpack
+‎    local Backpack = Player.WaitForChild("Backpack") 
 ‎    local Water = Backpack:FindFirstChild("Water")
 ‎    local SugarBlockBag = Backpack:FindFirstChild("Sugar Block Bag")
 ‎    local Gelatin = Backpack:FindFirstChild("Gelatin")
@@ -157,7 +159,7 @@
 ‎
 ‎local function TeleportToNPCLocation()
 ‎    local Player = game.Players.LocalPlayer
-‎    local Character = Player.Character
+‎    local Character = Player.Character or Player.CharacterAdded:Wait()
 ‎    local NPCIngredientSeller = workspace.NPCIngredientSeller
 ‎    Character.HumanoidRootPart.CFrame = NPCIngredientSeller.HumanoidRootPart.CFrame
 ‎end
@@ -165,7 +167,7 @@
 ‎-- Update GUI
 ‎local function UpdateGUI()
 ‎    local Player = game.Players.LocalPlayer
-‎    local Backpack = Player.Backpack
+‎    local Backpack = Player:WaitForChild("Backpack")
 ‎    local CurrentMarshmallowCount = Backpack:FindFirstChild("Marshmallow")
 ‎    local CurrentWaterAmount = Backpack:FindFirstChild("Water")
 ‎    local CurrentSugarBlockBagAmount = Backpack:FindFirstChild("Sugar Block Bag")
@@ -176,7 +178,7 @@
 ‎    CurrentSugarBlockBagAmount.Text = "Current Sugar Block Bag Amount: " .. tostring(CurrentSugarBlockBagAmount.Value)
 ‎    CurrentGelatinAmount.Text = "Current Gelatin Amount: " .. tostring(CurrentGelatinAmount.Value)
 ‎end
-‎
+
 ‎UpdateGUI()
 ‎while true do
 ‎    UpdateGUI()
