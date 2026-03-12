@@ -47,12 +47,12 @@ local function chooseDialogue()
 
             if v:IsA("TextButton") and string.find(v.Text,"Yea") then
                 v:Activate()
-                task.wait(0.5)
+                task.wait(1)
             end
 
         end
 
-        task.wait(0.5)
+        task.wait(1)
 
     end
 
@@ -64,7 +64,7 @@ local function autoBuy()
     -- buka NPC
     pressE(5)
 
-    task.wait(4)
+    task.wait(5)
 
     -- pilih dialog
     chooseDialogue()
