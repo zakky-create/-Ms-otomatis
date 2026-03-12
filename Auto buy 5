@@ -5,9 +5,9 @@ local gui = Instance.new("ScreenGui")
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0,220,0,130)
+frame.Size = UDim2.new(0,220,0,120)
 frame.Position = UDim2.new(0.02,0,0.5,0)
-frame.BackgroundColor3 = Color3.fromRGB(173,216,230) -- biru muda
+frame.BackgroundColor3 = Color3.fromRGB(173,216,230)
 frame.Active = true
 frame.Draggable = true
 frame.Parent = gui
@@ -29,21 +29,36 @@ button.TextColor3 = Color3.new(1,1,1)
 button.Parent = frame
 
 
--- cek jarak ke Lamont Bell
-local function nearLamont()
+-- cari NPC Lamont Bell
+local function getLamont()
 
-    local npc = workspace:FindFirstChild("Lamont Bell")
-
-    if npc and npc:FindFirstChild("HumanoidRootPart") then
-
-        local root = player.Character:WaitForChild("HumanoidRootPart")
-        local dist = (root.Position - npc.HumanoidRootPart.Position).Magnitude
-
-        return dist < 12
-
+    for _,v in pairs(workspace:GetDescendants()) do
+        if v.Name == "Lamont Bell" then
+            return v
+        end
     end
 
-    return false
+end
+
+
+-- tekan prompt NPC
+local function pressLamontPrompt()
+
+    local npc = getLamont()
+
+    if not npc then
+        warn("Lamont Bell tidak ditemukan")
+        return
+    end
+
+    for _,v in pairs(npc:GetDescendants()) do
+
+        if v:IsA("ProximityPrompt") then
+            fireproximityprompt(v,3)
+            return
+        end
+
+    end
 
 end
 
@@ -51,42 +66,13 @@ end
 -- klik tombol GUI shop
 local function clickButton(text)
 
-    while true do
+    for _,v in pairs(player.PlayerGui:GetDescendants()) do
 
-        for _,v in pairs(player.PlayerGui:GetDescendants()) do
+        if v:IsA("GuiButton") then
 
-            if v:IsA("GuiButton") and v.Text then
-
-                if string.find(string.lower(v.Text), string.lower(text)) then
-                    v:Activate()
-                    return
-                end
-
-            end
-
-        end
-
-        task.wait(0.3)
-
-    end
-
-end
-
-
--- buka toko (press E)
-local function openShop()
-
-    for _,v in pairs(workspace:GetDescendants()) do
-
-        if v:IsA("ProximityPrompt") then
-
-            if v.Parent and v.Parent.Parent then
-
-                if string.find(v.Parent.Parent.Name,"Lamont") then
-                    fireproximityprompt(v,5)
-                    return
-                end
-
+            if v.Text and string.find(string.lower(v.Text), string.lower(text)) then
+                v:Activate()
+                return true
             end
 
         end
@@ -99,12 +85,7 @@ end
 -- AutoBuy
 local function autoBuy()
 
-    if not nearLamont() then
-        warn("Dekati Lamont Bell dulu")
-        return
-    end
-
-    openShop()
+    pressLamontPrompt()
 
     task.wait(2)
 
@@ -125,13 +106,5 @@ local function autoBuy()
 end
 
 
--- tombol GUI
-button.MouseButton1Click:Connect(function()
-    autoBuy()
-end)
-
-      
-
-
-
+button.MouseButton1Click:Connect(autoBuy)
 
