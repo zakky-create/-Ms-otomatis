@@ -58,15 +58,15 @@ gelatin.Parent = frame
 gelatin.Position = UDim2.new(0.05,0,0,85)
 gelatin.Text = "🟡 Gelatin: 0"
 
-local bag = water:Clone()
-bag.Parent = frame
-bag.Position = UDim2.new(0.05,0,0,105)
-bag.Text = "👜 MS Bag: 0"
+local MarshmallowBag = water:Clone()
+MarshmallowBag.Parent = frame
+MarshmallowBag.Position = UDim2.new(0.05,0,0,105)
+MarshmallowBag.Text = "👜 Marshmallow Bag: 0"
 
 local autoFarm = makeButton("AUTO FARM : OFF",135)
 local autoSell = makeButton("AUTO SELL : OFF",170)
 local tpNPC = makeButton("TELEPORT NPC",205)
-local tpApt 1 = makeButton("TELEPORT APT 1",240)
+local tpAPT1 = makeButton("TELEPORT APT 1",240)
 local autoBuy = makeButton("AUTO BUY",275)
 
 local close = Instance.new("TextButton")
@@ -145,6 +145,69 @@ autoFarm.MouseButton1Click:Connect(function()
 
 end)
 
+-- ======================
+-- TELEPORT SYSTEM
+-- ======================
+
+local TweenService = game:GetService("TweenService")
+
+-- lokasi tujuan
+local NPC = Vector3.new(523,3,615)
+local APT1 = Vector3.new(1202,3,-182)
+
+-- cari kendaraan yang sedang dinaiki
+local function getSeat()
+
+    local char = player.Character
+    if not char then return end
+
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
+
+    if humanoid and humanoid.SeatPart then
+        return humanoid.SeatPart
+    end
+
+end
+
+-- teleport kendaraan
+local function teleport(pos)
+
+    local seat = getSeat()
+
+    if seat then
+
+        local vehicle = seat.Parent
+
+        for _,part in pairs(vehicle:GetDescendants()) do
+            if part:IsA("BasePart") then
+
+                local tween = TweenService:Create(
+                    part,
+                    TweenInfo.new(2, Enum.EasingStyle.Linear),
+                    {CFrame = part.CFrame + (pos - seat.Position)}
+                )
+
+                tween:Play()
+
+            end
+        end
+
+    end
+
+end
+
+
+-- ======================
+-- HUBUNGKAN KE TOMBOL GUI
+-- ======================
+
+tpNPC.MouseButton1Click:Connect(function()
+    teleport(NPC)
+end)
+
+tpAPT1.MouseButton1Click:Connect(function()
+    teleport(APT1)
+end)
 
 
 
