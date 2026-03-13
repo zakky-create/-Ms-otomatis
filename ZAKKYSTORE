@@ -113,7 +113,7 @@ local function autoCook()
         equipTool("Sugar Block Bag")
         pressE()
 
-        task.wait(0.5)
+        task.wait(1)
 
         equipTool("Gelatin")
         pressE()
@@ -121,7 +121,10 @@ local function autoCook()
         task.wait(50)
 
         equipTool("Empty Bag")
-
+        pressE() 
+        
+        task.wait(2) 
+        
         print("Marshmallow selesai")
 
     end
@@ -141,5 +144,6 @@ autoFarm.MouseButton1Click:Connect(function()
     end
 
 end)
+
 
 
