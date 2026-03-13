@@ -109,7 +109,7 @@ local function autoCook()
         equipTool("Water")
         pressE()
         
-    for i = 1,30 do
+    for i = 1,21 do
         if not running then return end
         task.wait(1)
     end
@@ -124,7 +124,7 @@ local function autoCook()
         equipTool("Gelatin")
         pressE()
         
-        for i = 1,50 do
+        for i = 1,46 do
             if not running then return end
             task.wait(1)
         end
@@ -366,5 +366,6 @@ local function autoSellFunc()
     end
 
 end
+
 
 
