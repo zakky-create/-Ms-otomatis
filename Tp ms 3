@@ -1,0 +1,87 @@
+-- South Bronx Vehicle Teleport Hub (Mobile)
+
+local player = game.Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
+
+-- lokasi teleport
+local locations = {
+    ["NPC Marshmallow"] = Vector3.new(523,3,615),
+    ["Kompor Marshmallow"] = Vector3.new(1202,3,-182),
+    ["City Center"] = Vector3.new(0,5,0)
+}
+
+-- cari kendaraan yang sedang dinaiki
+local function getVehicle()
+
+    local char = player.Character
+    if not char then return end
+
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
+
+    if humanoid and humanoid.SeatPart then
+        return humanoid.SeatPart.Parent
+    end
+
+end
+
+-- teleport smooth
+local function teleportVehicle(pos)
+
+    local vehicle = getVehicle()
+
+    if vehicle and vehicle.PrimaryPart then
+
+        local tween = TweenService:Create(
+            vehicle.PrimaryPart,
+            TweenInfo.new(3, Enum.EasingStyle.Linear),
+            {CFrame = CFrame.new(pos)}
+        )
+
+        tween:Play()
+
+    end
+
+end
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "SB_VehicleHub"
+gui.Parent = player.PlayerGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0,200,0,220)
+frame.Position = UDim2.new(0.02,0,0.3,0)
+frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
+frame.Parent = gui
+frame.Active = true
+frame.Draggable = true
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1,0,0,35)
+title.BackgroundColor3 = Color3.fromRGB(35,35,35)
+title.Text = "South Bronx TP"
+title.TextColor3 = Color3.new(1,1,1)
+title.TextScaled = true
+title.Parent = frame
+
+local y = 45
+
+for name,pos in pairs(locations) do
+
+    local btn = Instance.new("TextButton")
+
+    btn.Size = UDim2.new(0.9,0,0,35)
+    btn.Position = UDim2.new(0.05,0,0,y)
+    btn.Text = name
+    btn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+    btn.TextColor3 = Color3.new(1,1,1)
+    btn.Parent = frame
+
+    btn.MouseButton1Click:Connect(function()
+        teleportVehicle(pos)
+    end)
+
+    y = y + 40
+
+end
+
