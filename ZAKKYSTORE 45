@@ -111,7 +111,7 @@ local function autoCook()
         
     for i = 1,30 do
         if not running then return end
-        task.wait(30)
+        task.wait(1)
     end
        
         if not running then break end
@@ -126,7 +126,7 @@ local function autoCook()
         
         for i = 1,50 do
             if not running then return end
-            task.wait(50)
+            task.wait(1)
         end
 
         if not running then break end
@@ -302,30 +302,39 @@ end
 
 
 local function autoSellFunc()
-
+      
     while selling do
-
-        for _,tool in pairs(backpack:GetChildren()) do
-
-            if not selling then break end
-
-            if tool:IsA("Tool") and isMarshmallow(tool.Name) then
-
-                player.Character.Humanoid:EquipTool(tool)
-
-                task.wait(0.4)
-
-                pressE() -- jual ke NPC
-
-                task.wait(0.8)
-
+        
+        local function check(container)
+            for _,tool in pairs(container:GetChildren()) do
+                
+                if not selling then break end
+                
+                if tool:IsA("Tool") and string.find(tool.Name,"Marshmallow Bag") then
+                    
+                    player.Character.Humanoid:EquipTool(tool)
+                    
+                    task.wait(0.4)
+                    
+                    pressE()
+                    
+                    task.wait(1)
+                    
+                end
+                
             end
-
         end
-
+        
+        check(backpack)
+        
+        if player.Character then
+            check(player.Character)
+        end
+        
         task.wait(1)
 
     end
 
 end
+
 
