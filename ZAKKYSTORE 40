@@ -327,7 +327,5 @@ local function autoSellFunc()
 
     end
 
-endend
-
-
+end
 
