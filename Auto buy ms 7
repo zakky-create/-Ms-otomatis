@@ -1,0 +1,53 @@
+local player = game.Players.LocalPlayer
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0,200,0,120)
+frame.Position = UDim2.new(0.05,0,0.4,0)
+frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1,0,0,30)
+title.Text = "AUTO BUY MS"
+title.TextScaled = true
+title.BackgroundColor3 = Color3.fromRGB(40,40,40)
+title.TextColor3 = Color3.new(1,1,1)
+title.Parent = frame
+
+local buy = Instance.new("TextButton")
+buy.Size = UDim2.new(0.8,0,0,40)
+buy.Position = UDim2.new(0.1,0,0.5,0)
+buy.Text = "Auto Buy"
+buy.BackgroundColor3 = Color3.fromRGB(60,60,60)
+buy.TextColor3 = Color3.new(1,1,1)
+buy.Parent = frame
+
+-- fungsi tekan NPC
+local function pressPrompt()
+    for _,v in pairs(workspace:GetDescendants()) do
+        if v:IsA("ProximityPrompt") then
+            fireproximityprompt(v)
+        end
+    end
+end
+
+-- auto pilih dialog
+local function autoBuy()
+
+    for i = 1,5 do
+        pressPrompt()
+        task.wait(1) -- jeda 1 detik supaya tidak terlalu cepat
+    end
+
+end
+
+buy.MouseButton1Click:Connect(function()
+    autoBuy()
+end)
+
