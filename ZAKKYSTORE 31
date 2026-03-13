@@ -209,8 +209,49 @@ tpAPT1.MouseButton1Click:Connect(function()
     teleport(APT1)
 end)
 
+-- ======================
+-- COUNT ITEM
+-- ======================
+
+local function countItem(name)
+
+	local amount = 0
+
+	for _,v in pairs(backpack:GetChildren()) do
+		if v.Name == name then
+			amount += 1
+		end
+	end
+
+	if player.Character then
+		for _,v in pairs(player.Character:GetChildren()) do
+			if v.Name == name then
+				amount += 1
+			end
+		end
+	end
+
+	return amount
+
+end
 
 
+-- ======================
+-- UPDATE GUI ITEM
+-- ======================
 
+task.spawn(function()
 
+	while true do
+
+		water.Text = "💧 Water: "..countItem("Water")
+		sugar.Text = "🍬 Sugar: "..countItem("Sugar Block Bag")
+		gelatin.Text = "🟡 Gelatin: "..countItem("Gelatin")
+		MarshmallowBag.Text = "👜 Marshmallow Bag: "..countItem("Marshmallow Bag")
+
+		task.wait(1)
+
+	end
+
+end)
 
