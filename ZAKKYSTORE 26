@@ -66,7 +66,7 @@ bag.Text = "👜 MS Bag: 0"
 local autoFarm = makeButton("AUTO FARM : OFF",135)
 local autoSell = makeButton("AUTO SELL : OFF",170)
 local tpNPC = makeButton("TELEPORT NPC",205)
-local tpStove = makeButton("TELEPORT STOVE",240)
+local tpApt 1 = makeButton("TELEPORT APT 1",240)
 local autoBuy = makeButton("AUTO BUY",275)
 
 local close = Instance.new("TextButton")
