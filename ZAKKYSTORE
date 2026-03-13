@@ -1,0 +1,145 @@
+local player = game.Players.LocalPlayer
+local backpack = player:WaitForChild("Backpack")
+local vim = game:GetService("VirtualInputManager")
+
+local gui = Instance.new("ScreenGui")
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Parent = gui
+frame.Size = UDim2.new(0,260,0,330)
+frame.Position = UDim2.new(0.5,-130,0.5,-165)
+frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+frame.BorderSizePixel = 3
+frame.BorderColor3 = Color3.fromRGB(200,0,255)
+frame.Active = true
+frame.Draggable = true
+
+local title = Instance.new("TextLabel")
+title.Parent = frame
+title.Size = UDim2.new(1,0,0,35)
+title.BackgroundTransparency = 1
+title.Text = "ZAKKYSTORE"
+title.TextColor3 = Color3.fromRGB(255,255,255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+
+local function makeButton(text,y)
+local btn = Instance.new("TextButton")
+btn.Parent = frame
+btn.Size = UDim2.new(0.9,0,0,30)
+btn.Position = UDim2.new(0.05,0,0,y)
+btn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+btn.TextColor3 = Color3.fromRGB(255,255,255)
+btn.Text = text
+btn.Font = Enum.Font.Gotham
+btn.TextSize = 14
+return btn
+end
+
+local water = Instance.new("TextLabel")
+water.Parent = frame
+water.Position = UDim2.new(0.05,0,0,45)
+water.Size = UDim2.new(0.9,0,0,20)
+water.BackgroundTransparency = 1
+water.Text = "💧 Water: 0"
+water.TextColor3 = Color3.new(1,1,1)
+water.Font = Enum.Font.Gotham
+water.TextSize = 14
+water.TextXAlignment = Enum.TextXAlignment.Left
+
+local sugar = water:Clone()
+sugar.Parent = frame
+sugar.Position = UDim2.new(0.05,0,0,65)
+sugar.Text = "🍬 Sugar: 0"
+
+local gelatin = water:Clone()
+gelatin.Parent = frame
+gelatin.Position = UDim2.new(0.05,0,0,85)
+gelatin.Text = "🟡 Gelatin: 0"
+
+local bag = water:Clone()
+bag.Parent = frame
+bag.Position = UDim2.new(0.05,0,0,105)
+bag.Text = "👜 Bag: 0"
+
+local autoFarm = makeButton("AUTO FARM : OFF",135)
+local autoSell = makeButton("AUTO SELL : OFF",170)
+local tpNPC = makeButton("TELEPORT NPC",205)
+local tpStove = makeButton("TELEPORT STOVE",240)
+local autoBuy = makeButton("AUTO BUY",275)
+
+local close = Instance.new("TextButton")
+close.Parent = frame
+close.Size = UDim2.new(0,25,0,25)
+close.Position = UDim2.new(1,-30,0,5)
+close.Text = "X"
+close.BackgroundColor3 = Color3.fromRGB(200,0,0)
+close.TextColor3 = Color3.new(1,1,1)
+
+close.MouseButton1Click:Connect(function()
+frame.Visible = false
+end)
+
+-- ======================
+-- AUTO COOK SYSTEM
+-- ======================
+
+local running = false
+
+local function pressE()
+    vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+    task.wait(0.1)
+    vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+end
+
+local function equipTool(name)
+    local tool = backpack:FindFirstChild(name)
+    if tool then
+        player.Character.Humanoid:EquipTool(tool)
+        task.wait(0.4)
+    end
+end
+
+local function autoCook()
+
+    while running do
+
+        equipTool("Water")
+        pressE()
+
+        task.wait(30)
+
+        equipTool("Sugar Block Bag")
+        pressE()
+
+        task.wait(0.5)
+
+        equipTool("Gelatin")
+        pressE()
+
+        task.wait(50)
+
+        equipTool("Empty Bag")
+
+        print("Marshmallow selesai")
+
+    end
+
+end
+
+-- tombol auto farm
+autoFarm.MouseButton1Click:Connect(function()
+
+    running = not running
+
+    if running then
+        autoFarm.Text = "AUTO FARM : ON"
+        task.spawn(autoCook)
+    else
+        autoFarm.Text = "AUTO FARM : OFF"
+    end
+
+end)
+
+
