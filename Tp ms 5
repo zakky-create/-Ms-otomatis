@@ -1,0 +1,60 @@
+-- Teleport kendaraan naik dulu lalu turun
+
+local player = game.Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
+
+-- lokasi tujuan
+local target = Vector3.new(523,3,615) -- NPC Marshmallow
+
+-- cari kendaraan yang sedang dinaiki
+local function getVehicle()
+
+    local char = player.Character
+    if not char then return end
+
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
+
+    if humanoid and humanoid.SeatPart then
+        return humanoid.SeatPart.Parent
+    end
+
+end
+
+local function teleportVehicle()
+
+    local vehicle = getVehicle()
+    if not vehicle then return end
+
+    local seat = player.Character.Humanoid.SeatPart
+    local offset = seat.Position - vehicle:GetModelCFrame().Position
+
+    -- posisi awal
+    local start = seat.Position
+
+    -- posisi naik ke atas
+    local upPos = start + Vector3.new(0,80,0)
+
+    -- posisi tujuan di udara
+    local targetUp = target + Vector3.new(0,80,0)
+
+    -- naik dulu
+    seat.CFrame = CFrame.new(upPos)
+
+    task.wait(0.5)
+
+    -- pindah ke lokasi (di udara)
+    seat.CFrame = CFrame.new(targetUp)
+
+    task.wait(0.3)
+
+    -- turun ke tanah
+    TweenService:Create(
+        seat,
+        TweenInfo.new(1.2, Enum.EasingStyle.Linear),
+        {CFrame = CFrame.new(target)}
+    ):Play()
+
+end
+
+teleportVehicle()
+
