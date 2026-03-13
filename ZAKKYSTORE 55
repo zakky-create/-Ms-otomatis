@@ -292,6 +292,22 @@ end)
 -- AUTO SELL SYSTEM
 -- ======================
 
+local function sellPrompt()
+
+    for _,v in pairs(workspace:GetDescendants()) do
+        
+        if v:IsA("ProximityPrompt") then
+            
+            if v.ActionText and string.find(v.ActionText,"Sell") then
+                fireproximityprompt(v)
+            end
+            
+        end
+        
+    end
+
+end
+
 local selling = false
 
 local function isMarshmallow(name)
@@ -318,7 +334,7 @@ local function autoSellFunc()
                 
                 task.wait(0.4)
                 
-                pressE() -- jual
+                sellPromt() -- jual
                 
                 task.wait(1)
                 
@@ -350,4 +366,5 @@ local function autoSellFunc()
     end
 
 end
+
 
