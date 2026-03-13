@@ -300,44 +300,54 @@ local function isMarshmallow(name)
 
 end
 
-
 local function autoSellFunc()
-      
+
     while selling do
         
-        local function check(container)
-            for _,tool in pairs(container:GetChildren()) do
+        local char = player.Character
+        if not char then return end
+        
+        -- cek semua tool
+        for _,tool in pairs(player.Backpack:GetChildren()) do
+            
+            if not selling then break end
+            
+            if tool:IsA("Tool") and string.find(tool.Name,"Marshmallow Bag") then
                 
-                if not selling then break end
+                char.Humanoid:EquipTool(tool)
                 
-                if tool:IsA("Tool") and string.find(tool.Name,"Marshmallow Bag") then
-                    
-                    player.Character.Humanoid:EquipTool(tool)
-
-                    task.wait(0.4)
-
-                    tool:Activate()
-
-                    pressE()
-                    
-                    task.wait(1)
-                    
-                end
+                task.wait(0.4)
+                
+                pressE() -- jual
+                
+                task.wait(1)
                 
             end
+            
         end
         
-        check(backpack)
-        
-        if player.Character then
-            check(player.Character)
+        -- cek hotbar juga
+        for _,tool in pairs(char:GetChildren()) do
+            
+            if not selling then break end
+            
+            if tool:IsA("Tool") and string.find(tool.Name,"Marshmallow Bag") then
+                
+                char.Humanoid:EquipTool(tool)
+                
+                task.wait(0.4)
+                
+                pressE()
+                
+                task.wait(1)
+                
+            end
+            
         end
         
         task.wait(1)
-
+        
     end
 
 end
-
-
 
