@@ -1,0 +1,70 @@
+local player = game.Players.LocalPlayer
+local npcPos = Vector3.new(523,3,615)
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0,220,0,120)
+frame.Position = UDim2.new(0.05,0,0.4,0)
+frame.BackgroundColor3 = Color3.fromRGB(40,40,40)
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1,0,0,30)
+title.Text = "AUTO BUY MARSHMALLOW"
+title.TextScaled = true
+title.BackgroundColor3 = Color3.fromRGB(60,60,60)
+title.TextColor3 = Color3.new(1,1,1)
+title.Parent = frame
+
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0.8,0,0,40)
+button.Position = UDim2.new(0.1,0,0.5,0)
+button.Text = "Auto Buy"
+button.BackgroundColor3 = Color3.fromRGB(80,80,80)
+button.TextColor3 = Color3.new(1,1,1)
+button.Parent = frame
+
+-- tekan prompt dekat NPC saja
+local function pressNPCPrompt()
+
+    for _,v in pairs(workspace:GetDescendants()) do
+
+        if v:IsA("ProximityPrompt") then
+
+            local part = v.Parent
+
+            if part and part:IsA("BasePart") then
+
+                local dist = (part.Position - npcPos).Magnitude
+
+                if dist < 10 then
+                    fireproximityprompt(v)
+                end
+
+            end
+
+        end
+
+    end
+
+end
+
+-- auto buy
+local function autoBuy()
+
+    for i = 1,5 do
+        pressNPCPrompt()
+        task.wait(1) -- biar tidak terlalu cepat
+    end
+
+end
+
+button.MouseButton1Click:Connect(function()
+    autoBuy()
+end)
+
