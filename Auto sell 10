@@ -60,7 +60,7 @@ local function autoSell()
 
                 player.Character.Humanoid:EquipTool(tool)
 
-                task.wait(0.5)
+                task.wait(5)
 
                 pressE()
 
@@ -89,4 +89,5 @@ button.MouseButton1Click:Connect(function()
     end
 
 end)
+
 
