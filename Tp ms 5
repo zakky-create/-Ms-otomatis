@@ -1,60 +1,61 @@
--- Teleport kendaraan naik dulu lalu turun
-
 local player = game.Players.LocalPlayer
-local TweenService = game:GetService("TweenService")
 
--- lokasi tujuan
-local target = Vector3.new(523,3,615) -- NPC Marshmallow
+-- koordinat
+local npc = Vector3.new(523,3,615)
+local kompor = Vector3.new(1202,3,-182)
 
--- cari kendaraan yang sedang dinaiki
-local function getVehicle()
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0,200,0,120)
+frame.Position = UDim2.new(0.03,0,0.4,0)
+frame.BackgroundColor3 = Color3.fromRGB(40,40,40)
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1,0,0,30)
+title.Text = "TP MARSHMALLOW"
+title.TextColor3 = Color3.new(1,1,1)
+title.BackgroundColor3 = Color3.fromRGB(30,30,30)
+title.TextScaled = true
+title.Parent = frame
+
+local btn1 = Instance.new("TextButton")
+btn1.Size = UDim2.new(0.8,0,0,30)
+btn1.Position = UDim2.new(0.1,0,0.4,0)
+btn1.Text = "TP NPC"
+btn1.BackgroundColor3 = Color3.fromRGB(60,60,60)
+btn1.TextColor3 = Color3.new(1,1,1)
+btn1.Parent = frame
+
+local btn2 = Instance.new("TextButton")
+btn2.Size = UDim2.new(0.8,0,0,30)
+btn2.Position = UDim2.new(0.1,0,0.7,0)
+btn2.Text = "TP Kompor"
+btn2.BackgroundColor3 = Color3.fromRGB(60,60,60)
+btn2.TextColor3 = Color3.new(1,1,1)
+btn2.Parent = frame
+
+-- teleport function
+local function tp(pos)
 
     local char = player.Character
-    if not char then return end
-
-    local humanoid = char:FindFirstChildOfClass("Humanoid")
-
-    if humanoid and humanoid.SeatPart then
-        return humanoid.SeatPart.Parent
+    if char and char:FindFirstChild("HumanoidRootPart") then
+        char.HumanoidRootPart.CFrame = CFrame.new(pos)
     end
 
 end
 
-local function teleportVehicle()
+btn1.MouseButton1Click:Connect(function()
+    tp(npc)
+end)
 
-    local vehicle = getVehicle()
-    if not vehicle then return end
+btn2.MouseButton1Click:Connect(function()
+    tp(kompor)
+end)
 
-    local seat = player.Character.Humanoid.SeatPart
-    local offset = seat.Position - vehicle:GetModelCFrame().Position
-
-    -- posisi awal
-    local start = seat.Position
-
-    -- posisi naik ke atas
-    local upPos = start + Vector3.new(0,80,0)
-
-    -- posisi tujuan di udara
-    local targetUp = target + Vector3.new(0,80,0)
-
-    -- naik dulu
-    seat.CFrame = CFrame.new(upPos)
-
-    task.wait(0.5)
-
-    -- pindah ke lokasi (di udara)
-    seat.CFrame = CFrame.new(targetUp)
-
-    task.wait(0.3)
-
-    -- turun ke tanah
-    TweenService:Create(
-        seat,
-        TweenInfo.new(1.2, Enum.EasingStyle.Linear),
-        {CFrame = CFrame.new(target)}
-    ):Play()
-
-end
-
-teleportVehicle()
 
