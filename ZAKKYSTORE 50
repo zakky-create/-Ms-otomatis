@@ -313,9 +313,11 @@ local function autoSellFunc()
                 if tool:IsA("Tool") and string.find(tool.Name,"Marshmallow Bag") then
                     
                     player.Character.Humanoid:EquipTool(tool)
-                    
+
                     task.wait(0.4)
-                    
+
+                    tool:Activate()
+
                     pressE()
                     
                     task.wait(1)
@@ -336,5 +338,6 @@ local function autoSellFunc()
     end
 
 end
+
 
 
