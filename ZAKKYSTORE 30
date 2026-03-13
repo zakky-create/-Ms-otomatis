@@ -113,7 +113,7 @@ local function autoCook()
         equipTool("Sugar Block Bag")
         pressE()
 
-        task.wait(0.2)
+        task.wait(1)
 
         equipTool("Gelatin")
         pressE()
@@ -208,6 +208,7 @@ end)
 tpAPT1.MouseButton1Click:Connect(function()
     teleport(APT1)
 end)
+
 
 
 
