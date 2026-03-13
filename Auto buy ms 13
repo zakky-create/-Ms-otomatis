@@ -1,0 +1,77 @@
+local player = game.Players.LocalPlayer
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0,200,0,120)
+frame.Position = UDim2.new(0.05,0,0.4,0)
+frame.BackgroundColor3 = Color3.fromRGB(40,40,40)
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1,0,0,30)
+title.Text = "AUTO BUY MS"
+title.BackgroundColor3 = Color3.fromRGB(60,60,60)
+title.TextColor3 = Color3.new(1,1,1)
+title.TextScaled = true
+title.Parent = frame
+
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0.8,0,0,40)
+button.Position = UDim2.new(0.1,0,0.45,0)
+button.Text = "BUY BAHAN"
+button.BackgroundColor3 = Color3.fromRGB(80,80,80)
+button.TextColor3 = Color3.new(1,1,1)
+button.Parent = frame
+
+-- buka NPC
+local function openShop()
+
+    for _,v in pairs(workspace:GetDescendants()) do
+        if v:IsA("ProximityPrompt") then
+            fireproximityprompt(v)
+            task.wait(1)
+        end
+    end
+
+end
+
+-- klik item di UI
+local function clickItem(name)
+
+    for _,v in pairs(player.PlayerGui:GetDescendants()) do
+        if v:IsA("TextButton") then
+            if string.find(v.Text,name) then
+                v:Activate()
+                return
+            end
+        end
+    end
+
+end
+
+-- auto buy
+local function autoBuy()
+
+    openShop()
+
+    task.wait(2)
+
+    clickItem("Gelatin")
+    task.wait(1)
+
+    clickItem("Sugar")
+    task.wait(1)
+
+    clickItem("Water")
+
+end
+
+button.MouseButton1Click:Connect(function()
+    autoBuy()
+end)
+
