@@ -49,14 +49,22 @@ end
 
 -- fungsi jual ke NPC Lamont Bell
 local function sellToNPC()
+
     for _,v in pairs(workspace:GetDescendants()) do
+        
         if v:IsA("ProximityPrompt") then
-            -- hanya prompt milik Lamont Bell
-            if v.Parent and string.find(v.Parent.Name,"Lamont Bell") then
-                fireproximityprompt(v)
+            
+            -- cek hanya prompt NPC Lamont Bell
+            if v.ObjectText and string.find(v.ObjectText,"Lamont") then
+                
+                fireproximityprompt(v,1)
+                
             end
+            
         end
+        
     end
+
 end
 
 -- AUTO SELL
