@@ -1,0 +1,96 @@
+local player = game.Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0,220,0,130)
+frame.Position = UDim2.new(0.05,0,0.4,0)
+frame.BackgroundColor3 = Color3.fromRGB(40,40,40)
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1,0,0,30)
+title.Text = "AUTO BUY MARSHMALLOW"
+title.TextScaled = true
+title.BackgroundColor3 = Color3.fromRGB(60,60,60)
+title.TextColor3 = Color3.new(1,1,1)
+title.Parent = frame
+
+local buyBtn = Instance.new("TextButton")
+buyBtn.Size = UDim2.new(0.8,0,0,40)
+buyBtn.Position = UDim2.new(0.1,0,0.5,0)
+buyBtn.Text = "Buy Bahan"
+buyBtn.BackgroundColor3 = Color3.fromRGB(80,80,80)
+buyBtn.TextColor3 = Color3.new(1,1,1)
+buyBtn.Parent = frame
+
+-- cari prompt dekat player
+local function getPrompt()
+
+    local root = char:WaitForChild("HumanoidRootPart")
+
+    for _,v in pairs(workspace:GetDescendants()) do
+        if v:IsA("ProximityPrompt") then
+
+            local part = v.Parent
+
+            if part and part:IsA("BasePart") then
+
+                local dist = (part.Position - root.Position).Magnitude
+
+                if dist < 8 then
+                    return v
+                end
+
+            end
+        end
+    end
+end
+
+-- tekan prompt
+local function pressPrompt()
+
+    local prompt = getPrompt()
+
+    if prompt then
+        fireproximityprompt(prompt)
+    end
+
+end
+
+-- auto buy bahan
+local function autoBuy()
+
+    -- buka dialog npc
+    pressPrompt()
+    task.wait(2)
+
+    -- pilih dialog "Yea... you the guy?" 5x
+    for i = 1,5 do
+        pressPrompt()
+        task.wait(1.5)
+    end
+
+    -- tunggu shop muncul
+    task.wait(2)
+
+    -- beli item
+    pressPrompt() -- Water
+    task.wait(1)
+
+    pressPrompt() -- Sugar
+    task.wait(1)
+
+    pressPrompt() -- Gelatin
+
+end
+
+buyBtn.MouseButton1Click:Connect(function()
+    autoBuy()
+end)
+
