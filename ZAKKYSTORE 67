@@ -121,7 +121,7 @@ local function autoCook()
         task.wait(50)
 
         equipTool("Empty Bag")
-        pressE() 
+        pressE(1) 
         
         task.wait(2) 
         
@@ -144,6 +144,7 @@ autoFarm.MouseButton1Click:Connect(function()
     end
 
 end)
+
 
 
 
