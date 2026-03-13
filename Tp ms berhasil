@@ -5,7 +5,7 @@ local TweenService = game:GetService("TweenService")
 
 -- lokasi tujuan
 local npc = Vector3.new(523,3,615)
-local stove = Vector3.new(1202,3,-182)
+local apt 1 = Vector3.new(1202,3,-182)
 
 -- cari kendaraan yang sedang dinaiki
 local function getSeat()
@@ -77,3 +77,4 @@ end)
 btn2.MouseButton1Click:Connect(function()
     teleport(stove)
 end)
+
