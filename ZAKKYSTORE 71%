@@ -155,18 +155,6 @@ autoFarm.MouseButton1Click:Connect(function()
 
 end)
 
-autoSell.MouseButton1Click:Connect(function()
-
-    selling = not selling
-
-    if selling then
-        autoSell.Text = "AUTO SELL : ON"
-        task.spawn(autoSellFunc)
-    else
-        autoSell.Text = "AUTO SELL : OFF"
-    end
-
-end)
 
 -- ======================
 -- TELEPORT SYSTEM
@@ -349,4 +337,16 @@ local function autoSellFunc()
 
 end
 
+autoSell.MouseButton1Click:Connect(function()
+
+    selling = not selling
+
+    if selling then
+        autoSell.Text = "AUTO SELL : ON"
+        task.spawn(autoSellFunc)
+    else
+        autoSell.Text = "AUTO SELL : OFF"
+    end
+
+end)
 
