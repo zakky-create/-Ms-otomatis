@@ -292,14 +292,17 @@ end)
 -- AUTO SELL SYSTEM
 -- ======================
 
-local function sellPrompt()
+local selling = false
+
+-- cari prompt Lamont Bell
+local function getSellPrompt()
 
     for _,v in pairs(workspace:GetDescendants()) do
         
         if v:IsA("ProximityPrompt") then
             
-            if v.ActionText and string.find(v.ActionText,"Sell") then
-                fireproximityprompt(v)
+            if v.Parent and v.Parent.Parent and v.Parent.Parent.Name == "Lamont Bell" then
+                return v
             end
             
         end
@@ -308,64 +311,42 @@ local function sellPrompt()
 
 end
 
-local selling = false
-
+-- cek marshmallow
 local function isMarshmallow(name)
-
     return string.find(name,"Marshmallow Bag")
-
 end
+
 
 local function autoSellFunc()
 
+    local prompt = getSellPrompt()
+
     while selling do
-        
-        local char = player.Character
-        if not char then return end
-        
-        -- cek semua tool
-        for _,tool in pairs(player.Backpack:GetChildren()) do
-            
-            if not selling then break end
-            
-            if tool:IsA("Tool") and string.find(tool.Name,"Marshmallow Bag") then
-                
-                char.Humanoid:EquipTool(tool)
-                
-                task.wait(0.4)
-                
-                sellPromt() -- jual
-                
+
+        for _,tool in pairs(backpack:GetChildren()) do
+
+            if not selling then return end
+
+            if tool:IsA("Tool") and isMarshmallow(tool.Name) then
+
+                player.Character.Humanoid:EquipTool(tool)
+
+                task.wait(0.5)
+
+                if prompt then
+                    fireproximityprompt(prompt)
+                end
+
                 task.wait(1)
-                
+
             end
-            
+
         end
-        
-        -- cek hotbar juga
-        for _,tool in pairs(char:GetChildren()) do
-            
-            if not selling then break end
-            
-            if tool:IsA("Tool") and string.find(tool.Name,"Marshmallow Bag") then
-                
-                char.Humanoid:EquipTool(tool)
-                
-                task.wait(0.4)
-                
-                pressE()
-                
-                task.wait(1)
-                
-            end
-            
-        end
-        
+
         task.wait(1)
-        
+
     end
 
 end
-
 
 
