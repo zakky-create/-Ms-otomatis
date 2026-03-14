@@ -1,0 +1,109 @@
+local player = game.Players.LocalPlayer
+local backpack = player:WaitForChild("Backpack")
+
+local selling = false
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Parent = gui
+frame.Size = UDim2.new(0,200,0,90)
+frame.Position = UDim2.new(0.5,-100,0.5,-45)
+frame.BackgroundColor3 = Color3.fromRGB(40,40,40)
+frame.Active = true
+frame.Draggable = true
+
+local title = Instance.new("TextLabel")
+title.Parent = frame
+title.Size = UDim2.new(1,0,0,30)
+title.BackgroundTransparency = 1
+title.Text = "AUTO SELL"
+title.TextColor3 = Color3.new(1,1,1)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+
+local button = Instance.new("TextButton")
+button.Parent = frame
+button.Size = UDim2.new(0.9,0,0,35)
+button.Position = UDim2.new(0.05,0,0,40)
+button.Text = "AUTO SELL : OFF"
+button.BackgroundColor3 = Color3.fromRGB(70,70,70)
+button.TextColor3 = Color3.new(1,1,1)
+button.Font = Enum.Font.Gotham
+button.TextSize = 14
+
+
+-- cari prompt Lamont Bell
+local function getSellPrompt()
+
+    for _,v in pairs(workspace:GetDescendants()) do
+        
+        if v:IsA("ProximityPrompt") then
+            
+            if v.ObjectText == "Lamont Bell" and v.ActionText == "Interact" then
+                return v
+            end
+            
+        end
+        
+    end
+
+end
+
+
+-- cek marshmallow
+local function isMarshmallow(name)
+    return string.find(name,"Marshmallow Bag")
+end
+
+
+-- AUTO SELL
+local function autoSell()
+
+    local prompt = getSellPrompt()
+
+    while selling do
+
+        for _,tool in pairs(backpack:GetChildren()) do
+
+            if not selling then return end
+
+            if tool:IsA("Tool") and isMarshmallow(tool.Name) then
+
+                player.Character.Humanoid:EquipTool(tool)
+
+                task.wait(0.5)
+
+                if prompt then
+                    fireproximityprompt(prompt)
+                end
+
+                task.wait(1)
+
+            end
+
+        end
+
+        task.wait(1)
+
+    end
+
+end
+
+
+-- tombol GUI
+button.MouseButton1Click:Connect(function()
+
+    selling = not selling
+
+    if selling then
+        button.Text = "AUTO SELL : ON"
+        task.spawn(autoSell)
+    else
+        button.Text = "AUTO SELL : OFF"
+    end
+
+end)
+
