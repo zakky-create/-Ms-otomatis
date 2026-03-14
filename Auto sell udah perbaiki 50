@@ -38,8 +38,6 @@ button.TextSize = 14
 -- cari prompt Lamont Bell
 local function getSellPrompt()
 
-    local function getSellPrompt()
-
     for _,v in pairs(workspace:GetDescendants()) do
         
         if v:IsA("ProximityPrompt") then
@@ -63,9 +61,9 @@ end
 
 -- AUTO SELL
 local function autoSell()
-
-    local prompt = getSellPrompt()
-
+    
+    local prompt = getSellPrompt()  
+    
     while selling do
 
         for _,tool in pairs(backpack:GetChildren()) do
@@ -108,4 +106,5 @@ button.MouseButton1Click:Connect(function()
     end
 
 end)
+
 
