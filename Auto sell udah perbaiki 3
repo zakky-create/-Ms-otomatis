@@ -38,11 +38,13 @@ button.TextSize = 14
 -- cari prompt Lamont Bell
 local function getSellPrompt()
 
+    local function getSellPrompt()
+
     for _,v in pairs(workspace:GetDescendants()) do
         
         if v:IsA("ProximityPrompt") then
             
-            if v.ObjectText == "Lamont Bell" and v.ActionText == "Interact" then
+            if v.Parent and v.Parent.Parent and v.Parent.Parent.Name == "Lamont Bell" then
                 return v
             end
             
