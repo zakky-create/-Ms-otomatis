@@ -50,6 +50,7 @@ end
 
 
 -- AUTO SELL
+
 local function autoSell()
 
     while selling do
@@ -64,7 +65,7 @@ local function autoSell()
 
                 task.wait(0.5)
 
-                pressE()
+                sellToNPC()
 
                 task.wait(1.5)
 
@@ -77,7 +78,6 @@ local function autoSell()
     end
 
 end
-
 
 -- tombol GUI
 button.MouseButton1Click:Connect(function()
