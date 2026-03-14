@@ -64,7 +64,7 @@ local function pressE()
         local holdTime = prompt.HoldDuration
         
         vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
-        task.wait(holdTime + 0.3)
+        task.wait(holdTime + 5)
         vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
         
     end
@@ -121,3 +121,5 @@ button.MouseButton1Click:Connect(function()
     end
 
 end)
+
+
