@@ -43,7 +43,7 @@ local function getSellPrompt()
         
         if v:IsA("ProximityPrompt") then
             
-            if v.ObjectText and string.find(v.ObjectText,"Lamont") then
+            if v.ObjectText == "Lamont Bell" and v.ActionText == "Interact" then
                 return v
             end
             
