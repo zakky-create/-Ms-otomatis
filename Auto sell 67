@@ -38,9 +38,31 @@ button.TextSize = 14
 
 -- tekan tombol E
 local function pressE()
-    vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
-    task.wait(5)
-    vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+
+    local prompt = nil
+
+    -- cari proximity prompt terdekat
+    for _,v in pairs(workspace:GetDescendants()) do
+        if v:IsA("ProximityPrompt") then
+            
+            if v.ObjectText and string.find(v.ObjectText,"Lamont") then
+                prompt = v
+                break
+            end
+            
+        end
+    end
+
+    if prompt then
+        
+        local holdTime = prompt.HoldDuration
+        
+        vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+        task.wait(holdTime + 0.2)
+        vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+        
+    end
+
 end
 
 -- cek marshmallow
