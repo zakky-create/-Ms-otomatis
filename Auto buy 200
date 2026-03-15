@@ -24,11 +24,12 @@ button.MouseButton1Click:Connect(function()
     if buying then
         task.spawn(function()
             while buying do
-                remote:FireServer("Gelatin")
-                remote:FireServer("Sugar Block Bag")
                 remote:FireServer("Water")
+                remote:FireServer("Sugar Block Bag")
+                remote:FireServer("Gelatin")
                 task.wait(1)
             end
         end)
     end
 end)
+
