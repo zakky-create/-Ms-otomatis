@@ -1,0 +1,69 @@
+local player = game.Players.LocalPlayer
+local buying = false
+
+local buyRemote = game.ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("StorePurchase")
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Parent = gui
+frame.Size = UDim2.new(0,200,0,90)
+frame.Position = UDim2.new(0.5,-100,0.5,-45)
+frame.BackgroundColor3 = Color3.fromRGB(40,40,40)
+frame.Active = true
+frame.Draggable = true
+
+local title = Instance.new("TextLabel")
+title.Parent = frame
+title.Size = UDim2.new(1,0,0,30)
+title.BackgroundTransparency = 1
+title.Text = "AUTO BUY"
+title.TextColor3 = Color3.new(1,1,1)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+
+local button = Instance.new("TextButton")
+button.Parent = frame
+button.Size = UDim2.new(0.9,0,0,35)
+button.Position = UDim2.new(0.05,0,0,40)
+button.Text = "AUTO BUY : OFF"
+button.BackgroundColor3 = Color3.fromRGB(70,70,70)
+button.TextColor3 = Color3.new(1,1,1)
+button.Font = Enum.Font.Gotham
+button.TextSize = 14
+
+
+-- AUTO BUY
+local function autoBuy()
+
+    while buying do
+        
+        buyRemote:FireServer("Ingredients","Gelatin")
+        task.wait(0.3)
+
+        buyRemote:FireServer("Ingredients","Sugar Block Bag")
+        task.wait(0.3)
+
+        buyRemote:FireServer("Ingredients","Water")
+        task.wait(0.3)
+
+    end
+
+end
+
+
+-- tombol GUI
+button.MouseButton1Click:Connect(function()
+
+    buying = not buying
+
+    if buying then
+        button.Text = "AUTO BUY : ON"
+        task.spawn(autoBuy)
+    else
+        button.Text = "AUTO BUY : OFF"
+    end
+
+end)
