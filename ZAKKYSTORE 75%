@@ -69,6 +69,45 @@ local tpNPC = makeButton("TELEPORT NPC",205)
 local tpAPT1 = makeButton("TELEPORT APT 1",240)
 local autoBuy = makeButton("AUTO BUY",275)
 
+-- ======================
+-- AUTO BUY SYSTEM
+-- ======================
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local storeRemote = ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("StorePurchase")
+
+local buying = false
+
+local function autoBuyFunc()
+
+    while buying do
+
+        storeRemote:FireServer("Water")
+        task.wait(0.6)
+
+        storeRemote:FireServer("Sugar Block Bag")
+        task.wait(0.6)
+
+        storeRemote:FireServer("Gelatin")
+        task.wait(0.6)
+
+    end
+
+end
+
+autoBuy.MouseButton1Click:Connect(function()
+
+    buying = not buying
+
+    if buying then
+        autoBuy.Text = "AUTO BUY : ON"
+        task.spawn(autoBuyFunc)
+    else
+        autoBuy.Text = "AUTO BUY : OFF"
+    end
+
+end)
+
 local close = Instance.new("TextButton")
 close.Parent = frame
 close.Size = UDim2.new(0,25,0,25)
@@ -80,6 +119,7 @@ close.TextColor3 = Color3.new(1,1,1)
 close.MouseButton1Click:Connect(function()
 frame.Visible = false
 end)
+
 
 -- ======================
 -- AUTO COOK SYSTEM
