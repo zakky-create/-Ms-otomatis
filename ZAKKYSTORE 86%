@@ -133,13 +133,6 @@ local UIS = game:GetService("UserInputService")
 
 local dragging = false
 
-sliderButton.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 
-	or input.UserInputType == Enum.UserInputType.Touch then
-		dragging = true
-	end
-end)
-
 sliderButton.InputEnded:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 
 	or input.UserInputType == Enum.UserInputType.Touch then
@@ -154,21 +147,12 @@ local UIS = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 
 local dragging = false
-local buyAmount = 1
-local maxBuy = 100
 
 sliderButton.InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 
 	or input.UserInputType == Enum.UserInputType.Touch then
 		dragging = true
 	endo
-end)
-
-sliderButton.InputEnded:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 
-	or input.UserInputType == Enum.UserInputType.Touch then
-		dragging = false
-	end
 end)
 
 RunService.RenderStepped:Connect(function()
