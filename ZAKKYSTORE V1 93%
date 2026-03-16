@@ -16,6 +16,9 @@ frame.BorderSizePixel = 3
 frame.BorderColor3 = Color3.fromRGB(200,0,255)
 frame.Active = true
 frame.Draggable = true
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0,12) -- makin besar makin bulat
+corner.Parent = frame
 
 local title = Instance.new("TextLabel")
 title.Parent = frame
@@ -88,6 +91,14 @@ sliderButton.Position = UDim2.new(0,-9,0.5,-9)
 sliderButton.BackgroundColor3 = Color3.fromRGB(0,170,255)
 sliderButton.BorderSizePixel = 0
 sliderButton.Active = true
+
+local sliderCorner = Instance.new("UICorner")
+sliderCorner.CornerRadius = UDim.new(1,0)
+sliderCorner.Parent = sliderButton
+
+local barCorner = Instance.new("UICorner")
+barCorner.CornerRadius = UDim.new(0,5)
+barCorner.Parent = sliderBar
 
 -- BUTTON
 local autoFarm = makeButton("AUTO FARM : OFF",135)
