@@ -90,8 +90,12 @@ local sliderButton = Instance.new("Frame")
 sliderButton.Parent = sliderBar
 sliderButton.Size = UDim2.new(0,18,0,18)
 sliderButton.Position = UDim2.new(0,-9,0.5,-9)
-sliderButton.BackgroundColor3 = Color3.fromRGB(255,255,255)
+sliderButton.BackgroundColor3 = Color3.fromRGB(0,170,255) -- biru
 sliderButton.BorderSizePixel = 0
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(1,0)
+corner.Parent = sliderButton
 
 -- BUTTONS
 local autoFarm = makeButton("AUTO FARM : OFF",135)
@@ -142,7 +146,8 @@ if input.UserInputType == Enum.UserInputType.MouseButton1
 or input.UserInputType == Enum.UserInputType.Touch then
 
 dragging = true
-
+frame.Draggable = false
+		
 end
 
 end)
@@ -153,6 +158,7 @@ if input.UserInputType == Enum.UserInputType.MouseButton1
 or input.UserInputType == Enum.UserInputType.Touch then
 
 dragging = false
+frame.Draggable = true
 
 end
 
