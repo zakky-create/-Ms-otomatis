@@ -63,9 +63,11 @@ MarshmallowBag.Parent = frame
 MarshmallowBag.Position = UDim2.new(0.05,0,0,105)
 MarshmallowBag.Text = "👜 Marshmallow Bag: 0"
 
+-- SLIDER
+
 local sliderBar = Instance.new("Frame")
 sliderBar.Parent = frame
-sliderBar.Position = UDim2.new(0.05,0,0,125)
+sliderBar.Position = UDim2.new(0.05,0,0,130)
 sliderBar.Size = UDim2.new(0.9,0,0,6)
 sliderBar.BackgroundColor3 = Color3.fromRGB(60,60,60)
 
@@ -78,19 +80,22 @@ local sliderButton = Instance.new("Frame")
 sliderButton.Parent = sliderBar
 sliderButton.Size = UDim2.new(0,18,0,18)
 sliderButton.Position = UDim2.new(0,-9,0.5,-9)
-sliderButton.BackgroundColor3 = Color3.fromRGB(255,255,255)
+sliderButton.BackgroundColor3 = Color3.new(1,1,1)
 sliderButton.BorderSizePixel = 0
 
-local autoFarm = makeButton("AUTO FARM : OFF",135)
-local autoSell = makeButton("AUTO SELL : OFF",170)
-local tpNPC = makeButton("TELEPORT NPC",205)
-local tpAPT1 = makeButton("TELEPORT APT 1",240)
-local autoBuy = makeButton("AUTO BUY",275)
+-- BUTTONS
 
--- BUY AMOUNT LABEL
+local autoFarm = makeButton("AUTO FARM : OFF",145)
+local autoSell = makeButton("AUTO SELL : OFF",180)
+local tpNPC = makeButton("TELEPORT NPC",215)
+local tpAPT1 = makeButton("TELEPORT APT 1",250)
+local autoBuy = makeButton("AUTO BUY : OFF",285)
+
+-- BUY AMOUNT
+
 local amountLabel = Instance.new("TextLabel")
 amountLabel.Parent = frame
-amountLabel.Position = UDim2.new(0.05,0,0,305)
+amountLabel.Position = UDim2.new(0.05,0,0,315)
 amountLabel.Size = UDim2.new(0.9,0,0,20)
 amountLabel.BackgroundTransparency = 1
 amountLabel.Text = "BUY AMOUNT : 1"
@@ -98,6 +103,64 @@ amountLabel.TextColor3 = Color3.new(1,1,1)
 amountLabel.Font = Enum.Font.Gotham
 amountLabel.TextSize = 14
 amountLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+-- OPEN GUI BUTTON
+
+local openButton = Instance.new("TextButton")
+openButton.Parent = gui
+openButton.Size = UDim2.new(0,50,0,50)
+openButton.Position = UDim2.new(0,10,0.5,0)
+openButton.BackgroundColor3 = Color3.fromRGB(40,40,40)
+openButton.Text = "Z"
+openButton.TextColor3 = Color3.new(1,1,1)
+openButton.Font = Enum.Font.GothamBold
+openButton.TextSize = 20
+openButton.Active = true
+openButton.Draggable = true
+
+openButton.MouseButton1Click:Connect(function()
+frame.Visible = not frame.Visible
+end)
+
+-- SLIDER SYSTEM
+
+local dragging = false
+local buyAmount = 1
+local maxBuy = 100
+
+sliderButton.InputBegan:Connect(function(input)
+if input.UserInputType == Enum.UserInputType.MouseButton1 then
+dragging = true
+end
+end)
+
+UIS.InputEnded:Connect(function(input)
+if input.UserInputType == Enum.UserInputType.MouseButton1 then
+dragging = false
+end
+end)
+
+RunService.RenderStepped:Connect(function()
+
+if dragging then
+
+local mouseX = UIS:GetMouseLocation().X
+
+local barPos = sliderBar.AbsolutePosition.X
+local barSize = sliderBar.AbsoluteSize.X
+
+local percent = math.clamp((mouseX - barPos) / barSize,0,1)
+
+sliderFill.Size = UDim2.new(percent,0,1,0)
+sliderButton.Position = UDim2.new(percent,-9,0.5,-9)
+
+buyAmount = math.floor(1 + (maxBuy - 1) * percent + 0.5)
+
+amountLabel.Text = "BUY AMOUNT : "..buyAmount
+
+end
+
+end)
 
 -- tombol kecil (icon buka GUI)
 
