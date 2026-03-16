@@ -18,8 +18,58 @@ frame.Position = UDim2.new(0.5,-130,0.5,-165)
 frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
 frame.BorderSizePixel = 3
 frame.BorderColor3 = Color3.fromRGB(200,0,255)
-frame.Active = true
-frame.Draggable = true
+
+local UIS = game:GetService("UserInputService")
+
+local draggingGui = false
+local dragStart
+local startPos
+
+frame.InputBegan:Connect(function(input)
+
+	if input.UserInputType == Enum.UserInputType.MouseButton1 
+	or input.UserInputType == Enum.UserInputType.Touch then
+		
+		-- supaya slider tidak ikut drag GUI
+		if input.Target == sliderButton or input.Target == sliderBar then
+			return
+		end
+		
+		draggingGui = true
+		dragStart = input.Position
+		startPos = frame.Position
+		
+	end
+
+end)
+
+frame.InputEnded:Connect(function(input)
+
+	if input.UserInputType == Enum.UserInputType.MouseButton1 
+	or input.UserInputType == Enum.UserInputType.Touch then
+		draggingGui = false
+	end
+
+end)
+
+UIS.InputChanged:Connect(function(input)
+
+	if draggingGui and 
+	(input.UserInputType == Enum.UserInputType.MouseMovement 
+	or input.UserInputType == Enum.UserInputType.Touch) then
+		
+		local delta = input.Position - dragStart
+		
+		frame.Position = UDim2.new(
+			startPos.X.Scale,
+			startPos.X.Offset + delta.X,
+			startPos.Y.Scale,
+			startPos.Y.Offset + delta.Y
+		)
+		
+	end
+
+end)
 
 local title = Instance.new("TextLabel")
 title.Parent = frame
