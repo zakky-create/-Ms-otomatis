@@ -189,38 +189,42 @@ local storeRemote = game:GetService("ReplicatedStorage"):WaitForChild("RemoteEve
 
 local buying = false
 
+local function autoBuyLoop()
+
+	while buying do
+
+		local waterAmount = countItem("Water")
+		local sugarAmount = countItem("Sugar Block Bag")
+		local gelatinAmount = countItem("Gelatin")
+
+		if waterAmount < buyAmount then
+			storeRemote:FireServer("Water")
+		end
+
+		if sugarAmount < buyAmount then
+			storeRemote:FireServer("Sugar Block Bag")
+		end
+
+		if gelatinAmount < buyAmount then
+			storeRemote:FireServer("Gelatin")
+		end
+
+		task.wait(0.6)
+
+	end
+
+end
+
+
 autoBuy.MouseButton1Click:Connect(function()
 
-buying = not buying
+	buying = not buying
 
-autoBuy.Text = buying and "AUTO BUY : ON" or "AUTO BUY : OFF"
+	autoBuy.Text = buying and "AUTO BUY : ON" or "AUTO BUY : OFF"
 
-if buying then
-
-task.spawn(function()
-
-while buying do
-
-for i = 1,buyAmount do
-
-storeRemote:FireServer("Water")
-task.wait(0.5)
-
-storeRemote:FireServer("Sugar Block Bag")
-task.wait(0.5)
-
-storeRemote:FireServer("Gelatin")
-task.wait(0.5)
-
-end
-
-task.wait(1)
-
-end
-
-end)
-
-end
+	if buying then
+		task.spawn(autoBuyLoop)
+	end
 
 end)
 
@@ -398,3 +402,61 @@ task.spawn(autoSellFunc)
 end
 
 end)
+
+-- ======================
+-- COUNT ITEM
+-- ======================
+
+local function countItem(name)
+
+	local amount = 0
+
+	local function check(container)
+
+		for _,v in pairs(container:GetChildren()) do
+			
+			if name == "Marshmallow Bag" then
+			
+				if string.find(v.Name,"Marshmallow Bag") then
+					amount += 1
+				end
+			
+			else
+			
+				if v.Name == name then
+					amount += 1
+				end
+			
+			end
+			
+		end
+
+	end
+
+	check(backpack)
+
+	if player.Character then
+		check(player.Character)
+	end
+
+	return amount
+
+end
+
+-- UPDATE GUI ITEM
+
+task.spawn(function()
+
+	while true do
+
+		water.Text = "💧 Water: "..countItem("Water")
+		sugar.Text = "🍬 Sugar: "..countItem("Sugar Block Bag")
+		gelatin.Text = "🟡 Gelatin: "..countItem("Gelatin")
+		MarshmallowBag.Text = "👜 Marshmallow Bag: "..countItem("Marshmallow Bag")
+
+		task.wait(1)
+
+	end
+
+end)
+
