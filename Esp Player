@@ -1,0 +1,104 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+
+local espEnabled = false
+local espList = {}
+
+-- GUI
+local gui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
+gui.ResetOnSpawn = false
+
+local btn = Instance.new("TextButton", gui)
+btn.Size = UDim2.new(0,120,0,40)
+btn.Position = UDim2.new(0,10,0.5,0)
+btn.Text = "ESP : OFF"
+btn.BackgroundColor3 = Color3.fromRGB(40,40,40)
+btn.TextColor3 = Color3.new(1,1,1)
+btn.Font = Enum.Font.GothamBold
+btn.TextSize = 14
+btn.Active = true
+btn.Draggable = true
+
+-- CREATE ESP
+local function createESP(player)
+	if player == LocalPlayer then return end
+	
+	local function setup(char)
+		if espList[player] then
+			for _,v in pairs(espList[player]) do
+				v:Destroy()
+			end
+		end
+		
+		local hrp = char:WaitForChild("HumanoidRootPart",5)
+		local hum = char:WaitForChild("Humanoid",5)
+		if not hrp or not hum then return end
+		
+		-- BOX
+		local box = Instance.new("BoxHandleAdornment")
+		box.Size = Vector3.new(4,6,2)
+		box.Adornee = char
+		box.AlwaysOnTop = true
+		box.Transparency = 0.5
+		box.Color3 = Color3.fromRGB(255,0,0)
+		box.Parent = char
+		
+		-- TEXT
+		local bill = Instance.new("BillboardGui")
+		bill.Size = UDim2.new(0,150,0,40)
+		bill.Adornee = hrp
+		bill.AlwaysOnTop = true
+		bill.StudsOffset = Vector3.new(0,3,0)
+		
+		local text = Instance.new("TextLabel", bill)
+		text.Size = UDim2.new(1,0,1,0)
+		text.BackgroundTransparency = 1
+		text.TextColor3 = Color3.new(1,1,1)
+		text.TextStrokeTransparency = 0
+		text.Font = Enum.Font.GothamBold
+		text.TextScaled = true
+		
+		bill.Parent = char
+		
+		espList[player] = {box, bill}
+		
+		RunService.RenderStepped:Connect(function()
+			if espEnabled and hum.Parent then
+				text.Text = player.Name.." | ❤️ "..math.floor(hum.Health)
+			end
+		end)
+	end
+	
+	if player.Character then
+		setup(player.Character)
+	end
+	
+	player.CharacterAdded:Connect(setup)
+end
+
+-- REMOVE ESP
+local function clearESP()
+	for _,tbl in pairs(espList) do
+		for _,v in pairs(tbl) do
+			v:Destroy()
+		end
+	end
+	espList = {}
+end
+
+-- TOGGLE
+btn.MouseButton1Click:Connect(function()
+	espEnabled = not espEnabled
+	btn.Text = espEnabled and "ESP : ON" or "ESP : OFF"
+	
+	if espEnabled then
+		for _,p in pairs(Players:GetPlayers()) do
+			createESP(p)
+		end
+		Players.PlayerAdded:Connect(createESP)
+	else
+		clearESP()
+	end
+end)
+
