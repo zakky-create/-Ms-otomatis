@@ -1,0 +1,85 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+
+local AimEnabled = false
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local button = Instance.new("TextButton")
+button.Parent = gui
+button.Size = UDim2.new(0,120,0,40)
+button.Position = UDim2.new(0,20,0.6,0)
+button.Text = "AIM OFF"
+button.BackgroundColor3 = Color3.fromRGB(30,30,30)
+button.TextColor3 = Color3.new(1,1,1)
+
+local corner = Instance.new("UICorner")
+corner.Parent = button
+
+-- tombol ON OFF
+button.MouseButton1Click:Connect(function()
+
+	AimEnabled = not AimEnabled
+	
+	if AimEnabled then
+		button.Text = "AIM ON"
+	else
+		button.Text = "AIM OFF"
+	end
+	
+end)
+
+-- cari target
+local function getClosestTarget()
+
+	local closest
+	local shortest = math.huge
+
+	for _,v in pairs(Players:GetPlayers()) do
+		
+		if v ~= player and v.Character and v.Character:FindFirstChild("Head") then
+			
+			local head = v.Character.Head
+			local distance = (head.Position - camera.CFrame.Position).Magnitude
+
+			if distance < shortest then
+				shortest = distance
+				closest = head
+			end
+			
+		end
+		
+	end
+
+	return closest
+end
+
+RunService.RenderStepped:Connect(function()
+
+	if AimEnabled then
+		
+		local target = getClosestTarget()
+
+		if target then
+			
+			local camPos = camera.CFrame.Position
+			local distance = (target.Position - camPos).Magnitude
+			
+			-- offset otomatis
+			local offset = distance / 10
+			
+			local aimPos = target.Position - Vector3.new(0, offset, 0)
+
+			camera.CFrame = CFrame.new(camPos, aimPos)
+			
+		end
+		
+	end
+
+end)
+
