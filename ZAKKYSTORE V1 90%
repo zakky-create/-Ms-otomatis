@@ -195,48 +195,38 @@ end
 
 end)
 
--- AUTO BUY
-local storeRemote = game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("StorePurchase")
-
+-- AUTO BUY FIX
 local buying = false
 
 local function autoBuyLoop()
-
 	while buying do
-
 		local waterAmount = countItem("Water")
-		local sugarAmount = countItem("Sugar Block Bag")
+		local sugarAmount = countItem("Sugar Block Bag") -- pastikan nama sesuai di game
 		local gelatinAmount = countItem("Gelatin")
 
 		if waterAmount < buyAmount then
-			storeRemote:FireServer("Water")
+			storeRemote:FireServer("Water", buyAmount - waterAmount) -- tambahkan jumlah
 		end
 
 		if sugarAmount < buyAmount then
-			storeRemote:FireServer("Sugar Block Bag")
+			storeRemote:FireServer("Sugar Block Bag", buyAmount - sugarAmount)
 		end
 
 		if gelatinAmount < buyAmount then
-			storeRemote:FireServer("Gelatin")
+			storeRemote:FireServer("Gelatin", buyAmount - gelatinAmount)
 		end
 
 		task.wait(0.6)
-
 	end
-
 end
 
-
 autoBuy.MouseButton1Click:Connect(function()
-
 	buying = not buying
-
 	autoBuy.Text = buying and "AUTO BUY : ON" or "AUTO BUY : OFF"
 
 	if buying then
 		task.spawn(autoBuyLoop)
 	end
-
 end)
 
 -- AUTO FARM
