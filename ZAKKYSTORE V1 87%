@@ -196,7 +196,7 @@ end
 
 end)
 
--- AUTO BUY FIX (ANTI OVERBUY)
+-- AUTO BUY FIX
 
 local buying = false
 
@@ -212,14 +212,17 @@ local function autoBuyLoop()
 		
 		if countItem("Water") < buyAmount then
 			buy("Water")
+			task.wait(0.3)
 		end
 		
 		if countItem("Sugar Block Bag") < buyAmount then
 			buy("Sugar Block Bag")
+			task.wait(0.3)
 		end
 		
 		if countItem("Gelatin") < buyAmount then
 			buy("Gelatin")
+			task.wait(0.3)
 		end
 
 		task.wait(0.5)
@@ -466,4 +469,5 @@ task.spawn(function()
 	end
 
 end)
+
 
