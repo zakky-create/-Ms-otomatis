@@ -63,9 +63,9 @@ RunService.RenderStepped:Connect(function()
 			local distance = (target.Position - camPos).Magnitude
 			
 			-- kamera diarahkan lebih ke bawah
-			local offset = distance / 8
+			local offset = distance / 6
 			
-			local aimPos = target.Position - Vector3.new(0, offset, 0)
+			local aimPos = target.Position - Vector3.new(0, 5, 0)
 
 			camera.CFrame = camera.CFrame:Lerp(
 				CFrame.new(camPos, aimPos),
