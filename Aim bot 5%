@@ -62,7 +62,7 @@ RunService.RenderStepped:Connect(function()
 			local camPos = camera.CFrame.Position
 			
 			-- offset supaya crosshair tepat di kepala
-			local aimPosition = target.Position - Vector3.new(0,1,0)
+			local aimPosition = target.Position - Vector3.new(0,5,0)
 
 			camera.CFrame = CFrame.new(camPos, aimPosition)
 			
