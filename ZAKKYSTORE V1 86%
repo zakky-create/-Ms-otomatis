@@ -196,6 +196,46 @@ end
 
 end)
 
+-- ======================
+-- COUNT ITEM
+-- ======================
+
+local function countItem(name)
+
+	local amount = 0
+
+	local function check(container)
+
+		for _,v in pairs(container:GetChildren()) do
+			
+			if name == "Marshmallow Bag" then
+			
+				if string.find(v.Name,"Marshmallow Bag") then
+					amount += 1
+				end
+			
+			else
+			
+				if v.Name == name then
+					amount += 1
+				end
+			
+			end
+			
+		end
+
+	end
+
+	check(backpack)
+
+	if player.Character then
+		check(player.Character)
+	end
+
+	return amount
+
+end
+
 -- AUTO BUY FIX
 
 local buying = false
@@ -210,21 +250,24 @@ end
 local function autoBuyLoop()
 	while buying do
 		
-		if countItem("Water") < buyAmount then
+		-- WATER
+		while countItem("Water") < buyAmount do
 			buy("Water")
-			task.wait(0.3)
+			task.wait(0.4)
 		end
 		
-		if countItem("Sugar Block Bag") < buyAmount then
+		-- SUGAR
+		while countItem("Sugar Block Bag") < buyAmount do
 			buy("Sugar Block Bag")
-			task.wait(0.3)
+			task.wait(0.4)
 		end
 		
-		if countItem("Gelatin") < buyAmount then
+		-- GELATIN
+		while countItem("Gelatin") < buyAmount do
 			buy("Gelatin")
-			task.wait(0.3)
+			task.wait(0.4)
 		end
-
+		
 		task.wait(0.5)
 	end
 end
@@ -412,46 +455,6 @@ task.spawn(autoSellFunc)
 end
 
 end)
-
--- ======================
--- COUNT ITEM
--- ======================
-
-local function countItem(name)
-
-	local amount = 0
-
-	local function check(container)
-
-		for _,v in pairs(container:GetChildren()) do
-			
-			if name == "Marshmallow Bag" then
-			
-				if string.find(v.Name,"Marshmallow Bag") then
-					amount += 1
-				end
-			
-			else
-			
-				if v.Name == name then
-					amount += 1
-				end
-			
-			end
-			
-		end
-
-	end
-
-	check(backpack)
-
-	if player.Character then
-		check(player.Character)
-	end
-
-	return amount
-
-end
 
 -- UPDATE GUI ITEM
 
