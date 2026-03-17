@@ -41,6 +41,7 @@ local function createESP(player)
       bill.Size = UDim2.new(4,0,6,0)
       bill.Adornee = hrp
       bill.AlwaysOnTop = true
+      bill.MaxDistance = 10000
 
       local function line(size,pos)
 	      local l = Instance.new("Frame")
@@ -67,6 +68,7 @@ local function createESP(player)
 		bill.Size = UDim2.new(0,150,0,40)
 		bill.Adornee = hrp
 		bill.AlwaysOnTop = true
+        bill.MaxDistance = 10000
 		bill.StudsOffset = Vector3.new(0,3,0)
 		
 		local text = Instance.new("TextLabel", bill)
