@@ -1,0 +1,173 @@
+-- Inisialisasi
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+
+-- Membuat GUI
+local ZAKKYSTORE = Instance.new("ScreenGui")
+ZAKKYSTORE.Name = "ZAKKYSTORE"
+ZAKKYSTORE.Parent = Players.LocalPlayer.PlayerGui
+ZAKKYSTORE.Title = "ZAKKYSTORE"
+ZAKKYSTORE.Sticky = true
+ZAKKYSTORE.Draggable = true
+
+-- Membuat panel utama
+local Panel = Instance.new("Frame")
+Panel.Name = "Panel"
+Panel.Parent = ZAKKYSTORE
+Panel.Size = UDim2.new(0, 300, 0, 200)
+Panel.Position = UDim2.new(0, 0, 0, 0)
+Panel.BackgroundTransparency = 0.5
+Panel.BackgroundTransparency = 0.5
+Panel.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+
+-- Membuat tombol ON/OFF
+local AimbotButton = Instance.new("TextButton")
+AimbotButton.Name = "AimbotButton"
+AimbotButton.Parent = Panel
+AimbotButton.Size = UDim2.new(0, 100, 0, 30)
+AimbotButton.Position = UDim2.new(0, 0, 0, 0)
+AimbotButton.Text = "Aimbot"
+AimbotButton.BackgroundColor3 = Color3.new(0.5, 0.5, 0.5)
+AimbotButton.BackgroundColor3 = Color3.new(0.5, 0.5, 0.5)
+AimbotButton.BorderColor3 = Color3.new(0.5, 0.5, 0.5)
+AimbotButton.Font = Enum.Font.SourceSans
+AimbotButton.FontSize = Enum.FontSize.Size14
+AimbotButton.TextColor3 = Color3.new(1, 1, 1)
+AimbotButton.TextScaled = true
+AimbotButton.TextWrapped = true
+AimbotButton.AutoButtonColor = false
+
+local FOVButton = Instance.new("TextButton")
+FOVButton.Name = "FOVButton"
+FOVButton.Parent = Panel
+FOVButton.Size = UDim2.new(0, 100, 0, 30)
+FOVButton.Position = UDim2.new(0, 0, 0, 30)
+FOVButton.Text = "FOV"
+FOVButton.BackgroundColor3 = Color3.new(0.5, 0.5, 0.5)
+FOVButton.BackgroundColor3 = Color3.new(0.5, 0.5, 0.5)
+FOVButton.BorderColor3 = Color3.new(0.5, 0.5, 0.5)
+FOVButton.Font = Enum.Font.SourceSans
+FOVButton.FontSize = Enum.FontSize.Size14
+FOVButton.TextColor3 = Color3.new(1, 1, 1)
+FOVButton.TextScaled = true
+FOVButton.TextWrapped = true
+FOVButton.AutoButtonColor = false
+
+local ESPButton = Instance.new("TextButton")
+ESPButton.Name = "ESPButton"
+ESPButton.Parent = Panel
+ESPButton.Size = UDim2.new(0, 100, 0, 30)
+ESPButton.Position = UDim2.new(0, 0, 0, 60)
+ESPButton.Text = "ESP"
+ESPButton.BackgroundColor3 = Color3.new(0.5, 0.5, 0.5)
+ESPButton.BackgroundColor3 = Color3.new(0.5, 0.5, 0.5)
+ESPButton.BorderColor3 = Color3.new(0.5, 0.5, 0.5)
+ESPButton.Font = Enum.Font.SourceSans
+ESPButton.FontSize = Enum.FontSize.Size14
+ESPButton.TextColor3 = Color3.new(1, 1, 1)
+ESPButton.TextScaled = true
+ESPButton.TextWrapped = true
+ESPButton.AutoButtonColor = false
+
+-- Membuat GUI untuk FOV
+local FOVPanel = Instance.new("Frame")
+FOVPanel.Name = "FOVPanel"
+FOVPanel.Parent = Panel
+FOVPanel.Size = UDim2.new(0, 100, 0, 30)
+FOVPanel.Position = UDim2.new(0, 0, 0, 90)
+FOVPanel.BackgroundTransparency = 0.5
+FOVPanel.BackgroundTransparency = 0.5
+FOVPanel.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+
+local FOVLabel = Instance.new("TextLabel")
+FOVLabel.Name = "FOVLabel"
+FOVLabel.Parent = FOVPanel
+FOVLabel.Size = UDim2.new(0, 100, 0, 30)
+FOVLabel.Position = UDim2.new(0, 0, 0, 0)
+FOVLabel.Text = "FOV: 90"
+FOVLabel.BackgroundColor3 = Color3.new(0.5, 0.5, 0.5)
+FOVLabel.BackgroundColor3 = Color3.new(0.5, 0.5, 0.5)
+FOVLabel.BorderColor3 = Color3.new(0.5, 0.5, 0.5)
+FOVLabel.Font = Enum.Font.SourceSans
+FOVLabel.FontSize = Enum.FontSize.Size14
+FOVLabel.TextColor3 = Color3.new(1, 1, 1)
+FOVLabel.TextScaled = true
+FOVLabel.TextWrapped = true
+FOVLabel.AutoButtonColor = false
+
+-- Membuat GUI untuk ESP
+local ESPPanel = Instance.new("Frame")
+ESPPanel.Name = "ESPPanel"
+ESPPanel.Parent = Panel
+ESPPanel.Size = UDim2.new(0, 100, 0, 30)
+ESPPanel.Position = UDim2.new(0, 0, 0, 120)
+ESPPanel.BackgroundTransparency = 0.5
+ESPPanel.BackgroundTransparency = 0.5
+ESPPanel.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+
+local ESPLabel = Instance.new("TextLabel")
+ESPLabel.Name = "ESPLabel"
+ESPLabel.Parent = ESPPanel
+ESPLabel.Size = UDim2.new(0, 100, 0, 30)
+ESPLabel.Position = UDim2.new(0, 0, 0, 0)
+ESPLabel.Text = "ESP: OFF"
+ESPLabel.BackgroundColor3 = Color3.new(0.5, 0.5, 0.5)
+ESPLabel.BackgroundColor3 = Color3.new(0.5, 0.5, 0.5)
+ESPLabel.BorderColor3 = Color3.new(0.5, 0.5, 0.5)
+ESPLabel.Font = Enum.Font.SourceSans
+ESPLabel.FontSize = Enum.FontSize.Size14
+ESPLabel.TextColor3 = Color3.new(1, 1, 1)
+ESPLabel.TextScaled = true
+ESPLabel.TextWrapped = true
+ESPLabel.AutoButtonColor = false
+
+-- Membuat lingkaran FOV
+local FOVCircle = Instance.new("Part")
+FOVCircle.Name = "FOVCircle"
+FOVCircle.Parent = Workspace
+FOVCircle.Size = Vector3.new(1, 1, 1)
+FOVCircle.Position = Vector3.new(0, 0, 0)
+FOVCircle.Transparency = 0.5
+FOVCircle.Anchored = true
+FOVCircle.CanCollide = false
+FOVCircle.Material = Enum.Material.Neon
+
+-- Membuat ESP
+local ESP = {}
+local ESPParts = {}
+
+-- Membuat aimbot
+local Aimbot = {}
+local AimbotTarget = nil
+local AimbotSmooth = false
+
+-- Event handler
+local function onInput(Input)
+    if Input.KeyCode == Enum.KeyCode.LeftShift then
+        AimbotSmooth = not AimbotSmooth
+    end
+end
+
+UserInputService.InputBegan:Connect(onInput)
+
+-- Update aimbot
+local function updateAimbot()
+    if AimbotTarget then
+        local AimbotPosition = AimbotTarget.Position
+        local PlayerPosition = Players.LocalPlayer.Character.HumanoidRootPart.Position
+        local AimbotDirection = (AimbotPosition - PlayerPosition).Unit
+        local AimbotAngle = math.atan2(AimbotDirection.X, AimbotDirection.Z)
+        local CameraAngle = math.atan2(-math.sin(PlayerPosition.X - PlayerPosition.Z), math.cos(PlayerPosition.X - PlayerPosition.Z))
+        if AimbotSmooth then
+            local AimbotSmoothAngle = math.clamp(AimbotAngle - CameraAngle, -0.1, 0.1)
+            Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(PlayerPosition) * CFrame.Angles(0, AimbotSmoothAngle, 0)
+        else
+            Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(PlayerPosition) * CFrame.Angles(0, AimbotAngle, 0)
+        end
+    end
+end
+
+-- Update
