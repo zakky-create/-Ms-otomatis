@@ -198,25 +198,26 @@ end)
 -- AUTO BUY FIX
 local buying = false
 
+local function buyBatch(item)
+	for i = 1, buyAmount do
+		if not buying then break end
+		
+		pcall(function()
+			storeRemote:FireServer(item)
+		end)
+		
+		task.wait(0.3) -- delay biar aman
+	end
+end
+
 local function autoBuyLoop()
 	while buying do
-		local waterAmount = countItem("Water")
-		local sugarAmount = countItem("Sugar Block Bag") -- pastikan nama sesuai di game
-		local gelatinAmount = countItem("Gelatin")
+		
+		buyBatch("Water")
+		buyBatch("Sugar Block Bag")
+		buyBatch("Gelatin")
 
-		if waterAmount < buyAmount then
-			storeRemote:FireServer("Water", buyAmount - waterAmount) -- tambahkan jumlah
-		end
-
-		if sugarAmount < buyAmount then
-			storeRemote:FireServer("Sugar Block Bag", buyAmount - sugarAmount)
-		end
-
-		if gelatinAmount < buyAmount then
-			storeRemote:FireServer("Gelatin", buyAmount - gelatinAmount)
-		end
-
-		task.wait(0.6)
+		task.wait(1) -- jeda sebelum ulang lagi
 	end
 end
 
