@@ -35,15 +35,32 @@ local function createESP(player)
 		local hum = char:WaitForChild("Humanoid",5)
 		if not hrp or not hum then return end
 		
-		-- BOX
-		local box = Instance.new("BoxHandleAdornment")
-		box.Size = Vector3.new(4,6,2)
-		box.Adornee = char
-		box.AlwaysOnTop = true
-		box.Transparency = 0.5
-		box.Color3 = Color3.fromRGB(255,0,0)
-		box.Parent = char
-		
+      -- OUTLINE BOX (4 GARIS)
+      local bill = Instance.new("BillboardGui")
+      bill.Size = UDim2.new(4,0,6,0)
+      bill.Adornee = hrp
+      bill.AlwaysOnTop = true
+
+      local function line(size,pos)
+	      local l = Instance.new("Frame")
+	      l.Size = size
+	      l.Position = pos
+	      l.BackgroundColor3 = Color3.fromRGB(255,0,0)
+	      l.BorderSizePixel = 0
+	      l.Parent = bill
+        end
+
+        -- atas
+        line(UDim2.new(1,0,0,2), UDim2.new(0,0,0,0))
+        -- bawah
+        line(UDim2.new(1,0,0,2), UDim2.new(0,0,1,-2))
+        -- kiri
+        line(UDim2.new(0,2,1,0), UDim2.new(0,0,0,0))
+        -- kanan
+        line(UDim2.new(0,2,1,0), UDim2.new(1,-2,0,0))
+
+        bill.Parent = char
+	
 		-- TEXT
 		local bill = Instance.new("BillboardGui")
 		bill.Size = UDim2.new(0,150,0,40)
