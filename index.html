@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ZAKKYSTORE Loadstring Generator</title>
+<style>
+body{
+background:#0f0f0f;
+color:white;
+font-family:Arial;
+text-align:center;
+padding:50px;
+}
+
+input{
+width:420px;
+padding:10px;
+border-radius:6px;
+border:none;
+margin-top:10px;
+}
+
+button{
+padding:10px 20px;
+border:none;
+border-radius:6px;
+background:#a020f0;
+color:white;
+font-size:16px;
+margin-top:15px;
+cursor:pointer;
+}
+
+pre{
+background:#1c1c1c;
+padding:15px;
+margin-top:20px;
+border-radius:6px;
+width:450px;
+margin-left:auto;
+margin-right:auto;
+}
+
+</style>
+</head>
+
+<body>
+
+<h2>ZAKKYSTORE Loadstring Generator</h2>
+
+<input id="link" placeholder="Paste Raw Script Link">
+
+<br>
+
+<button onclick="generate()">Generate</button>
+
+<pre id="result"></pre>
+
+<script>
+
+function generate(){
+
+let link = document.getElementById("link").value
+
+let loadstring = 'loadstring(game:HttpGet("' + link + '"))()'
+
+document.getElementById("result").innerText = loadstring
+
+}
+
+</script>
+
+</body>
+</html>
+
