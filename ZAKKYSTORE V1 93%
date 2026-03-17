@@ -205,19 +205,21 @@ local function buy(item)
 	end)
 end
 
-local function buyUntil(item, target)
-	while buying and countItem(item) < target do
+local function buyBatch(item)
+	for i = 1, buyAmount do
+		if not buying then break end
+		
 		buy(item)
-		task.wait(0.3)
+		task.wait(0.4)
 	end
 end
 
 local function autoBuyLoop()
 	while buying do
 		
-		buyUntil("Water", buyAmount)
-		buyUntil("Sugar Block Bag", buyAmount)
-		buyUntil("Gelatin", buyAmount)
+		buyBatch("Water")
+		buyBatch("Sugar Block Bag")
+		buyBatch("Gelatin")
 
 		task.wait(1)
 	end
