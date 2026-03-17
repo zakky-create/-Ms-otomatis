@@ -1,6 +1,7 @@
 local player = game.Players.LocalPlayer
 local backpack = player:WaitForChild("Backpack")
 local vim = game:GetService("VirtualInputManager")
+local storeRemote = game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("StorePurchase")
 
 -- GUI
 local gui = Instance.new("ScreenGui")
@@ -221,7 +222,7 @@ local function autoBuyLoop()
 			buy("Gelatin")
 		end
 
-		task.wait(0.4) -- bisa kamu naikkan kalau masih delay
+		task.wait(0.5)
 	end
 end
 
