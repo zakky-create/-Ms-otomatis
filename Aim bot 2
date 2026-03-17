@@ -1,0 +1,80 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+
+local AimEnabled = false
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local button = Instance.new("TextButton")
+button.Parent = gui
+button.Size = UDim2.new(0,120,0,40)
+button.Position = UDim2.new(0,20,0.6,0)
+button.Text = "Aim OFF"
+button.BackgroundColor3 = Color3.fromRGB(40,40,40)
+button.TextColor3 = Color3.new(1,1,1)
+
+local corner = Instance.new("UICorner")
+corner.Parent = button
+
+-- tombol ON/OFF
+button.MouseButton1Click:Connect(function()
+
+	AimEnabled = not AimEnabled
+	
+	if AimEnabled then
+		button.Text = "Aim ON"
+	else
+		button.Text = "Aim OFF"
+	end
+	
+end)
+
+-- cari kepala player terdekat
+local function getClosestHead()
+
+	local closest = nil
+	local shortest = math.huge
+
+	for _,v in pairs(Players:GetPlayers()) do
+		
+		if v ~= player and v.Character and v.Character:FindFirstChild("Head") then
+			
+			local head = v.Character.Head
+			local distance = (head.Position - camera.CFrame.Position).Magnitude
+
+			if distance < shortest then
+				shortest = distance
+				closest = head
+			end
+			
+		end
+		
+	end
+
+	return closest
+end
+
+RunService.RenderStepped:Connect(function()
+
+	if AimEnabled then
+		
+		local target = getClosestHead()
+		
+		if target then
+			
+			camera.CFrame = camera.CFrame:Lerp(
+				CFrame.new(camera.CFrame.Position, target.Position),
+				0.1
+			)
+			
+		end
+		
+	end
+
+end)
+
