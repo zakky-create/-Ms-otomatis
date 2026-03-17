@@ -195,7 +195,8 @@ end
 
 end)
 
--- AUTO BUY FIX
+-- AUTO BUY FIX (ANTI OVERBUY)
+
 local buying = false
 
 local function buy(item)
@@ -205,23 +206,22 @@ local function buy(item)
 	end)
 end
 
-local function buyBatch(item)
-	for i = 1, buyAmount do
-		if not buying then break end
-		
-		buy(item)
-		task.wait(0.4)
-	end
-end
-
 local function autoBuyLoop()
 	while buying do
 		
-		buyBatch("Water")
-		buyBatch("Sugar Block Bag")
-		buyBatch("Gelatin")
+		if countItem("Water") < buyAmount then
+			buy("Water")
+		end
+		
+		if countItem("Sugar Block Bag") < buyAmount then
+			buy("Sugar Block Bag")
+		end
+		
+		if countItem("Gelatin") < buyAmount then
+			buy("Gelatin")
+		end
 
-		task.wait(1)
+		task.wait(0.4) -- bisa kamu naikkan kalau masih delay
 	end
 end
 
