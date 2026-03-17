@@ -34,14 +34,14 @@ local function getClosestTarget()
 
 	for _,v in pairs(Players:GetPlayers()) do
 		
-		if v ~= player and v.Character and v.Character:FindFirstChild("Head") then
+		if v ~= player and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
 			
-			local head = v.Character.Head
-			local distance = (head.Position - camera.CFrame.Position).Magnitude
+			local HumanoidRootPart = v.Character.HumanoidRootPart
+			local distance = (HumanoidRootPart.Position - camera.CFrame.Position).Magnitude
 
 			if distance < shortest then
 				shortest = distance
-				closest = head
+				closest = HumanoidRootPart
 			end
 			
 		end
