@@ -198,26 +198,28 @@ end)
 -- AUTO BUY FIX
 local buying = false
 
-local function buyBatch(item)
-	for i = 1, buyAmount do
-		if not buying then break end
-		
-		pcall(function()
-			storeRemote:FireServer(item)
-		end)
-		
-		task.wait(0.3) -- delay biar aman
+local function buy(item)
+	local args = {item}
+	pcall(function()
+		storeRemote:FireServer(unpack(args))
+	end)
+end
+
+local function buyUntil(item, target)
+	while buying and countItem(item) < target do
+		buy(item)
+		task.wait(0.3)
 	end
 end
 
 local function autoBuyLoop()
 	while buying do
 		
-		buyBatch("Water")
-		buyBatch("Sugar Block Bag")
-		buyBatch("Gelatin")
+		buyUntil("Water", buyAmount)
+		buyUntil("Sugar Block Bag", buyAmount)
+		buyUntil("Gelatin", buyAmount)
 
-		task.wait(1) -- jeda sebelum ulang lagi
+		task.wait(1)
 	end
 end
 
