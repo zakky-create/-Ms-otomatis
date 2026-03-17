@@ -1,0 +1,71 @@
+-- AIM LOCK HEAD + GUI
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Camera = workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
+
+local AimLock = false
+
+-- GUI
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+local Frame = Instance.new("Frame", ScreenGui)
+Frame.Size = UDim2.new(0,150,0,50)
+Frame.Position = UDim2.new(0.05,0,0.4,0)
+Frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+
+local Button = Instance.new("TextButton", Frame)
+Button.Size = UDim2.new(1,0,1,0)
+Button.Text = "AimLock OFF"
+Button.BackgroundColor3 = Color3.fromRGB(60,60,60)
+Button.TextColor3 = Color3.new(1,1,1)
+
+Button.MouseButton1Click:Connect(function()
+	AimLock = not AimLock
+	
+	if AimLock then
+		Button.Text = "AimLock ON"
+	else
+		Button.Text = "AimLock OFF"
+	end
+end)
+
+-- Cari player terdekat
+function GetClosestPlayer()
+	local closest = nil
+	local shortestDistance = math.huge
+
+	for i,v in pairs(Players:GetPlayers()) do
+		if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("Head") then
+			
+			local pos, visible = Camera:WorldToViewportPoint(v.Character.Head.Position)
+			
+			if visible then
+				local dist = (Vector2.new(pos.X,pos.Y) - Vector2.new(Camera.ViewportSize.X/2,Camera.ViewportSize.Y/2)).Magnitude
+				
+				if dist < shortestDistance then
+					shortestDistance = dist
+					closest = v
+				end
+			end
+		end
+	end
+
+	return closest
+end
+
+RunService.RenderStepped:Connect(function()
+	if AimLock then
+		
+		local target = GetClosestPlayer()
+		
+		if target and target.Character then
+			local head = target.Character:FindFirstChild("Head")
+			
+			if head then
+				Camera.CFrame = CFrame.new(Camera.CFrame.Position, head.Position)
+			end
+		end
+	end
+end)
+
