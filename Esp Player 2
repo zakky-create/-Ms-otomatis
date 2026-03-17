@@ -1,6 +1,7 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
+LocalPlayer.CameraMaxZoomDistance = 10000
 
 local espEnabled = false
 local espList = {}
