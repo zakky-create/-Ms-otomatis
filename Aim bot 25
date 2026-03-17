@@ -34,14 +34,14 @@ local function getClosestTarget()
 
 	for _,v in pairs(Players:GetPlayers()) do
 		
-		if v ~= player and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+		if v ~= player and v.Character and v.Character:FindFirstChild("Head") then
 			
 			local HumanoidRootPart = v.Character.HumanoidRootPart
-			local distance = (HumanoidRootPart.Position - camera.CFrame.Position).Magnitude
+			local distance = (head.Position - camera.CFrame.Position).Magnitude
 
 			if distance < shortest then
 				shortest = distance
-				closest = HumanoidRootPart
+				closest = head
 			end
 			
 		end
@@ -63,9 +63,9 @@ RunService.RenderStepped:Connect(function()
 			local distance = (target.Position - camPos).Magnitude
 			
 			-- kamera diarahkan lebih ke bawah
-			local offset = distance / 6
+			local offset = distance / 8
 			
-			local aimPos = target.Position - Vector3.new(0, 5, 0)
+			local aimPos = target.Position - Vector3.new(0, offset, 0)
 
 			camera.CFrame = camera.CFrame:Lerp(
 				CFrame.new(camPos, aimPos),
