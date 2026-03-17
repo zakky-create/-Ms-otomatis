@@ -1,0 +1,74 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+
+local AimEnabled = false
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local button = Instance.new("TextButton")
+button.Parent = gui
+button.Size = UDim2.new(0,120,0,40)
+button.Position = UDim2.new(0,20,0.6,0)
+button.Text = "Aim OFF"
+
+button.MouseButton1Click:Connect(function()
+	AimEnabled = not AimEnabled
+	
+	if AimEnabled then
+		button.Text = "Aim ON"
+	else
+		button.Text = "Aim OFF"
+	end
+end)
+
+-- cari target
+local function getClosestTarget()
+
+	local closest
+	local shortest = math.huge
+
+	for _,v in pairs(Players:GetPlayers()) do
+		
+		if v ~= player and v.Character and v.Character:FindFirstChild("Head") then
+			
+			local head = v.Character.Head
+			local distance = (head.Position - camera.CFrame.Position).Magnitude
+
+			if distance < shortest then
+				shortest = distance
+				closest = head
+			end
+			
+		end
+		
+	end
+
+	return closest
+end
+
+RunService.RenderStepped:Connect(function()
+
+	if AimEnabled then
+		
+		local target = getClosestTarget()
+		
+		if target then
+			
+			local camPos = camera.CFrame.Position
+			
+			-- offset supaya crosshair tepat di kepala
+			local aimPosition = target.Position - Vector3.new(0,0.6,0)
+
+			camera.CFrame = CFrame.new(camPos, aimPosition)
+			
+		end
+		
+	end
+
+end)
+
