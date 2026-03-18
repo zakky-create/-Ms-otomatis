@@ -55,3 +55,15 @@ barCorner.Parent = sliderBar
 -- BUTTON
 local autoFarm = makeButton("AUTO FARM : OFF",135)
 
+-- BUY AMOUNT
+local amountLabel = Instance.new("TextLabel")
+amountLabel.Parent = frame
+amountLabel.Position = UDim2.new(0.05,0,0,305)
+amountLabel.Size = UDim2.new(0.9,0,0,20)
+amountLabel.BackgroundTransparency = 1
+amountLabel.Text = "BUY AMOUNT : 1"
+amountLabel.TextColor3 = Color3.new(1,1,1)
+amountLabel.Font = Enum.Font.Gotham
+amountLabel.TextSize = 14
+amountLabel.TextXAlignment = Enum.TextXAlignment.Left
+
