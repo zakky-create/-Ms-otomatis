@@ -349,42 +349,70 @@ end
 
 end)
 
--- AUTO SELL
+-- AUTO SELL (pakai script kamu)
+
 local selling = false
+
+local function getSellPrompt()
+
+    for _,v in pairs(workspace:GetDescendants()) do
+
+        if v:IsA("ProximityPrompt") then
+
+            if v.Parent 
+            and v.Parent.Parent 
+            and v.Parent.Parent.Name == "Lamont Bell" then
+                return v
+            end
+
+        end
+
+    end
+
+end
+
+local function isMarshmallow(name)
+    return string.find(name,"Marshmallow Bag")
+end
+
+local function autoSellFunc()
+
+    while selling do
+
+        local prompt = getSellPrompt()
+
+        for _,tool in pairs(backpack:GetChildren()) do
+
+            if tool:IsA("Tool") and isMarshmallow(tool.Name) then
+
+                player.Character.Humanoid:EquipTool(tool)
+                task.wait(0.5)
+
+                if prompt then
+                    fireproximityprompt(prompt)
+                end
+
+                task.wait(1)
+
+            end
+
+        end
+
+        task.wait(1)
+
+    end
+
+end
 
 autoSell.MouseButton1Click:Connect(function()
 
-selling = not selling
-autoSell.Text = selling and "AUTO SELL : ON" or "AUTO SELL : OFF"
+    selling = not selling
 
-end)
+    autoSell.Text = selling and "AUTO SELL : ON" or "AUTO SELL : OFF"
 
-task.spawn(function()
-
-while task.wait(2) do
-
-if selling then
-
-for _,tool in pairs(backpack:GetChildren()) do
-
-if tool:IsA("Tool") and string.find(tool.Name,"Marshmallow Bag") then
-
-player.Character.Humanoid:EquipTool(tool)
-task.wait(0.5)
-
-for _,v in pairs(workspace:GetDescendants()) do
-if v:IsA("ProximityPrompt") then
-fireproximityprompt(v)
-end
-end
-
-end
-
-end
-
-end
-
-end
+    if selling then
+        task.spawn(autoSellFunc)
+    end
 
 end)
 
