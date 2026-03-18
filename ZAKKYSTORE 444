@@ -225,7 +225,7 @@ local function createESP(targetplayer)
 
 		nameGui.Parent = char
 
-		espList[player] = {bill,nameGui}
+		espList[targertplayer] = {bill,nameGui}
 
 		RunService.RenderStepped:Connect(function()
 			if espEnabled and hum and hum.Parent then
@@ -235,12 +235,11 @@ local function createESP(targetplayer)
 
 	end
 
-	if player.Character then
-		setup(player.Character)
-	end
+if targetplayer.Character then
+	setup(targetplayer.Character)
+end
 
-	player.CharacterAdded:Connect(setup)
-
+targetplayer.CharacterAdded:Connect(setup)
 end
 
 local function clearESP()
@@ -263,11 +262,17 @@ espToggle.MouseButton1Click:Connect(function()
 
 	if espEnabled then
 
-		for _,p in pairs(Players:GetPlayers()) do
-			if p ~= player then
-				createESP(p)
-			end
+	for _,p in pairs(Players:GetPlayers()) do
+		if p ~= player then
+			createESP(p)
 		end
+	end
+
+	Players.PlayerAdded:Connect(function(p)
+		createESP(p)
+	end)
+
+end
 
 	else
 		clearESP()
@@ -506,7 +511,11 @@ local function autoSellFunc()
 
             if tool:IsA("Tool") and isMarshmallow(tool.Name) then
 
-                player.Character.Humanoid:EquipTool(tool)
+                local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+                if hum then
+	             hum:EquipTool(tool)
+                end
+                
                 task.wait(0.5)
 
                 if prompt then
