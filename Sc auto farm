@@ -1,0 +1,57 @@
+local water = Instance.new("TextLabel")
+water.Parent = frame
+water.Position = UDim2.new(0.05,0,0,45)
+water.Size = UDim2.new(0.9,0,0,20)
+water.BackgroundTransparency = 1
+water.Text = "💧 Water: 0"
+water.TextColor3 = Color3.new(1,1,1)
+water.Font = Enum.Font.Gotham
+water.TextSize = 14
+water.TextXAlignment = Enum.TextXAlignment.Left
+
+local sugar = water:Clone()
+sugar.Parent = frame
+sugar.Position = UDim2.new(0.05,0,0,65)
+sugar.Text = "🍬 Sugar: 0"
+
+local gelatin = water:Clone()
+gelatin.Parent = frame
+gelatin.Position = UDim2.new(0.05,0,0,85)
+gelatin.Text = "🟡 Gelatin: 0"
+
+local MarshmallowBag = water:Clone()
+MarshmallowBag.Parent = frame
+MarshmallowBag.Position = UDim2.new(0.05,0,0,105)
+MarshmallowBag.Text = "👜 Marshmallow Bag: 0"
+
+-- SLIDER
+local sliderBar = Instance.new("Frame")
+sliderBar.Parent = frame
+sliderBar.Position = UDim2.new(0.05,0,0,125)
+sliderBar.Size = UDim2.new(0.9,0,0,6)
+sliderBar.BackgroundColor3 = Color3.fromRGB(60,60,60)
+
+local sliderFill = Instance.new("Frame")
+sliderFill.Parent = sliderBar
+sliderFill.Size = UDim2.new(0,0,1,0)
+sliderFill.BackgroundColor3 = Color3.fromRGB(0,170,255)
+
+local sliderButton = Instance.new("Frame")
+sliderButton.Parent = sliderBar
+sliderButton.Size = UDim2.new(0,18,0,18)
+sliderButton.Position = UDim2.new(0,-9,0.5,-9)
+sliderButton.BackgroundColor3 = Color3.fromRGB(0,170,255)
+sliderButton.BorderSizePixel = 0
+sliderButton.Active = true
+
+local sliderCorner = Instance.new("UICorner")
+sliderCorner.CornerRadius = UDim.new(1,0)
+sliderCorner.Parent = sliderButton
+
+local barCorner = Instance.new("UICorner")
+barCorner.CornerRadius = UDim.new(0,5)
+barCorner.Parent = sliderBar
+
+-- BUTTON
+local autoFarm = makeButton("AUTO FARM : OFF",135)
+
