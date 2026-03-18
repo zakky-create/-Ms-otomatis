@@ -244,35 +244,51 @@ return amount
 
 end
 
--- AUTO BUY
+-- AUTO BUY FIX
 local buying = false
+
+local function buy(item)
+    pcall(function()
+        storeRemote:FireServer(item)
+    end)
+end
+
+local function autoBuyLoop()
+
+    while buying do
+
+        -- WATER
+        while countItem("Water") < BuyAmount and buying do
+            buy("Water")
+            task.wait(0.35)
+        end
+
+        -- SUGAR
+        while countItem("Sugar Block Bag") < BuyAmount and buying do
+            buy("Sugar Block Bag")
+            task.wait(0.35)
+        end
+
+        -- GELATIN
+        while countItem("Gelatin") < BuyAmount and buying do
+            buy("Gelatin")
+            task.wait(0.35)
+        end
+
+        task.wait(0.5)
+
+    end
+
+end
 
 autoBuy.MouseButton1Click:Connect(function()
 
-buying = not buying
-autoBuy.Text = buying and "AUTO BUY : ON" or "AUTO BUY : OFF"
+    buying = not buying
+    autoBuy.Text = buying and "AUTO BUY : ON" or "AUTO BUY : OFF"
 
-end)
-
-task.spawn(function()
-
-while task.wait(1) do
-
-if buying then
-
-for i=1,BuyAmount do
-
-storeRemote:FireServer("Water")
-storeRemote:FireServer("Sugar Block Bag")
-storeRemote:FireServer("Gelatin")
-
-task.wait(0.2)
-
-end
-
-end
-
-end
+    if buying then
+        task.spawn(autoBuyLoop)
+    end
 
 end)
 
