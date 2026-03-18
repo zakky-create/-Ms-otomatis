@@ -177,9 +177,9 @@ local RunService = game:GetService("RunService")
 local espEnabled = false
 local espList = {}
 
-local function createESP(player)
+local function createESP(targetplayer)
 
-	if player == player then return end
+	if targetplayer == player then return end
 
 	local function setup(char)
 
@@ -228,8 +228,8 @@ local function createESP(player)
 		espList[player] = {bill,nameGui}
 
 		RunService.RenderStepped:Connect(function()
-			if espEnabled and hum.Parent then
-				text.Text = player.Name.." | ❤️ "..math.floor(hum.Health)
+			if espEnabled and hum and hum.Parent then
+				text.Text = targetplayer.Name.." | ❤️ "..math.floor(hum.Health)
 			end
 		end)
 
@@ -425,7 +425,11 @@ local function equipTool(name)
 local tool = backpack:FindFirstChild(name)
 
 if tool then
-player.Character.Humanoid:EquipTool(tool)
+local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+if hum then
+	hum:EquipTool(tool)
+end
+
 task.wait(0.4)
 end
 
