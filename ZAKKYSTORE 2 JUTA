@@ -1,0 +1,301 @@
+-- SERVICES
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+
+-- =================
+-- GUI
+-- =================
+
+local gui = Instance.new("ScreenGui",player.PlayerGui)
+gui.ResetOnSpawn = false
+gui.Name = "ZAKKYSTORE"
+
+local main = Instance.new("Frame",gui)
+main.Size = UDim2.new(0,430,0,330)
+main.Position = UDim2.new(0.5,-215,0.5,-165)
+main.BackgroundColor3 = Color3.fromRGB(20,20,20)
+main.Active = true
+main.Draggable = true
+
+Instance.new("UICorner",main)
+
+-- TITLE
+local title = Instance.new("TextLabel",main)
+title.Size = UDim2.new(1,0,0,35)
+title.BackgroundTransparency = 1
+title.Text = "ZAKKYSTORE"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.TextColor3 = Color3.new(1,1,1)
+
+-- SIDEBAR
+local sidebar = Instance.new("Frame",main)
+sidebar.Size = UDim2.new(0,120,1,-35)
+sidebar.Position = UDim2.new(0,0,0,35)
+sidebar.BackgroundColor3 = Color3.fromRGB(30,30,30)
+
+-- CONTENT
+local content = Instance.new("Frame",main)
+content.Size = UDim2.new(1,-120,1,-35)
+content.Position = UDim2.new(0,120,0,35)
+content.BackgroundTransparency = 1
+
+-- =================
+-- FRAMES
+-- =================
+
+local farmFrame = Instance.new("ScrollingFrame",content)
+farmFrame.Size = UDim2.new(1,0,1,0)
+farmFrame.CanvasSize = UDim2.new(0,0,0,400)
+farmFrame.ScrollBarThickness = 4
+
+local statusFrame = Instance.new("Frame",content)
+statusFrame.Size = UDim2.new(1,0,1,0)
+statusFrame.Visible = false
+
+local teleportFrame = Instance.new("Frame",content)
+teleportFrame.Size = UDim2.new(1,0,1,0)
+teleportFrame.Visible = false
+
+local espFrame = Instance.new("Frame",content)
+espFrame.Size = UDim2.new(1,0,1,0)
+espFrame.Visible = false
+
+-- =================
+-- MENU BUTTON
+-- =================
+
+local function makeMenu(name,pos)
+
+local b = Instance.new("TextButton",sidebar)
+b.Size = UDim2.new(1,0,0,40)
+b.Position = UDim2.new(0,0,0,pos)
+b.Text = name
+b.BackgroundColor3 = Color3.fromRGB(40,40,40)
+b.TextColor3 = Color3.new(1,1,1)
+b.Font = Enum.Font.Gotham
+b.TextSize = 14
+
+Instance.new("UICorner",b)
+
+return b
+
+end
+
+local farmBtn = makeMenu("FARM",0)
+local statusBtn = makeMenu("STATUS",45)
+local teleportBtn = makeMenu("TELEPORT",90)
+local espBtn = makeMenu("ESP",135)
+
+-- SWITCH TAB
+local function open(tab)
+
+farmFrame.Visible = false
+statusFrame.Visible = false
+teleportFrame.Visible = false
+espFrame.Visible = false
+
+tab.Visible = true
+
+end
+
+farmBtn.MouseButton1Click:Connect(function()
+open(farmFrame)
+end)
+
+statusBtn.MouseButton1Click:Connect(function()
+open(statusFrame)
+end)
+
+teleportBtn.MouseButton1Click:Connect(function()
+open(teleportFrame)
+end)
+
+espBtn.MouseButton1Click:Connect(function()
+open(espFrame)
+end)
+
+-- =================
+-- FARM MENU
+-- =================
+
+local function makeButton(text,y)
+
+local b = Instance.new("TextButton",farmFrame)
+b.Size = UDim2.new(0.9,0,0,35)
+b.Position = UDim2.new(0.05,0,0,y)
+b.Text = text
+b.BackgroundColor3 = Color3.fromRGB(45,45,45)
+b.TextColor3 = Color3.new(1,1,1)
+b.Font = Enum.Font.Gotham
+
+Instance.new("UICorner",b)
+
+return b
+
+end
+
+-- BUY AMOUNT LABEL
+local amountLabel = Instance.new("TextLabel",farmFrame)
+amountLabel.Position = UDim2.new(0.05,0,0,20)
+amountLabel.Size = UDim2.new(0.9,0,0,20)
+amountLabel.BackgroundTransparency = 1
+amountLabel.Text = "BUY AMOUNT : 1"
+amountLabel.TextColor3 = Color3.new(1,1,1)
+amountLabel.Font = Enum.Font.Gotham
+amountLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+-- SLIDER
+local sliderBar = Instance.new("Frame",farmFrame)
+sliderBar.Position = UDim2.new(0.05,0,0,50)
+sliderBar.Size = UDim2.new(0.9,0,0,6)
+sliderBar.BackgroundColor3 = Color3.fromRGB(60,60,60)
+
+local sliderFill = Instance.new("Frame",sliderBar)
+sliderFill.Size = UDim2.new(0,0,1,0)
+sliderFill.BackgroundColor3 = Color3.fromRGB(0,170,255)
+
+local sliderButton = Instance.new("Frame",sliderBar)
+sliderButton.Size = UDim2.new(0,18,0,18)
+sliderButton.Position = UDim2.new(0,-9,0.5,-9)
+sliderButton.BackgroundColor3 = Color3.fromRGB(0,170,255)
+
+Instance.new("UICorner",sliderButton).CornerRadius = UDim.new(1,0)
+
+local dragging = false
+local buyAmount = 1
+
+sliderButton.InputBegan:Connect(function(i)
+if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
+dragging = true
+end
+end)
+
+UIS.InputEnded:Connect(function(i)
+if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
+dragging = false
+end
+end)
+
+UIS.InputChanged:Connect(function(i)
+
+if dragging then
+
+local percent = (i.Position.X - sliderBar.AbsolutePosition.X) / sliderBar.AbsoluteSize.X
+percent = math.clamp(percent,0,1)
+
+sliderFill.Size = UDim2.new(percent,0,1,0)
+sliderButton.Position = UDim2.new(percent,-9,0.5,-9)
+
+buyAmount = math.floor(percent*19)+1
+amountLabel.Text = "BUY AMOUNT : "..buyAmount
+
+end
+
+end)
+
+-- BUTTONS
+local autoFarm = makeButton("AUTO FARM : OFF",100)
+local autoBuy = makeButton("AUTO BUY : OFF",150)
+local autoSell = makeButton("AUTO SELL : OFF",200)
+
+-- =================
+-- TELEPORT MENU
+-- =================
+
+local npc = Vector3.new(523,3,615)
+local stove = Vector3.new(1202,3,-182)
+
+local function tp(pos)
+
+local char = player.Character
+if char and char:FindFirstChild("HumanoidRootPart") then
+char.HumanoidRootPart.CFrame = CFrame.new(pos)
+end
+
+end
+
+local tp1 = Instance.new("TextButton",teleportFrame)
+tp1.Size = UDim2.new(0.9,0,0,40)
+tp1.Position = UDim2.new(0.05,0,0,20)
+tp1.Text = "TP NPC Marshmallow"
+
+tp1.MouseButton1Click:Connect(function()
+tp(npc)
+end)
+
+local tp2 = Instance.new("TextButton",teleportFrame)
+tp2.Size = UDim2.new(0.9,0,0,40)
+tp2.Position = UDim2.new(0.05,0,0,70)
+tp2.Text = "TP Kompor"
+
+tp2.MouseButton1Click:Connect(function()
+tp(stove)
+end)
+
+-- =================
+-- ESP MENU
+-- =================
+
+local espBtnToggle = Instance.new("TextButton",espFrame)
+espBtnToggle.Size = UDim2.new(0.9,0,0,40)
+espBtnToggle.Position = UDim2.new(0.05,0,0,20)
+espBtnToggle.Text = "ESP : OFF"
+
+local espEnabled = false
+
+espBtnToggle.MouseButton1Click:Connect(function()
+
+espEnabled = not espEnabled
+espBtnToggle.Text = espEnabled and "ESP : ON" or "ESP : OFF"
+
+for _,p in pairs(Players:GetPlayers()) do
+if p ~= player and p.Character then
+
+if espEnabled then
+
+local h = Instance.new("Highlight",p.Character)
+h.FillTransparency = 1
+h.OutlineColor = Color3.new(1,0,0)
+
+else
+
+for _,v in pairs(p.Character:GetChildren()) do
+if v:IsA("Highlight") then
+v:Destroy()
+end
+end
+
+end
+
+end
+end
+
+end)
+
+-- =================
+-- ICON Z
+-- =================
+
+local icon = Instance.new("TextButton",gui)
+icon.Size = UDim2.new(0,50,0,50)
+icon.Position = UDim2.new(0,20,0.5,-25)
+icon.Text = "Z"
+icon.BackgroundColor3 = Color3.fromRGB(30,30,30)
+icon.TextColor3 = Color3.new(1,1,1)
+icon.Font = Enum.Font.GothamBold
+icon.TextSize = 24
+icon.Active = true
+icon.Draggable = true
+
+Instance.new("UICorner",icon).CornerRadius = UDim.new(1,0)
+
+icon.MouseButton1Click:Connect(function()
+main.Visible = not main.Visible
+end)
+
+
