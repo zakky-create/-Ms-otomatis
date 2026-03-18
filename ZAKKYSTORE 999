@@ -64,6 +64,86 @@ espFrame.Size = UDim2.new(1,0,1,0)
 espFrame.Visible = false
 espFrame.BackgroundTransparency = 1
 
+-- TELEPORT FRAME
+local teleportFrame = Instance.new("ScrollingFrame")
+teleportFrame.Parent = content
+teleportFrame.Size = UDim2.new(1,0,1,0)
+teleportFrame.CanvasSize = UDim2.new(0,0,0,200)
+teleportFrame.ScrollBarThickness = 4
+teleportFrame.Visible = false
+teleportFrame.BackgroundTransparency = 1
+
+-- =====================
+-- TELEPORT MENU
+-- =====================
+
+local TweenService = game:GetService("TweenService")
+
+local npc = Vector3.new(523,3,615)
+local stove = Vector3.new(1202,3,-182)
+
+local function getSeat()
+
+    local char = player.Character
+    if not char then return end
+
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
+
+    if humanoid and humanoid.SeatPart then
+        return humanoid.SeatPart
+    end
+
+end
+
+local function teleport(pos)
+
+    local seat = getSeat()
+
+    if seat then
+
+        local vehicle = seat.Parent
+
+        for _,part in pairs(vehicle:GetDescendants()) do
+            if part:IsA("BasePart") then
+
+                local tween = TweenService:Create(
+                    part,
+                    TweenInfo.new(2, Enum.EasingStyle.Linear),
+                    {CFrame = part.CFrame + (pos - seat.Position)}
+                )
+
+                tween:Play()
+
+            end
+        end
+
+    end
+
+end
+
+local function makeTP(text,y,pos)
+
+local btn = Instance.new("TextButton")
+btn.Parent = teleportFrame
+btn.Size = UDim2.new(0.9,0,0,35)
+btn.Position = UDim2.new(0.05,0,0,y)
+btn.Text = text
+btn.Font = Enum.Font.Gotham
+btn.TextSize = 14
+btn.TextColor3 = Color3.new(1,1,1)
+btn.BackgroundColor3 = Color3.fromRGB(45,45,45)
+
+Instance.new("UICorner",btn)
+
+btn.MouseButton1Click:Connect(function()
+teleport(pos)
+end)
+
+end
+
+makeTP("TP NPC Marshmallow",10,npc)
+makeTP("TP Kompor",55,stove)
+
 -- MENU BUTTON
 local function makeMenu(name,pos)
 
@@ -85,7 +165,12 @@ end
 
 local farmBtn = makeMenu("FARM",0)
 local statusBtn = makeMenu("STATUS",45)
-local espBtn = makeMenu("ESP",90)
+local teleportBtn = makeMenu("TELEPORT",90)
+local espBtn = makeMenu("ESP",135)
+
+teleportBtn.MouseButton1Click:Connect(function()
+open(teleportFrame)
+end)
 
 -- SWITCH TAB
 local function open(tab)
@@ -93,6 +178,7 @@ local function open(tab)
 farmFrame.Visible = false
 statusFrame.Visible = false
 espFrame.Visible = false
+teleportFrame.Visible = false
 
 tab.Visible = true
 
