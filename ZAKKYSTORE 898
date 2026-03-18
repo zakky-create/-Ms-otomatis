@@ -1,0 +1,444 @@
+-- ZAKKYSTORE ELIXIR FULL
+
+local player = game.Players.LocalPlayer
+local backpack = player:WaitForChild("Backpack")
+local vim = game:GetService("VirtualInputManager")
+local TweenService = game:GetService("TweenService")
+
+local storeRemote = game:GetService("ReplicatedStorage")
+:WaitForChild("RemoteEvents")
+:WaitForChild("StorePurchase")
+
+-- GUI
+local gui = Instance.new("ScreenGui",player.PlayerGui)
+gui.ResetOnSpawn = false
+
+local frame = Instance.new("Frame",gui)
+frame.Size = UDim2.new(0,340,0,400)
+frame.Position = UDim2.new(0.5,-170,0.5,-200)
+frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
+frame.Active = true
+frame.Draggable = true
+Instance.new("UICorner",frame)
+
+-- TITLE
+local title = Instance.new("TextLabel",frame)
+title.Size = UDim2.new(1,0,0,35)
+title.BackgroundTransparency = 1
+title.Text = "ZAKKYSTORE"
+title.TextColor3 = Color3.new(1,1,1)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+
+-- MENU BUTTON
+local function menuButton(name,x)
+
+local b = Instance.new("TextButton",frame)
+b.Size = UDim2.new(0.33,0,0,30)
+b.Position = UDim2.new(x,0,0,35)
+b.Text = name
+b.BackgroundColor3 = Color3.fromRGB(45,45,45)
+b.TextColor3 = Color3.new(1,1,1)
+Instance.new("UICorner",b)
+
+return b
+
+end
+
+local farmTab = menuButton("FARM",0)
+local tpTab = menuButton("TELEPORT",0.33)
+local espTab = menuButton("ESP",0.66)
+
+-- PAGE
+local farmPage = Instance.new("Frame",frame)
+farmPage.Size = UDim2.new(1,0,1,-70)
+farmPage.Position = UDim2.new(0,0,0,70)
+farmPage.BackgroundTransparency = 1
+
+local tpPage = farmPage:Clone()
+tpPage.Parent = frame
+tpPage.Visible = false
+
+local espPage = farmPage:Clone()
+espPage.Parent = frame
+espPage.Visible = false
+
+-- TAB SWITCH
+local function openTab(tab)
+
+farmPage.Visible = false
+tpPage.Visible = false
+espPage.Visible = false
+
+tab.Visible = true
+
+end
+
+farmTab.MouseButton1Click:Connect(function()
+openTab(farmPage)
+end)
+
+tpTab.MouseButton1Click:Connect(function()
+openTab(tpPage)
+end)
+
+espTab.MouseButton1Click:Connect(function()
+openTab(espPage)
+end)
+
+-- BUTTON MAKER
+local function makeButton(parent,text,y)
+
+local b = Instance.new("TextButton",parent)
+b.Size = UDim2.new(0.9,0,0,35)
+b.Position = UDim2.new(0.05,0,0,y)
+b.BackgroundColor3 = Color3.fromRGB(55,55,55)
+b.TextColor3 = Color3.new(1,1,1)
+b.Text = text
+Instance.new("UICorner",b)
+
+return b
+
+end
+
+-- ITEM LABEL
+local water = Instance.new("TextLabel",farmPage)
+water.Size = UDim2.new(0.9,0,0,20)
+water.Position = UDim2.new(0.05,0,0,5)
+water.BackgroundTransparency = 1
+water.TextColor3 = Color3.new(1,1,1)
+water.Text = "💧 Water: 0"
+
+local sugar = water:Clone()
+sugar.Parent = farmPage
+sugar.Position = UDim2.new(0.05,0,0,25)
+sugar.Text = "🍬 Sugar: 0"
+
+local gelatin = water:Clone()
+gelatin.Parent = farmPage
+gelatin.Position = UDim2.new(0.05,0,0,45)
+gelatin.Text = "🟡 Gelatin: 0"
+
+local bag = water:Clone()
+bag.Parent = farmPage
+bag.Position = UDim2.new(0.05,0,0,65)
+bag.Text = "👜 Marshmallow Bag: 0"
+
+-- SLIDER
+local sliderBar = Instance.new("Frame",farmPage)
+sliderBar.Position = UDim2.new(0.05,0,0,90)
+sliderBar.Size = UDim2.new(0.9,0,0,6)
+sliderBar.BackgroundColor3 = Color3.fromRGB(60,60,60)
+
+local sliderFill = Instance.new("Frame",sliderBar)
+sliderFill.Size = UDim2.new(0,0,1,0)
+sliderFill.BackgroundColor3 = Color3.fromRGB(0,170,255)
+
+local sliderButton = Instance.new("Frame",sliderBar)
+sliderButton.Size = UDim2.new(0,18,0,18)
+sliderButton.Position = UDim2.new(0,-9,0.5,-9)
+sliderButton.BackgroundColor3 = Color3.fromRGB(0,170,255)
+sliderButton.Active = true
+
+Instance.new("UICorner",sliderButton)
+
+local amountLabel = Instance.new("TextLabel",farmPage)
+amountLabel.Position = UDim2.new(0.05,0,0,105)
+amountLabel.Size = UDim2.new(0.9,0,0,20)
+amountLabel.BackgroundTransparency = 1
+amountLabel.Text = "BUY AMOUNT : 1"
+amountLabel.TextColor3 = Color3.new(1,1,1)
+
+-- FARM BUTTON
+local autoFarm = makeButton(farmPage,"AUTO FARM : OFF",130)
+local autoSell = makeButton(farmPage,"AUTO SELL : OFF",170)
+local autoBuy = makeButton(farmPage,"AUTO BUY : OFF",210)
+
+-- TELEPORT BUTTON
+local tpNPC = makeButton(tpPage,"TP NPC Marshmallow",40)
+local tpAPT1 = makeButton(tpPage,"TP APT 1",80)
+
+-- BUY AMOUNT SYSTEM
+local UIS = game:GetService("UserInputService")
+
+local dragging = false
+local BuyAmount = 1
+local maxBuy = 100
+
+local function updateSlider(x)
+
+local barPos = sliderBar.AbsolutePosition.X
+local barSize = sliderBar.AbsoluteSize.X
+
+local percent = math.clamp((x - barPos)/barSize,0,1)
+
+sliderFill.Size = UDim2.new(percent,0,1,0)
+sliderButton.Position = UDim2.new(percent,-9,0.5,-9)
+
+BuyAmount = math.floor(1 + (maxBuy-1)*percent + 0.5)
+
+amountLabel.Text = "BUY AMOUNT : "..BuyAmount
+
+end
+
+sliderBar.InputBegan:Connect(function(input)
+
+if input.UserInputType == Enum.UserInputType.MouseButton1
+or input.UserInputType == Enum.UserInputType.Touch then
+
+dragging = true
+updateSlider(input.Position.X)
+
+end
+
+end)
+
+UIS.InputChanged:Connect(function(input)
+
+if dragging then
+updateSlider(input.Position.X)
+end
+
+end)
+
+UIS.InputEnded:Connect(function()
+
+dragging = false
+
+end)
+
+-- COUNT ITEM
+local function countItem(name)
+
+local amount = 0
+
+local function check(container)
+
+for _,v in pairs(container:GetChildren()) do
+
+if name == "Marshmallow Bag" then
+
+if string.find(v.Name,"Marshmallow Bag") then
+amount += 1
+end
+
+else
+
+if v.Name == name then
+amount += 1
+end
+
+end
+
+end
+
+end
+
+check(backpack)
+
+if player.Character then
+check(player.Character)
+end
+
+return amount
+
+end
+
+-- AUTO BUY
+local buying = false
+
+autoBuy.MouseButton1Click:Connect(function()
+
+buying = not buying
+autoBuy.Text = buying and "AUTO BUY : ON" or "AUTO BUY : OFF"
+
+end)
+
+task.spawn(function()
+
+while task.wait(1) do
+
+if buying then
+
+for i=1,BuyAmount do
+
+storeRemote:FireServer("Water")
+storeRemote:FireServer("Sugar Block Bag")
+storeRemote:FireServer("Gelatin")
+
+task.wait(0.2)
+
+end
+
+end
+
+end
+
+end)
+
+-- AUTO FARM
+local running = false
+
+local function pressE()
+
+vim:SendKeyEvent(true,Enum.KeyCode.E,false,game)
+task.wait(0.1)
+vim:SendKeyEvent(false,Enum.KeyCode.E,false,game)
+
+end
+
+local function equipTool(name)
+
+local tool = backpack:FindFirstChild(name)
+
+if tool then
+player.Character.Humanoid:EquipTool(tool)
+task.wait(0.4)
+end
+
+end
+
+local function autoCook()
+
+while running do
+
+equipTool("Water")
+pressE()
+task.wait(21)
+
+equipTool("Sugar Block Bag")
+pressE()
+task.wait(1)
+
+equipTool("Gelatin")
+pressE()
+task.wait(46)
+
+equipTool("Empty Bag")
+pressE()
+task.wait(2)
+
+end
+
+end
+
+autoFarm.MouseButton1Click:Connect(function()
+
+running = not running
+autoFarm.Text = running and "AUTO FARM : ON" or "AUTO FARM : OFF"
+
+if running then
+task.spawn(autoCook)
+end
+
+end)
+
+-- AUTO SELL
+local selling = false
+
+autoSell.MouseButton1Click:Connect(function()
+
+selling = not selling
+autoSell.Text = selling and "AUTO SELL : ON" or "AUTO SELL : OFF"
+
+end)
+
+task.spawn(function()
+
+while task.wait(2) do
+
+if selling then
+
+for _,tool in pairs(backpack:GetChildren()) do
+
+if tool:IsA("Tool") and string.find(tool.Name,"Marshmallow Bag") then
+
+player.Character.Humanoid:EquipTool(tool)
+task.wait(0.5)
+
+for _,v in pairs(workspace:GetDescendants()) do
+if v:IsA("ProximityPrompt") then
+fireproximityprompt(v)
+end
+end
+
+end
+
+end
+
+end
+
+end
+
+end)
+
+-- TELEPORT
+local NPC = Vector3.new(523,3,615)
+local APT1 = Vector3.new(1202,3,-182)
+
+local function getSeat()
+
+local char = player.Character
+if not char then return end
+
+local humanoid = char:FindFirstChildOfClass("Humanoid")
+
+if humanoid and humanoid.SeatPart then
+return humanoid.SeatPart
+end
+
+end
+
+local function teleport(pos)
+
+local seat = getSeat()
+
+if seat then
+
+local vehicle = seat.Parent
+
+for _,part in pairs(vehicle:GetDescendants()) do
+
+if part:IsA("BasePart") then
+
+local tween = TweenService:Create(
+part,
+TweenInfo.new(2),
+{CFrame = part.CFrame + (pos - seat.Position)}
+)
+
+tween:Play()
+
+end
+
+end
+
+end
+
+end
+
+tpNPC.MouseButton1Click:Connect(function()
+teleport(NPC)
+end)
+
+tpAPT1.MouseButton1Click:Connect(function()
+teleport(APT1)
+end)
+
+-- ITEM GUI UPDATE
+task.spawn(function()
+
+while true do
+
+water.Text = "💧 Water: "..countItem("Water")
+sugar.Text = "🍬 Sugar: "..countItem("Sugar Block Bag")
+gelatin.Text = "🟡 Gelatin: "..countItem("Gelatin")
+bag.Text = "👜 Marshmallow Bag: "..countItem("Marshmallow Bag")
+
+task.wait(1)
+
+end
+
+end)
+
+
