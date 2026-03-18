@@ -1,0 +1,258 @@
+-- PLAYER
+local player = game.Players.LocalPlayer
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Parent = player.PlayerGui
+gui.Name = "ZAKKYSTORE"
+gui.ResetOnSpawn = false
+
+-- MAIN FRAME
+local main = Instance.new("Frame")
+main.Parent = gui
+main.Size = UDim2.new(0,420,0,320)
+main.Position = UDim2.new(0.5,-210,0.5,-160)
+main.BackgroundColor3 = Color3.fromRGB(25,25,25)
+main.Active = true
+main.Draggable = true
+
+Instance.new("UICorner",main).CornerRadius = UDim.new(0,10)
+
+-- TITLE
+local title = Instance.new("TextLabel")
+title.Parent = main
+title.Size = UDim2.new(1,0,0,35)
+title.BackgroundTransparency = 1
+title.Text = "ZAKKYSTORE"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
+title.TextColor3 = Color3.new(1,1,1)
+
+-- SIDEBAR
+local sidebar = Instance.new("Frame")
+sidebar.Parent = main
+sidebar.Size = UDim2.new(0,110,1,-35)
+sidebar.Position = UDim2.new(0,0,0,35)
+sidebar.BackgroundColor3 = Color3.fromRGB(30,30,30)
+
+-- CONTENT
+local content = Instance.new("Frame")
+content.Parent = main
+content.Size = UDim2.new(1,-110,1,-35)
+content.Position = UDim2.new(0,110,0,35)
+content.BackgroundTransparency = 1
+
+-- FARM FRAME
+local farmFrame = Instance.new("ScrollingFrame")
+farmFrame.Parent = content
+farmFrame.Size = UDim2.new(1,0,1,0)
+farmFrame.CanvasSize = UDim2.new(0,0,0,400)
+farmFrame.ScrollBarThickness = 4
+farmFrame.BackgroundTransparency = 1
+
+-- STATUS FRAME
+local statusFrame = Instance.new("Frame")
+statusFrame.Parent = content
+statusFrame.Size = UDim2.new(1,0,1,0)
+statusFrame.Visible = false
+statusFrame.BackgroundTransparency = 1
+
+-- ESP FRAME
+local espFrame = Instance.new("Frame")
+espFrame.Parent = content
+espFrame.Size = UDim2.new(1,0,1,0)
+espFrame.Visible = false
+espFrame.BackgroundTransparency = 1
+
+-- MENU BUTTON
+local function makeMenu(name,pos)
+
+local b = Instance.new("TextButton")
+b.Parent = sidebar
+b.Size = UDim2.new(1,0,0,40)
+b.Position = UDim2.new(0,0,0,pos)
+b.Text = name
+b.Font = Enum.Font.Gotham
+b.TextSize = 14
+b.TextColor3 = Color3.new(1,1,1)
+b.BackgroundColor3 = Color3.fromRGB(40,40,40)
+
+Instance.new("UICorner",b)
+
+return b
+
+end
+
+local farmBtn = makeMenu("FARM",0)
+local statusBtn = makeMenu("STATUS",45)
+local espBtn = makeMenu("ESP",90)
+
+-- SWITCH TAB
+local function open(tab)
+
+farmFrame.Visible = false
+statusFrame.Visible = false
+espFrame.Visible = false
+
+tab.Visible = true
+
+end
+
+farmBtn.MouseButton1Click:Connect(function()
+open(farmFrame)
+end)
+
+statusBtn.MouseButton1Click:Connect(function()
+open(statusFrame)
+end)
+
+espBtn.MouseButton1Click:Connect(function()
+open(espFrame)
+end)
+
+-- =================
+-- FARM CONTENT
+-- =================
+
+local frame = farmFrame
+
+local function makeButton(text,y)
+
+local b = Instance.new("TextButton")
+b.Parent = frame
+b.Size = UDim2.new(0.9,0,0,30)
+b.Position = UDim2.new(0.05,0,0,y)
+b.Text = text
+b.Font = Enum.Font.Gotham
+b.TextSize = 14
+b.TextColor3 = Color3.new(1,1,1)
+b.BackgroundColor3 = Color3.fromRGB(45,45,45)
+
+Instance.new("UICorner",b)
+
+return b
+
+end
+
+-- ITEM LABEL
+local water = Instance.new("TextLabel")
+water.Parent = frame
+water.Position = UDim2.new(0.05,0,0,10)
+water.Size = UDim2.new(0.9,0,0,20)
+water.BackgroundTransparency = 1
+water.Text = "💧 Water: 0"
+water.TextColor3 = Color3.new(1,1,1)
+water.Font = Enum.Font.Gotham
+water.TextSize = 14
+water.TextXAlignment = Enum.TextXAlignment.Left
+
+local sugar = water:Clone()
+sugar.Parent = frame
+sugar.Position = UDim2.new(0.05,0,0,30)
+sugar.Text = "🍬 Sugar: 0"
+
+local gelatin = water:Clone()
+gelatin.Parent = frame
+gelatin.Position = UDim2.new(0.05,0,0,50)
+gelatin.Text = "🟡 Gelatin: 0"
+
+local bag = water:Clone()
+bag.Parent = frame
+bag.Position = UDim2.new(0.05,0,0,70)
+bag.Text = "👜 Marshmallow Bag: 0"
+
+-- BUY AMOUNT
+local amountLabel = Instance.new("TextLabel")
+amountLabel.Parent = frame
+amountLabel.Position = UDim2.new(0.05,0,0,95)
+amountLabel.Size = UDim2.new(0.9,0,0,20)
+amountLabel.BackgroundTransparency = 1
+amountLabel.Text = "BUY AMOUNT : 1"
+amountLabel.TextColor3 = Color3.new(1,1,1)
+amountLabel.Font = Enum.Font.Gotham
+amountLabel.TextSize = 14
+amountLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+-- SLIDER
+local sliderBar = Instance.new("Frame")
+sliderBar.Parent = frame
+sliderBar.Position = UDim2.new(0.05,0,0,120)
+sliderBar.Size = UDim2.new(0.9,0,0,6)
+sliderBar.BackgroundColor3 = Color3.fromRGB(60,60,60)
+
+local sliderFill = Instance.new("Frame")
+sliderFill.Parent = sliderBar
+sliderFill.Size = UDim2.new(0,0,1,0)
+sliderFill.BackgroundColor3 = Color3.fromRGB(0,170,255)
+
+local sliderButton = Instance.new("Frame")
+sliderButton.Parent = sliderBar
+sliderButton.Size = UDim2.new(0,18,0,18)
+sliderButton.Position = UDim2.new(0,-9,0.5,-9)
+sliderButton.BackgroundColor3 = Color3.fromRGB(0,170,255)
+sliderButton.BorderSizePixel = 0
+
+Instance.new("UICorner",sliderButton).CornerRadius = UDim.new(1,0)
+
+local UIS = game:GetService("UserInputService")
+
+local dragging = false
+local buyAmount = 1
+
+sliderButton.InputBegan:Connect(function(input)
+if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+dragging = true
+end
+end)
+
+UIS.InputEnded:Connect(function(input)
+if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+dragging = false
+end
+end)
+
+UIS.InputChanged:Connect(function(input)
+
+if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+
+local percent = (input.Position.X - sliderBar.AbsolutePosition.X) / sliderBar.AbsoluteSize.X
+percent = math.clamp(percent,0,1)
+
+sliderFill.Size = UDim2.new(percent,0,1,0)
+sliderButton.Position = UDim2.new(percent,-9,0.5,-9)
+
+buyAmount = math.floor(percent * 19) + 1
+amountLabel.Text = "BUY AMOUNT : "..buyAmount
+
+end
+
+end)
+
+-- BUTTON
+local autoFarm = makeButton("AUTO FARM : OFF",150)
+local autoSell = makeButton("AUTO SELL : OFF",190)
+local autoBuy = makeButton("AUTO BUY : OFF",230)
+
+-- =================
+-- ICON Z
+-- =================
+
+local openButton = Instance.new("TextButton")
+openButton.Parent = gui
+openButton.Size = UDim2.new(0,50,0,50)
+openButton.Position = UDim2.new(0,20,0.5,-25)
+openButton.BackgroundColor3 = Color3.fromRGB(30,30,30)
+openButton.Text = "Z"
+openButton.TextColor3 = Color3.new(1,1,1)
+openButton.Font = Enum.Font.GothamBold
+openButton.TextSize = 24
+openButton.Active = true
+openButton.Draggable = true
+
+Instance.new("UICorner",openButton).CornerRadius = UDim.new(1,0)
+
+openButton.MouseButton1Click:Connect(function()
+main.Visible = not main.Visible
+end)
+
+
