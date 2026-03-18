@@ -164,3 +164,60 @@ local function countItem(name)
 
 end
 
+-- AUTO FARM
+local running = false
+
+local function pressE()
+
+vim:SendKeyEvent(true,Enum.KeyCode.E,false,game)
+task.wait(0.1)
+vim:SendKeyEvent(false,Enum.KeyCode.E,false,game)
+
+end
+
+local function equipTool(name)
+
+local tool = backpack:FindFirstChild(name)
+
+if tool then
+player.Character.Humanoid:EquipTool(tool)
+task.wait(0.4)
+end
+
+end
+
+local function autoCook()
+
+while running do
+
+equipTool("Water")
+pressE()
+task.wait(21)
+
+equipTool("Sugar Block Bag")
+pressE()
+task.wait(1)
+
+equipTool("Gelatin")
+pressE()
+task.wait(46)
+
+equipTool("Empty Bag")
+pressE()
+task.wait(2)
+
+end
+
+end
+
+autoFarm.MouseButton1Click:Connect(function()
+
+running = not running
+autoFarm.Text = running and "AUTO FARM : ON" or "AUTO FARM : OFF"
+
+if running then
+task.spawn(autoCook)
+end
+
+end)
+
