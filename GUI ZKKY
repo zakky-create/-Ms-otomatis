@@ -82,3 +82,324 @@ close.MouseButton1Click:Connect(function()
 gui:Destroy()
 end)
 
+local player = game.Players.LocalPlayer
+local backpack = player:WaitForChild("Backpack")
+local vim = game:GetService("VirtualInputManager")
+local storeRemote = game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("StorePurchase")
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Parent = player:WaitForChild("PlayerGui")
+gui.ResetOnSpawn = false
+
+local frame = Instance.new("Frame")
+frame.Parent = gui
+frame.Size = UDim2.new(0,260,0,360)
+frame.Position = UDim2.new(0.5,-130,0.5,-180)
+frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+frame.BorderSizePixel = 3
+frame.BorderColor3 = Color3.fromRGB(200,0,255)
+frame.Active = true
+frame.Draggable = true
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0,12)
+corner.Parent = frame
+
+local title = Instance.new("TextLabel")
+title.Parent = frame
+title.Size = UDim2.new(1,0,0,35)
+title.BackgroundTransparency = 1
+title.Text = "ZAKKYSTORE"
+title.TextColor3 = Color3.new(1,1,1)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+
+local function makeButton(text,y)
+
+local btn = Instance.new("TextButton")
+btn.Parent = frame
+btn.Size = UDim2.new(0.9,0,0,30)
+btn.Position = UDim2.new(0.05,0,0,y)
+btn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+btn.TextColor3 = Color3.new(1,1,1)
+btn.Font = Enum.Font.Gotham
+btn.TextSize = 14
+btn.Text = text
+
+return btn
+
+end
+
+-- ITEM LABEL
+local water = Instance.new("TextLabel")
+water.Parent = frame
+water.Position = UDim2.new(0.05,0,0,45)
+water.Size = UDim2.new(0.9,0,0,20)
+water.BackgroundTransparency = 1
+water.Text = "💧 Water: 0"
+water.TextColor3 = Color3.new(1,1,1)
+water.Font = Enum.Font.Gotham
+water.TextSize = 14
+water.TextXAlignment = Enum.TextXAlignment.Left
+
+local sugar = water:Clone()
+sugar.Parent = frame
+sugar.Position = UDim2.new(0.05,0,0,65)
+sugar.Text = "🍬 Sugar: 0"
+
+local gelatin = water:Clone()
+gelatin.Parent = frame
+gelatin.Position = UDim2.new(0.05,0,0,85)
+gelatin.Text = "🟡 Gelatin: 0"
+
+local bag = water:Clone()
+bag.Parent = frame
+bag.Position = UDim2.new(0.05,0,0,105)
+bag.Text = "👜 Marshmallow Bag: 0"
+
+-- SLIDER
+local sliderBar = Instance.new("Frame")
+sliderBar.Parent = frame
+sliderBar.Position = UDim2.new(0.05,0,0,125)
+sliderBar.Size = UDim2.new(0.9,0,0,6)
+sliderBar.BackgroundColor3 = Color3.fromRGB(60,60,60)
+
+local sliderFill = Instance.new("Frame")
+sliderFill.Parent = sliderBar
+sliderFill.Size = UDim2.new(0,0,1,0)
+sliderFill.BackgroundColor3 = Color3.fromRGB(0,170,255)
+
+local sliderButton = Instance.new("Frame")
+sliderButton.Parent = sliderBar
+sliderButton.Size = UDim2.new(0,18,0,18)
+sliderButton.Position = UDim2.new(0,-9,0.5,-9)
+sliderButton.BackgroundColor3 = Color3.fromRGB(0,170,255)
+sliderButton.BorderSizePixel = 0
+sliderButton.Active = true
+
+-- BUTTON
+local autoFarm = makeButton("AUTO FARM : OFF",135)
+local autoSell = makeButton("AUTO SELL : OFF",170)
+local autoBuy = makeButton("AUTO BUY : OFF",275)
+
+local amountLabel = Instance.new("TextLabel")
+amountLabel.Parent = frame
+amountLabel.Position = UDim2.new(0.05,0,0,310)
+amountLabel.Size = UDim2.new(0.9,0,0,20)
+amountLabel.BackgroundTransparency = 1
+amountLabel.Text = "BUY AMOUNT : 1"
+amountLabel.TextColor3 = Color3.new(1,1,1)
+amountLabel.Font = Enum.Font.Gotham
+amountLabel.TextSize = 14
+amountLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+-- OPEN BUTTON
+local openButton = Instance.new("TextButton")
+openButton.Parent = gui
+openButton.Size = UDim2.new(0,50,0,50)
+openButton.Position = UDim2.new(0,10,0.5,0)
+openButton.BackgroundColor3 = Color3.fromRGB(40,40,40)
+openButton.Text = "Z"
+openButton.TextColor3 = Color3.new(1,1,1)
+openButton.Font = Enum.Font.GothamBold
+openButton.TextSize = 20
+openButton.Active = true
+openButton.Draggable = true
+
+openButton.MouseButton1Click:Connect(function()
+frame.Visible = not frame.Visible
+end)
+
+-- COUNT ITEM
+local function countItem(name)
+
+local amount = 0
+
+local function check(container)
+
+for _,v in pairs(container:GetChildren()) do
+
+if name == "Marshmallow Bag" then
+if string.find(v.Name,"Marshmallow Bag") then
+amount += 1
+end
+else
+if v.Name == name then
+amount += 1
+end
+end
+
+end
+
+end
+
+check(backpack)
+
+if player.Character then
+check(player.Character)
+end
+
+return amount
+
+end
+
+-- AUTO BUY
+local buying = false
+local buyAmount = 1
+
+local function buy(item)
+pcall(function()
+storeRemote:FireServer(item)
+end)
+end
+
+local function autoBuyLoop()
+
+while buying do
+
+while countItem("Water") < buyAmount do
+buy("Water")
+task.wait(0.4)
+end
+
+while countItem("Sugar Block Bag") < buyAmount do
+buy("Sugar Block Bag")
+task.wait(0.4)
+end
+
+while countItem("Gelatin") < buyAmount do
+buy("Gelatin")
+task.wait(0.4)
+end
+
+task.wait(1)
+
+end
+
+end
+
+autoBuy.MouseButton1Click:Connect(function()
+
+buying = not buying
+autoBuy.Text = buying and "AUTO BUY : ON" or "AUTO BUY : OFF"
+
+if buying then
+task.spawn(autoBuyLoop)
+end
+
+end)
+
+-- AUTO FARM
+local running = false
+
+local function pressE()
+
+vim:SendKeyEvent(true,Enum.KeyCode.E,false,game)
+task.wait(0.1)
+vim:SendKeyEvent(false,Enum.KeyCode.E,false,game)
+
+end
+
+local function equipTool(name)
+
+local tool = backpack:FindFirstChild(name)
+
+if tool then
+player.Character.Humanoid:EquipTool(tool)
+task.wait(0.4)
+end
+
+end
+
+local function autoCook()
+
+while running do
+
+equipTool("Water")
+pressE()
+task.wait(21)
+
+equipTool("Sugar Block Bag")
+pressE()
+task.wait(1)
+
+equipTool("Gelatin")
+pressE()
+task.wait(46)
+
+equipTool("Empty Bag")
+pressE()
+task.wait(2)
+
+end
+
+end
+
+autoFarm.MouseButton1Click:Connect(function()
+
+running = not running
+autoFarm.Text = running and "AUTO FARM : ON" or "AUTO FARM : OFF"
+
+if running then
+task.spawn(autoCook)
+end
+
+end)
+
+-- AUTO SELL
+local selling = false
+
+local function getSellPrompt()
+
+for _,v in pairs(workspace:GetDescendants()) do
+if v:IsA("ProximityPrompt") then
+if v.Parent and v.Parent.Parent and v.Parent.Parent.Name == "Lamont Bell" then
+return v
+end
+end
+end
+
+end
+
+local function autoSellFunc()
+
+local prompt = getSellPrompt()
+
+while selling do
+
+for _,tool in pairs(backpack:GetChildren()) do
+
+if string.find(tool.Name,"Marshmallow Bag") then
+
+player.Character.Humanoid:EquipTool(tool)
+
+task.wait(0.5)
+
+if prompt then
+fireproximityprompt(prompt)
+end
+
+task.wait(1)
+
+end
+
+end
+
+task.wait(1)
+
+end
+
+end
+
+autoSell.MouseButton1Click:Connect(function()
+
+selling = not selling
+autoSell.Text = selling and "AUTO SELL : ON" or "AUTO SELL : OFF"
+
+if selling then
+task.spawn(autoSellFunc)
+end
+
+end)
+
