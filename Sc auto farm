@@ -221,3 +221,20 @@ end
 
 end)
 
+-- UPDATE GUI ITEM
+
+task.spawn(function()
+
+	while true do
+
+		water.Text = "💧 Water: "..countItem("Water")
+		sugar.Text = "🍬 Sugar: "..countItem("Sugar Block Bag")
+		gelatin.Text = "🟡 Gelatin: "..countItem("Gelatin")
+		MarshmallowBag.Text = "👜 Marshmallow Bag: "..countItem("Marshmallow Bag")
+
+		task.wait(1)
+
+	end
+
+end)
+
