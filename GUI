@@ -1,0 +1,80 @@
+-- ZAKKYSTORE HUB GUI
+
+local gui = Instance.new("ScreenGui")
+gui.Parent = game.CoreGui
+gui.Name = "ZAKKYSTORE"
+
+local main = Instance.new("Frame")
+main.Parent = gui
+main.Size = UDim2.new(0,380,0,240)
+main.Position = UDim2.new(0.5,-190,0.5,-120)
+main.BackgroundColor3 = Color3.fromRGB(20,20,20)
+main.Active = true
+main.Draggable = true
+
+Instance.new("UICorner",main).CornerRadius = UDim.new(0,10)
+
+-- TITLE
+local title = Instance.new("TextLabel")
+title.Parent = main
+title.Size = UDim2.new(1,0,0,40)
+title.BackgroundColor3 = Color3.fromRGB(30,30,30)
+title.Text = "ZAKKYSTORE"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 22
+title.TextColor3 = Color3.new(1,1,1)
+
+Instance.new("UICorner",title)
+
+-- SIDEBAR
+local sidebar = Instance.new("Frame")
+sidebar.Parent = main
+sidebar.Size = UDim2.new(0,120,1,-40)
+sidebar.Position = UDim2.new(0,0,0,40)
+sidebar.BackgroundColor3 = Color3.fromRGB(25,25,25)
+
+-- CONTENT
+local content = Instance.new("Frame")
+content.Parent = main
+content.Size = UDim2.new(1,-120,1,-40)
+content.Position = UDim2.new(0,120,0,40)
+content.BackgroundColor3 = Color3.fromRGB(35,35,35)
+
+Instance.new("UICorner",content)
+
+-- BUTTON FUNCTION
+local function makeButton(text,y)
+
+local btn = Instance.new("TextButton")
+btn.Parent = sidebar
+btn.Size = UDim2.new(1,-10,0,35)
+btn.Position = UDim2.new(0,5,0,y)
+btn.BackgroundColor3 = Color3.fromRGB(40,40,40)
+btn.Text = text
+btn.TextColor3 = Color3.new(1,1,1)
+btn.Font = Enum.Font.Gotham
+btn.TextSize = 14
+
+Instance.new("UICorner",btn)
+
+end
+
+makeButton("Aimbot",10)
+makeButton("ESP",55)
+makeButton("Player",100)
+makeButton("Settings",145)
+
+-- CLOSE
+local close = Instance.new("TextButton")
+close.Parent = title
+close.Size = UDim2.new(0,30,0,30)
+close.Position = UDim2.new(1,-35,0,5)
+close.Text = "X"
+close.BackgroundColor3 = Color3.fromRGB(150,40,40)
+close.TextColor3 = Color3.new(1,1,1)
+
+Instance.new("UICorner",close)
+
+close.MouseButton1Click:Connect(function()
+gui:Destroy()
+end)
