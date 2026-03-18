@@ -145,8 +145,100 @@ bag.Parent = frame
 bag.Position = UDim2.new(0.05,0,0,70)
 bag.Text = "👜 Marshmallow Bag: 0"
 
+-- BUY AMOUNT LABEL
+local amountLabel = Instance.new("TextLabel")
+amountLabel.Parent = frame
+amountLabel.Position = UDim2.new(0.05,0,0,95)
+amountLabel.Size = UDim2.new(0.9,0,0,20)
+amountLabel.BackgroundTransparency = 1
+amountLabel.Text = "BUY AMOUNT : 1"
+amountLabel.TextColor3 = Color3.new(1,1,1)
+amountLabel.Font = Enum.Font.Gotham
+amountLabel.TextSize = 14
+amountLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+-- SLIDER BAR
+local sliderBar = Instance.new("Frame")
+sliderBar.Parent = frame
+sliderBar.Position = UDim2.new(0.05,0,0,120)
+sliderBar.Size = UDim2.new(0.9,0,0,6)
+sliderBar.BackgroundColor3 = Color3.fromRGB(60,60,60)
+
+local sliderFill = Instance.new("Frame")
+sliderFill.Parent = sliderBar
+sliderFill.Size = UDim2.new(0,0,1,0)
+sliderFill.BackgroundColor3 = Color3.fromRGB(0,170,255)
+
+local sliderButton = Instance.new("Frame")
+sliderButton.Parent = sliderBar
+sliderButton.Size = UDim2.new(0,18,0,18)
+sliderButton.Position = UDim2.new(0,-9,0.5,-9)
+sliderButton.BackgroundColor3 = Color3.fromRGB(0,170,255)
+sliderButton.BorderSizePixel = 0
+
+local UIS = game:GetService("UserInputService")
+
+local dragging = false
+local buyAmount = 1
+
+sliderButton.InputBegan:Connect(function(input)
+if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+dragging = true
+end
+end)
+
+UIS.InputEnded:Connect(function(input)
+if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+dragging = false
+end
+end)
+
+UIS.InputChanged:Connect(function(input)
+
+if dragging and input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+
+local size = (input.Position.X - sliderBar.AbsolutePosition.X) / sliderBar.AbsoluteSize.X
+size = math.clamp(size,0,1)
+
+sliderFill.Size = UDim2.new(size,0,1,0)
+sliderButton.Position = UDim2.new(size,-9,0.5,-9)
+
+buyAmount = math.floor(size * 19) + 1
+amountLabel.Text = "BUY AMOUNT : "..buyAmount
+
+end
+
+end)
+
 -- BUTTON
-local autoFarm = makeButton("AUTO FARM : OFF",100)
-local autoSell = makeButton("AUTO SELL : OFF",140)
-local autoBuy = makeButton("AUTO BUY : OFF",180)
+local autoFarm = makeButton("AUTO FARM : OFF",150)
+local autoSell = makeButton("AUTO SELL : OFF",190)
+local autoBuy = makeButton("AUTO BUY : OFF",230)
+
+end)
+
+-- =========================
+-- ICON Z (OPEN / CLOSE GUI)
+-- =========================
+
+local openButton = Instance.new("TextButton")
+openButton.Parent = gui
+openButton.Size = UDim2.new(0,50,0,50)
+openButton.Position = UDim2.new(0,20,0.5,-25)
+openButton.BackgroundColor3 = Color3.fromRGB(30,30,30)
+openButton.Text = "Z"
+openButton.TextColor3 = Color3.new(1,1,1)
+openButton.Font = Enum.Font.GothamBold
+openButton.TextSize = 24
+openButton.Active = true
+openButton.Draggable = true
+
+local iconCorner = Instance.new("UICorner")
+iconCorner.CornerRadius = UDim.new(1,0)
+iconCorner.Parent = openButton
+
+openButton.MouseButton1Click:Connect(function()
+	main.Visible = not main.Visible
+end)
+
 
