@@ -50,40 +50,50 @@ local tpTab = menuButton("TELEPORT",0.33)
 local espTab = menuButton("ESP",0.66)
 
 -- PAGE
-local farmPage = Instance.new("Frame",frame)
+
+local farmPage = Instance.new("Frame")
+farmPage.Parent = frame
 farmPage.Size = UDim2.new(1,0,1,-70)
 farmPage.Position = UDim2.new(0,0,0,70)
 farmPage.BackgroundTransparency = 1
+farmPage.Visible = true
 
-local tpPage = farmPage:Clone()
+local tpPage = Instance.new("Frame")
 tpPage.Parent = frame
+tpPage.Size = UDim2.new(1,0,1,-70)
+tpPage.Position = UDim2.new(0,0,0,70)
+tpPage.BackgroundTransparency = 1
 tpPage.Visible = false
 
-local espPage = farmPage:Clone()
+local espPage = Instance.new("Frame")
 espPage.Parent = frame
+espPage.Size = UDim2.new(1,0,1,-70)
+espPage.Position = UDim2.new(0,0,0,70)
+espPage.BackgroundTransparency = 1
 espPage.Visible = false
 
 -- TAB SWITCH
-local function openTab(tab)
+
+local function switchPage(page)
 
 farmPage.Visible = false
 tpPage.Visible = false
 espPage.Visible = false
 
-tab.Visible = true
+page.Visible = true
 
 end
 
 farmTab.MouseButton1Click:Connect(function()
-openTab(farmPage)
+	switchPage(farmPage)
 end)
 
 tpTab.MouseButton1Click:Connect(function()
-openTab(tpPage)
+	switchPage(tpPage)
 end)
 
 espTab.MouseButton1Click:Connect(function()
-openTab(espPage)
+	switchPage(espPage)
 end)
 
 -- BUTTON MAKER
@@ -485,4 +495,26 @@ end
 
 end)
 
+-- ICON Z
+
+local icon = Instance.new("TextButton")
+icon.Parent = gui
+icon.Size = UDim2.new(0,50,0,50)
+icon.Position = UDim2.new(0,20,0.5,-25)
+icon.BackgroundColor3 = Color3.fromRGB(30,30,30)
+icon.Text = "Z"
+icon.TextColor3 = Color3.new(1,1,1)
+icon.Font = Enum.Font.GothamBold
+icon.TextSize = 20
+icon.Active = true
+icon.Draggable = true
+
+Instance.new("UICorner",icon)
+
+-- toggle GUI
+icon.MouseButton1Click:Connect(function()
+
+	frame.Visible = not frame.Visible
+
+end)
 
