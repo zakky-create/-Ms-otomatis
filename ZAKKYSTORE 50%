@@ -1,0 +1,284 @@
+-- ZAKKYSTORE HUB
+
+local player = game.Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
+
+local gui = Instance.new("ScreenGui")
+gui.Parent = player.PlayerGui
+
+-- MAIN FRAME
+local main = Instance.new("Frame")
+main.Size = UDim2.new(0,420,0,280)
+main.Position = UDim2.new(0.3,0,0.3,0)
+main.BackgroundColor3 = Color3.fromRGB(25,25,25)
+main.Active = true
+main.Draggable = true
+main.Parent = gui
+
+-- TITLE
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1,0,0,40)
+title.BackgroundTransparency = 1
+title.Text = "ZAKKYSTORE"
+title.TextScaled = true
+title.TextColor3 = Color3.fromRGB(255,255,255)
+title.Parent = main
+
+-- MENU FRAME
+local menu = Instance.new("Frame")
+menu.Size = UDim2.new(0,120,1,-40)
+menu.Position = UDim2.new(0,0,0,40)
+menu.BackgroundColor3 = Color3.fromRGB(35,35,35)
+menu.Parent = main
+
+-- CONTENT FRAME
+local content = Instance.new("Frame")
+content.Size = UDim2.new(1,-120,1,-40)
+content.Position = UDim2.new(0,120,0,40)
+content.BackgroundTransparency = 1
+content.Parent = main
+
+-- SCROLL
+local scroll = Instance.new("ScrollingFrame")
+scroll.Size = UDim2.new(1,0,1,0)
+scroll.CanvasSize = UDim2.new(0,0,0,400)
+scroll.ScrollBarThickness = 6
+scroll.BackgroundTransparency = 1
+scroll.Parent = content
+
+-- MENU BUTTON FUNCTION
+function makeMenu(name,pos)
+
+local btn = Instance.new("TextButton")
+btn.Size = UDim2.new(1,0,0,40)
+btn.Position = UDim2.new(0,0,0,pos)
+btn.Text = name
+btn.BackgroundColor3 = Color3.fromRGB(45,45,45)
+btn.TextColor3 = Color3.new(1,1,1)
+btn.Parent = menu
+
+return btn
+end
+
+local farmBtn = makeMenu("FARM",0)
+local statusBtn = makeMenu("STATUS",40)
+local teleportBtn = makeMenu("TELEPORT",80)
+local espBtn = makeMenu("ESP",120)
+
+-- TAB FRAME
+function makeTab()
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(1,0,1,0)
+frame.BackgroundTransparency = 1
+frame.Visible = false
+frame.Parent = scroll
+
+return frame
+end
+
+local farmFrame = makeTab()
+local statusFrame = makeTab()
+local teleportFrame = makeTab()
+local espFrame = makeTab()
+
+farmFrame.Visible = true
+
+-- SWITCH TAB
+local function open(tab)
+
+farmFrame.Visible = false
+statusFrame.Visible = false
+teleportFrame.Visible = false
+espFrame.Visible = false
+
+tab.Visible = true
+
+end
+
+farmBtn.MouseButton1Click:Connect(function()
+open(farmFrame)
+end)
+
+statusBtn.MouseButton1Click:Connect(function()
+open(statusFrame)
+end)
+
+teleportBtn.MouseButton1Click:Connect(function()
+open(teleportFrame)
+end)
+
+espBtn.MouseButton1Click:Connect(function()
+open(espFrame)
+end)
+
+-- BUTTON FUNCTION
+function makeButton(text,pos,parent)
+
+local btn = Instance.new("TextButton")
+btn.Size = UDim2.new(0,250,0,40)
+btn.Position = UDim2.new(0,10,0,pos)
+btn.Text = text
+btn.BackgroundColor3 = Color3.fromRGB(50,50,50)
+btn.TextColor3 = Color3.new(1,1,1)
+btn.Parent = parent
+
+return btn
+end
+
+-- FARM MENU
+local autoBuy = false
+local autoSell = false
+local buyAmount = 1
+
+local autoBuyBtn = makeButton("AUTO BUY : OFF",20,farmFrame)
+local autoSellBtn = makeButton("AUTO SELL : OFF",70,farmFrame)
+
+-- SLIDER TEXT
+local sliderText = Instance.new("TextLabel")
+sliderText.Size = UDim2.new(0,250,0,30)
+sliderText.Position = UDim2.new(0,10,0,120)
+sliderText.Text = "BUY AMOUNT : 1"
+sliderText.TextColor3 = Color3.new(1,1,1)
+sliderText.BackgroundTransparency = 1
+sliderText.Parent = farmFrame
+
+-- SLIDER
+local slider = Instance.new("TextButton")
+slider.Size = UDim2.new(0,250,0,30)
+slider.Position = UDim2.new(0,10,0,150)
+slider.Text = "CHANGE BUY AMOUNT"
+slider.BackgroundColor3 = Color3.fromRGB(60,60,60)
+slider.TextColor3 = Color3.new(1,1,1)
+slider.Parent = farmFrame
+
+slider.MouseButton1Click:Connect(function()
+
+buyAmount = buyAmount + 1
+
+if buyAmount > 10 then
+buyAmount = 1
+end
+
+sliderText.Text = "BUY AMOUNT : "..buyAmount
+
+end)
+
+-- AUTO BUY
+autoBuyBtn.MouseButton1Click:Connect(function()
+
+autoBuy = not autoBuy
+
+if autoBuy then
+autoBuyBtn.Text = "AUTO BUY : ON"
+else
+autoBuyBtn.Text = "AUTO BUY : OFF"
+end
+
+end)
+
+-- AUTO SELL
+autoSellBtn.MouseButton1Click:Connect(function()
+
+autoSell = not autoSell
+
+if autoSell then
+autoSellBtn.Text = "AUTO SELL : ON"
+else
+autoSellBtn.Text = "AUTO SELL : OFF"
+end
+
+end)
+
+-- TELEPORT MENU
+local npc = Vector3.new(523,3,615)
+local stove = Vector3.new(1202,3,-182)
+
+local function getSeat()
+
+local char = player.Character
+if not char then return end
+
+local humanoid = char:FindFirstChildOfClass("Humanoid")
+
+if humanoid and humanoid.SeatPart then
+return humanoid.SeatPart
+end
+
+end
+
+local function teleport(pos)
+
+local seat = getSeat()
+
+if seat then
+
+local vehicle = seat.Parent
+
+for _,part in pairs(vehicle:GetDescendants()) do
+
+if part:IsA("BasePart") then
+
+local tween = TweenService:Create(
+part,
+TweenInfo.new(2,Enum.EasingStyle.Linear),
+{CFrame = part.CFrame + (pos - seat.Position)}
+)
+
+tween:Play()
+
+end
+end
+end
+end
+
+local tpNpc = makeButton("TP NPC Marshmallow",20,teleportFrame)
+local tpStove = makeButton("TP Kompor",70,teleportFrame)
+
+tpNpc.MouseButton1Click:Connect(function()
+teleport(npc)
+end)
+
+tpStove.MouseButton1Click:Connect(function()
+teleport(stove)
+end)
+
+-- STATUS MENU
+local statusText = Instance.new("TextLabel")
+statusText.Size = UDim2.new(0,250,0,40)
+statusText.Position = UDim2.new(0,10,0,20)
+statusText.Text = "STATUS PLAYER"
+statusText.TextColor3 = Color3.new(1,1,1)
+statusText.BackgroundTransparency = 1
+statusText.Parent = statusFrame
+
+-- ESP MENU
+local espEnabled = false
+local espBtn2 = makeButton("ESP PLAYER : OFF",20,espFrame)
+
+espBtn2.MouseButton1Click:Connect(function()
+
+espEnabled = not espEnabled
+
+if espEnabled then
+espBtn2.Text = "ESP PLAYER : ON"
+else
+espBtn2.Text = "ESP PLAYER : OFF"
+end
+
+end)
+
+-- ICON Z
+local icon = Instance.new("TextButton")
+icon.Size = UDim2.new(0,40,0,40)
+icon.Position = UDim2.new(0,10,1,-50)
+icon.Text = "Z"
+icon.BackgroundColor3 = Color3.fromRGB(40,40,40)
+icon.TextColor3 = Color3.new(1,1,1)
+icon.Parent = gui
+
+icon.MouseButton1Click:Connect(function()
+main.Visible = not main.Visible
+end)
+
+
