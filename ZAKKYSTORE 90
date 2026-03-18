@@ -1,0 +1,152 @@
+-- GUI
+local player = game.Players.LocalPlayer
+local gui = Instance.new("ScreenGui",player.PlayerGui)
+gui.Name = "ZAKKYSTORE"
+
+-- MAIN FRAME
+local main = Instance.new("Frame",gui)
+main.Size = UDim2.new(0,420,0,320)
+main.Position = UDim2.new(0.5,-210,0.5,-160)
+main.BackgroundColor3 = Color3.fromRGB(25,25,25)
+
+Instance.new("UICorner",main).CornerRadius = UDim.new(0,10)
+
+-- TITLE
+local title = Instance.new("TextLabel",main)
+title.Size = UDim2.new(1,0,0,35)
+title.BackgroundTransparency = 1
+title.Text = "ZAKKYSTORE"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
+title.TextColor3 = Color3.new(1,1,1)
+
+-- SIDEBAR
+local sidebar = Instance.new("Frame",main)
+sidebar.Size = UDim2.new(0,110,1,-35)
+sidebar.Position = UDim2.new(0,0,0,35)
+sidebar.BackgroundColor3 = Color3.fromRGB(30,30,30)
+
+-- CONTENT
+local content = Instance.new("Frame",main)
+content.Size = UDim2.new(1,-110,1,-35)
+content.Position = UDim2.new(0,110,0,35)
+content.BackgroundTransparency = 1
+
+-- FARM FRAME
+local farmFrame = Instance.new("ScrollingFrame",content)
+farmFrame.Size = UDim2.new(1,0,1,0)
+farmFrame.CanvasSize = UDim2.new(0,0,0,400)
+farmFrame.ScrollBarThickness = 4
+farmFrame.BackgroundTransparency = 1
+
+-- STATUS FRAME
+local statusFrame = Instance.new("Frame",content)
+statusFrame.Size = UDim2.new(1,0,1,0)
+statusFrame.Visible = false
+statusFrame.BackgroundTransparency = 1
+
+-- ESP FRAME
+local espFrame = Instance.new("Frame",content)
+espFrame.Size = UDim2.new(1,0,1,0)
+espFrame.Visible = false
+espFrame.BackgroundTransparency = 1
+
+-- MENU BUTTON FUNCTION
+local function makeMenu(name,pos)
+
+local b = Instance.new("TextButton",sidebar)
+b.Size = UDim2.new(1,0,0,40)
+b.Position = UDim2.new(0,0,0,pos)
+b.Text = name
+b.Font = Enum.Font.Gotham
+b.TextSize = 14
+b.TextColor3 = Color3.new(1,1,1)
+b.BackgroundColor3 = Color3.fromRGB(40,40,40)
+
+Instance.new("UICorner",b)
+
+return b
+
+end
+
+local farmBtn = makeMenu("FARM",0)
+local statusBtn = makeMenu("STATUS",45)
+local espBtn = makeMenu("ESP",90)
+
+-- SWITCH MENU
+local function open(tab)
+
+farmFrame.Visible = false
+statusFrame.Visible = false
+espFrame.Visible = false
+
+tab.Visible = true
+
+end
+
+farmBtn.MouseButton1Click:Connect(function()
+open(farmFrame)
+end)
+
+statusBtn.MouseButton1Click:Connect(function()
+open(statusFrame)
+end)
+
+espBtn.MouseButton1Click:Connect(function()
+open(espFrame)
+end)
+
+-- =====================
+-- FARM CONTENT
+-- =====================
+
+local frame = farmFrame
+
+local function makeButton(text,y)
+
+local b = Instance.new("TextButton",frame)
+b.Size = UDim2.new(0.9,0,0,30)
+b.Position = UDim2.new(0.05,0,0,y)
+b.Text = text
+b.Font = Enum.Font.Gotham
+b.TextSize = 14
+b.TextColor3 = Color3.new(1,1,1)
+b.BackgroundColor3 = Color3.fromRGB(45,45,45)
+
+Instance.new("UICorner",b)
+
+return b
+
+end
+
+-- ITEM LABEL
+local water = Instance.new("TextLabel",frame)
+water.Position = UDim2.new(0.05,0,0,10)
+water.Size = UDim2.new(0.9,0,0,20)
+water.BackgroundTransparency = 1
+water.Text = "💧 Water: 0"
+water.TextColor3 = Color3.new(1,1,1)
+water.Font = Enum.Font.Gotham
+water.TextSize = 14
+water.TextXAlignment = Enum.TextXAlignment.Left
+
+local sugar = water:Clone()
+sugar.Parent = frame
+sugar.Position = UDim2.new(0.05,0,0,30)
+sugar.Text = "🍬 Sugar: 0"
+
+local gelatin = water:Clone()
+gelatin.Parent = frame
+gelatin.Position = UDim2.new(0.05,0,0,50)
+gelatin.Text = "🟡 Gelatin: 0"
+
+local bag = water:Clone()
+bag.Parent = frame
+bag.Position = UDim2.new(0.05,0,0,70)
+bag.Text = "👜 Marshmallow Bag: 0"
+
+-- BUTTON
+local autoFarm = makeButton("AUTO FARM : OFF",100)
+local autoSell = makeButton("AUTO SELL : OFF",140)
+local autoBuy = makeButton("AUTO BUY : OFF",180)
+
