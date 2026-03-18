@@ -67,3 +67,100 @@ amountLabel.Font = Enum.Font.Gotham
 amountLabel.TextSize = 14
 amountLabel.TextXAlignment = Enum.TextXAlignment.Left
 
+-- SLIDER SYSTEM
+local UIS = game:GetService("UserInputService")
+
+local dragging = false
+local buyAmount = 1
+local maxBuy = 100
+
+local function updateSlider(x)
+
+local barPos = sliderBar.AbsolutePosition.X
+local barSize = sliderBar.AbsoluteSize.X
+
+local percent = math.clamp((x - barPos) / barSize,0,1)
+
+sliderFill.Size = UDim2.new(percent,0,1,0)
+sliderButton.Position = UDim2.new(percent,-9,0.5,-9)
+
+buyAmount = math.floor(1 + (maxBuy - 1) * percent + 0.5)
+
+amountLabel.Text = "BUY AMOUNT : "..buyAmount
+
+end
+
+sliderBar.InputBegan:Connect(function(input)
+
+if input.UserInputType == Enum.UserInputType.MouseButton1
+or input.UserInputType == Enum.UserInputType.Touch then
+
+dragging = true
+updateSlider(input.Position.X)
+
+end
+
+end)
+
+UIS.InputEnded:Connect(function(input)
+
+if input.UserInputType == Enum.UserInputType.MouseButton1
+or input.UserInputType == Enum.UserInputType.Touch then
+
+dragging = false
+
+end
+
+end)
+
+UIS.InputChanged:Connect(function(input)
+
+if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement
+or input.UserInputType == Enum.UserInputType.Touch) then
+
+updateSlider(input.Position.X)
+
+end
+
+end)
+
+-- ======================
+-- COUNT ITEM
+-- ======================
+
+local function countItem(name)
+
+	local amount = 0
+
+	local function check(container)
+
+		for _,v in pairs(container:GetChildren()) do
+			
+			if name == "Marshmallow Bag" then
+			
+				if string.find(v.Name,"Marshmallow Bag") then
+					amount += 1
+				end
+			
+			else
+			
+				if v.Name == name then
+					amount += 1
+				end
+			
+			end
+			
+		end
+
+	end
+
+	check(backpack)
+
+	if player.Character then
+		check(player.Character)
+	end
+
+	return amount
+
+end
+
