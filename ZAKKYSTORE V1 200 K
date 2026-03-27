@@ -336,9 +336,11 @@ local function check(container)
 
 for _,v in pairs(container:GetChildren()) do
 
+if v:IsA("Tool") then
+
 if name == "Marshmallow Bag" then
 
-if string.find(v.Name,"Marshmallow Bag") then
+if string.find(v.Name,"Marshmallow") then
 amount += 1
 end
 
@@ -346,6 +348,8 @@ else
 
 if v.Name == name then
 amount += 1
+end
+
 end
 
 end
@@ -375,42 +379,32 @@ end
 
 local function autoBuyLoop()
 
-while buying do  
+while buying do
 
-    -- WATER  
-    while countItem("Water") < BuyAmount and buying do  
-        buy("Water")  
-        task.wait(0.35)  
-    end  
+local waterCount = countItem("Water")
+local sugarCount = countItem("Sugar Block Bag")
+local gelatinCount = countItem("Gelatin")
 
-    -- SUGAR  
-    while countItem("Sugar Block Bag") < BuyAmount and buying do  
-        buy("Sugar Block Bag")  
-        task.wait(0.35)  
-    end  
+if waterCount < BuyAmount then
+buy("Water")
+task.wait(0.3)
+end
 
-    -- GELATIN  
-    while countItem("Gelatin") < BuyAmount and buying do  
-        buy("Gelatin")  
-        task.wait(0.35)  
-    end  
+if sugarCount < BuyAmount then
+buy("Sugar Block Bag")
+task.wait(0.3)
+end
 
-    task.wait(0.5)  
+if gelatinCount < BuyAmount then
+buy("Gelatin")
+task.wait(0.3)
+end
+
+task.wait(0.2)
 
 end
 
 end
-
-autoBuy.MouseButton1Click:Connect(function()
-
-buying = not buying  
-autoBuy.Text = buying and "AUTO BUY : ON" or "AUTO BUY : OFF"  
-
-if buying then  
-    task.spawn(autoBuyLoop)  
-end
-
-end)
 
 -- AUTO FARM
 local running = false
@@ -473,59 +467,120 @@ end
 
 end)
 
--- AUTO SELL (pakai script kamu)
+-- AUTO SELL (Keyboard E System)
 
-local selling = false
+local player = game.Players.LocalPlayer
+local backpack = player:WaitForChild("Backpack")
 
+local Vim = game:GetService("VirtualInputManager")
+
+-- cari prompt sell
 local function getSellPrompt()
 
-for _,v in pairs(workspace:GetDescendants()) do  
+for _,v in pairs(workspace:GetDescendants()) do
 
-    if v:IsA("ProximityPrompt") then  
+if v:IsA("ProximityPrompt") then
 
-        if v.Parent   
-        and v.Parent.Parent   
-        and v.Parent.Parent.Name == "Lamont Bell" then  
-            return v  
-        end  
+if v.ActionText == "Sell"
+and v.Parent
+and v.Parent.Parent
+and v.Parent.Parent.Name == "Lamont Bell" then
 
-    end  
+-- ubah jadi tombol keyboard E
+v.KeyboardKeyCode = Enum.KeyCode.E
+
+return v
+
+end
+
+end
+
+end
+
+end
+
+-- tekan tombol E
+local function pressE()
+
+Vim:SendKeyEvent(true,Enum.KeyCode.E,false,game)
+task.wait(0.1)
+Vim:SendKeyEvent(false,Enum.KeyCode.E,false,game)
+
+end
+
+-- cek marshmallow bag
+local function isBag(tool)
+
+return tool:IsA("Tool") and string.find(tool.Name,"Marshmallow")
+
+end
+
+-- AUTO SELL
+
+local selling = false
+local vim = game:GetService("VirtualInputManager")
+
+local function pressE()
+
+vim:SendKeyEvent(true,Enum.KeyCode.E,false,game)
+task.wait(0.1)
+vim:SendKeyEvent(false,Enum.KeyCode.E,false,game)
+
+end
+
+local function getSellPromt()
+
+for _,v in pairs(workspace:GetDescendants()) do
+
+if v:IsA("ProximityPrompt") then
+
+if v.Parent
+and v.Parent.Parent
+and v.Parent.Parent.Name == "Lamont Bell"
+and v.ActionText == "Sell" then
+
+v.KeyboardKeyCode = Enum.KeyCode.E
+return v
+
+end
+
+end
 
 end
 
 end
 
 local function isMarshmallow(name)
-return string.find(name,"Marshmallow Bag")
+return string.find(name,"Marshmallow")
 end
 
-local function autoSellFunc()
+local function autoSellLoop()
 
-while selling do  
+while selling do
 
-    local prompt = getSellPrompt()  
+local prompt = getSellPromt()
 
-    for _,tool in pairs(backpack:GetChildren()) do  
+for _,tool in pairs(backpack:GetChildren()) do
 
-        if tool:IsA("Tool") and isMarshmallow(tool.Name) then  
+if tool:IsA("Tool") and isMarshmallow(tool.Name) then
 
-            local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+
 if hum then
-	hum:EquipTool(tool)
+hum:EquipTool(tool)
 end
-            task.wait(0.5)  
 
-            if prompt then  
-                fireproximityprompt(prompt)  
-            end  
+task.wait(0.4)
 
-            task.wait(1)  
+pressE()
 
-        end  
+task.wait(0.8)
 
-    end  
+end
 
-    task.wait(1)  
+end
+
+task.wait(1)
 
 end
 
@@ -533,12 +588,11 @@ end
 
 autoSell.MouseButton1Click:Connect(function()
 
-selling = not selling  
+selling = not selling
+autoSell.Text = selling and "AUTO SELL : ON" or "AUTO SELL : OFF"
 
-autoSell.Text = selling and "AUTO SELL : ON" or "AUTO SELL : OFF"  
-
-if selling then  
-    task.spawn(autoSellFunc)  
+if selling then
+task.spawn(autoSellLoop)
 end
 
 end)
