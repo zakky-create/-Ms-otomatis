@@ -480,72 +480,73 @@ end)
 
 local player = game.Players.LocalPlayer
 local backpack = player:WaitForChild("Backpack")
-local vim = game:GetService("VirtualInputManager")
 
 local selling = false
 
--- cari proximity prompt lamont bell
+-- cari proximity prompt Lamont Bell
 local function getPrompt()
-
-    local npc = workspace.NPCs:FindFirstChild("Lamont Bell")
-
-    if npc then
-        local torso = npc:FindFirstChild("UpperTorso")
-        if torso then
-            return torso:FindFirstChildOfClass("ProximityPrompt")
+    local npcFolder = workspace:FindFirstChild("NPCs")
+    if npcFolder then
+        local lamont = npcFolder:FindFirstChild("Lamont Bell")
+        if lamont then
+            local torso = lamont:FindFirstChild("UpperTorso")
+            if torso then
+                return torso:FindFirstChildOfClass("ProximityPrompt")
+            end
         end
     end
-
-end
-
--- tahan tombol E
-local function holdE()
-
-    vim:SendKeyEvent(true,Enum.KeyCode.E,false,game)
-    task.wait(0.6) -- lebih lama dari hold duration
-    vim:SendKeyEvent(false,Enum.KeyCode.E,false,game)
-
 end
 
 -- cek marshmallow bag
 local function isBag(tool)
-
-    return tool:IsA("Tool") and string.find(tool.Name,"Marshmallow")
-
+    return tool:IsA("Tool") and tool.Name:find("Marshmallow")
 end
 
--- loop auto sell
+-- auto sell loop
 local function autoSellLoop()
-
     while selling do
-
+        
         local prompt = getPrompt()
+        local character = player.Character
+        local hum = character and character:FindFirstChildOfClass("Humanoid")
 
-        for _,tool in pairs(backpack:GetChildren()) do
-
-            if isBag(tool) then
-
-                local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-
-                if hum then
+        if prompt and hum then
+            for _, tool in pairs(backpack:GetChildren()) do
+                
+                if isBag(tool) then
+                    
+                    -- equip marshmallow bag
                     hum:EquipTool(tool)
+                    
+                    task.wait(0.3)
+                    
+                    -- tekan prompt npc
+                    fireproximityprompt(prompt)
+                    
+                    task.wait(0.6)
+
                 end
 
-                task.wait(0.5)
-
-                holdE()
-
-                task.wait(1)
-
             end
-
         end
 
         task.wait(1)
 
     end
-
 end
+
+-- tombol GUI
+autoSell.MouseButton1Click:Connect(function()
+
+    selling = not selling
+
+    autoSell.Text = selling and "AUTO SELL : ON" or "AUTO SELL : OFF"
+
+    if selling then
+        task.spawn(autoSellLoop)
+    end
+
+end)
 
 -- tombol GUI
 autoSell.MouseButton1Click:Connect(function()
