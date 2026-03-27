@@ -489,14 +489,9 @@ local function getSellPrompt()
 
 		if v:IsA("ProximityPrompt") then
 
-			if v.ActionText == "Sell"
-			and v.Parent
-			and v.Parent.Parent
-			and v.Parent.Parent.Name == "Lamont Bell" then
-
+			if v.ActionText and string.find(v.ActionText,"Interact") then
 				v.KeyboardKeyCode = Enum.KeyCode.E
 				return v
-
 			end
 
 		end
