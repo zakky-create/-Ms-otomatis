@@ -482,88 +482,84 @@ local player = game.Players.LocalPlayer
 local backpack = player:WaitForChild("Backpack")
 local vim = game:GetService("VirtualInputManager")
 
--- cari prompt sell di NPC Lamont Bell
-local function getSellPrompt()
+local selling = false
 
-	for _,v in pairs(workspace:GetDescendants()) do
+-- cari proximity prompt lamont bell
+local function getPrompt()
 
-		if v:IsA("ProximityPrompt") then
+    local npc = workspace.NPCs:FindFirstChild("Lamont Bell")
 
-			if v.ActionText and string.find(v.ActionText,"Interact") then
-				v.KeyboardKeyCode = Enum.KeyCode.E
-				return v
-			end
-
-		end
-
-	end
+    if npc then
+        local torso = npc:FindFirstChild("UpperTorso")
+        if torso then
+            return torso:FindFirstChildOfClass("ProximityPrompt")
+        end
+    end
 
 end
 
--- tekan tombol E
-local function pressE()
+-- tahan tombol E
+local function holdE()
 
-	vim:SendKeyEvent(true,Enum.KeyCode.E,false,game)
-	task.wait(0.7)
-	vim:SendKeyEvent(false,Enum.KeyCode.E,false,game)
+    vim:SendKeyEvent(true,Enum.KeyCode.E,false,game)
+    task.wait(0.6) -- lebih lama dari hold duration
+    vim:SendKeyEvent(false,Enum.KeyCode.E,false,game)
 
 end
 
 -- cek marshmallow bag
-local function isMarshmallow(tool)
+local function isBag(tool)
 
-	return tool:IsA("Tool") and string.find(tool.Name,"Marshmallow")
+    return tool:IsA("Tool") and string.find(tool.Name,"Marshmallow")
 
 end
 
-local selling = false
-
+-- loop auto sell
 local function autoSellLoop()
 
-	while selling do
+    while selling do
 
-		local prompt = getSellPrompt()
+        local prompt = getPrompt()
 
-		if prompt then
+        for _,tool in pairs(backpack:GetChildren()) do
 
-			for _,tool in pairs(backpack:GetChildren()) do
+            if isBag(tool) then
 
-				if isMarshmallow(tool) then
+                local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
 
-					local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+                if hum then
+                    hum:EquipTool(tool)
+                end
 
-					if hum then
-						hum:EquipTool(tool)
-					end
+                task.wait(0.5)
 
-					task.wait(0.4)
+                holdE()
 
-					pressE()
+                task.wait(1)
 
-					task.wait(0.8)
+            end
 
-				end
+        end
 
-			end
+        task.wait(1)
 
-		end
-
-		task.wait(1)
-
-	end
+    end
 
 end
 
+-- tombol GUI
 autoSell.MouseButton1Click:Connect(function()
 
-	selling = not selling
-	autoSell.Text = selling and "AUTO SELL : ON" or "AUTO SELL : OFF"
+    selling = not selling
 
-	if selling then
-		task.spawn(autoSellLoop)
-	end
+    autoSell.Text = selling and "AUTO SELL : ON" or "AUTO SELL : OFF"
+
+    if selling then
+        task.spawn(autoSellLoop)
+    end
 
 end)
+
 
 -- TELEPORT
 local NPC = Vector3.new(523,3,615)
