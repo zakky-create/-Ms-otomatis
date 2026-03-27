@@ -368,43 +368,52 @@ return amount
 
 end
 
--- AUTO BUY FIX
+-- AUTO BUY
 local buying = false
 
-local function buy(item)
-pcall(function()
-storeRemote:FireServer(item)
+autoBuy.MouseButton1Click:Connect(function()
+
+buying = not buying
+autoBuy.Text = buying and "AUTO BUY : ON" or "AUTO BUY : OFF"
+
+if buying then
+	task.spawn(function()
+
+		while buying do
+
+			local waterCount = countItem("Water")
+			local sugarCount = countItem("Sugar Block Bag")
+			local gelatinCount = countItem("Gelatin")
+
+			if waterCount < BuyAmount then
+				pcall(function()
+					storeRemote:FireServer("Water")
+				end)
+				task.wait(0.4)
+			end
+
+			if sugarCount < BuyAmount then
+				pcall(function()
+					storeRemote:FireServer("Sugar Block Bag")
+				end)
+				task.wait(0.4)
+			end
+
+			if gelatinCount < BuyAmount then
+				pcall(function()
+					storeRemote:FireServer("Gelatin")
+				end)
+				task.wait(0.4)
+			end
+
+			task.wait(0.2)
+
+		end
+
+	end)
+end
+
 end)
-end
-
-local function autoBuyLoop()
-
-while buying do
-
-local waterCount = countItem("Water")
-local sugarCount = countItem("Sugar Block Bag")
-local gelatinCount = countItem("Gelatin")
-
-if waterCount < BuyAmount then
-buy("Water")
-task.wait(0.3)
-end
-
-if sugarCount < BuyAmount then
-buy("Sugar Block Bag")
-task.wait(0.3)
-end
-
-if gelatinCount < BuyAmount then
-buy("Gelatin")
-task.wait(0.3)
-end
-
-task.wait(0.2)
-
-end
-
-end
 
 -- AUTO FARM
 local running = false
@@ -471,129 +480,93 @@ end)
 
 local player = game.Players.LocalPlayer
 local backpack = player:WaitForChild("Backpack")
+local vim = game:GetService("VirtualInputManager")
 
-local Vim = game:GetService("VirtualInputManager")
-
--- cari prompt sell
+-- cari prompt sell di NPC Lamont Bell
 local function getSellPrompt()
 
-for _,v in pairs(workspace:GetDescendants()) do
+	for _,v in pairs(workspace:GetDescendants()) do
 
-if v:IsA("ProximityPrompt") then
+		if v:IsA("ProximityPrompt") then
 
-if v.ActionText == "Sell"
-and v.Parent
-and v.Parent.Parent
-and v.Parent.Parent.Name == "Lamont Bell" then
+			if v.ActionText == "Sell"
+			and v.Parent
+			and v.Parent.Parent
+			and v.Parent.Parent.Name == "Lamont Bell" then
 
--- ubah jadi tombol keyboard E
-v.KeyboardKeyCode = Enum.KeyCode.E
+				v.KeyboardKeyCode = Enum.KeyCode.E
+				return v
 
-return v
+			end
 
-end
+		end
 
-end
-
-end
+	end
 
 end
 
 -- tekan tombol E
 local function pressE()
 
-Vim:SendKeyEvent(true,Enum.KeyCode.E,false,game)
-task.wait(0.1)
-Vim:SendKeyEvent(false,Enum.KeyCode.E,false,game)
+	vim:SendKeyEvent(true,Enum.KeyCode.E,false,game)
+	task.wait(0.1)
+	vim:SendKeyEvent(false,Enum.KeyCode.E,false,game)
 
 end
 
 -- cek marshmallow bag
-local function isBag(tool)
+local function isMarshmallow(tool)
 
-return tool:IsA("Tool") and string.find(tool.Name,"Marshmallow")
+	return tool:IsA("Tool") and string.find(tool.Name,"Marshmallow")
 
 end
-
--- AUTO SELL
 
 local selling = false
-local vim = game:GetService("VirtualInputManager")
-
-local function pressE()
-
-vim:SendKeyEvent(true,Enum.KeyCode.E,false,game)
-task.wait(0.1)
-vim:SendKeyEvent(false,Enum.KeyCode.E,false,game)
-
-end
-
-local function getSellPromt()
-
-for _,v in pairs(workspace:GetDescendants()) do
-
-if v:IsA("ProximityPrompt") then
-
-if v.Parent
-and v.Parent.Parent
-and v.Parent.Parent.Name == "Lamont Bell"
-and v.ActionText == "Sell" then
-
-v.KeyboardKeyCode = Enum.KeyCode.E
-return v
-
-end
-
-end
-
-end
-
-end
-
-local function isMarshmallow(name)
-return string.find(name,"Marshmallow")
-end
 
 local function autoSellLoop()
 
-while selling do
+	while selling do
 
-local prompt = getSellPromt()
+		local prompt = getSellPrompt()
 
-for _,tool in pairs(backpack:GetChildren()) do
+		if prompt then
 
-if tool:IsA("Tool") and isMarshmallow(tool.Name) then
+			for _,tool in pairs(backpack:GetChildren()) do
 
-local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+				if isMarshmallow(tool) then
 
-if hum then
-hum:EquipTool(tool)
-end
+					local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
 
-task.wait(0.4)
+					if hum then
+						hum:EquipTool(tool)
+					end
 
-pressE()
+					task.wait(0.4)
 
-task.wait(0.8)
+					pressE()
 
-end
+					task.wait(0.8)
 
-end
+				end
 
-task.wait(1)
+			end
 
-end
+		end
+
+		task.wait(1)
+
+	end
 
 end
 
 autoSell.MouseButton1Click:Connect(function()
 
-selling = not selling
-autoSell.Text = selling and "AUTO SELL : ON" or "AUTO SELL : OFF"
+	selling = not selling
+	autoSell.Text = selling and "AUTO SELL : ON" or "AUTO SELL : OFF"
 
-if selling then
-task.spawn(autoSellLoop)
-end
+	if selling then
+		task.spawn(autoSellLoop)
+	end
 
 end)
 
@@ -688,5 +661,4 @@ icon.MouseButton1Click:Connect(function()
 frame.Visible = not frame.Visible
 
 end)
-
 
