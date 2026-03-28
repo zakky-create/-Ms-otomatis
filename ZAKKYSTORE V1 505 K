@@ -483,11 +483,11 @@ local backpack = player:WaitForChild("Backpack")
 
 local selling = false
 
--- cari proximity prompt Lamont Bell
+-- ambil prompt Lamont Bell
 local function getPrompt()
-    local npcFolder = workspace:FindFirstChild("NPCs")
-    if npcFolder then
-        local lamont = npcFolder:FindFirstChild("Lamont Bell")
+    local npc = workspace:FindFirstChild("NPCs")
+    if npc then
+        local lamont = npc:FindFirstChild("Lamont Bell")
         if lamont then
             local torso = lamont:FindFirstChild("UpperTorso")
             if torso then
@@ -507,23 +507,29 @@ local function autoSellLoop()
     while selling do
         
         local prompt = getPrompt()
-        local character = player.Character
-        local hum = character and character:FindFirstChildOfClass("Humanoid")
+        local char = player.Character
+        local hum = char and char:FindFirstChildOfClass("Humanoid")
 
         if prompt and hum then
             for _, tool in pairs(backpack:GetChildren()) do
                 
                 if isBag(tool) then
                     
-                    -- equip marshmallow bag
+                    -- equip bag
                     hum:EquipTool(tool)
-                    
-                    task.wait(0.3)
-                    
-                    -- tekan prompt npc
-                    fireproximityprompt(prompt)
-                    
-                    task.wait(0.6)
+
+                    task.wait(0.4)
+
+                    -- trigger npc
+                    if fireproximityprompt then
+                        fireproximityprompt(prompt, 1)
+                    else
+                        prompt:InputHoldBegin()
+                        task.wait(prompt.HoldDuration)
+                        prompt:InputHoldEnd()
+                    end
+
+                    task.wait(0.7)
 
                 end
 
@@ -535,11 +541,9 @@ local function autoSellLoop()
     end
 end
 
--- tombol GUI
 autoSell.MouseButton1Click:Connect(function()
 
     selling = not selling
-
     autoSell.Text = selling and "AUTO SELL : ON" or "AUTO SELL : OFF"
 
     if selling then
