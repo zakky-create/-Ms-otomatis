@@ -481,12 +481,11 @@ end)
 local selling = false
 
 local function getPrompt()
-	local npc = workspace:FindFirstChild("NPCs")
-
-	if npc then
-		local lamont = npc:FindFirstChild("Lamont Bell")
-		if lamont then
-			return lamont:FindFirstChildWhichIsA("ProximityPrompt", true)
+	local npcFolder = workspace:FindFirstChild("NPCs")
+	if npcFolder then
+		local npc = npcFolder:FindFirstChild("Lamont Bell")
+		if npc then
+			return npc:FindFirstChildWhichIsA("ProximityPrompt", true)
 		end
 	end
 end
@@ -507,7 +506,6 @@ local function autoSellLoop()
 		local bag = getBag()
 
 		if not bag then
-			print("Marshmallow Bag habis")
 			break
 		end
 
@@ -517,7 +515,7 @@ local function autoSellLoop()
 			hum:EquipTool(bag)
 		end
 
-		task.wait(0.3)
+		task.wait(0.25)
 
 		local prompt = getPrompt()
 
@@ -527,7 +525,7 @@ local function autoSellLoop()
 			prompt:InputHoldEnd()
 		end
 
-		task.wait(0.6)
+		task.wait(0.4)
 
 	end
 
@@ -536,14 +534,13 @@ local function autoSellLoop()
 
 end
 
+
 autoSell.MouseButton1Click:Connect(function()
 
+	selling = not selling
+	autoSell.Text = selling and "AUTO SELL : ON" or "AUTO SELL : OFF"
+
 	if selling then
-		selling = false
-		autoSell.Text = "AUTO SELL : OFF"
-	else
-		selling = true
-		autoSell.Text = "AUTO SELL : ON"
 		task.spawn(autoSellLoop)
 	end
 
