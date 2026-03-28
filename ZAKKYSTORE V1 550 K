@@ -483,67 +483,69 @@ local backpack = player:WaitForChild("Backpack")
 
 local selling = false
 
--- ambil prompt Lamont Bell
+-- cari ProximityPrompt Lamont Bell
 local function getPrompt()
-    local npc = workspace:FindFirstChild("NPCs")
+    local npc = workspace.NPCs:FindFirstChild("Lamont Bell")
     if npc then
-        local lamont = npc:FindFirstChild("Lamont Bell")
-        if lamont then
-            local torso = lamont:FindFirstChild("UpperTorso")
-            if torso then
-                return torso:FindFirstChildOfClass("ProximityPrompt")
-            end
+        local torso = npc:FindFirstChild("UpperTorso")
+        if torso then
+            return torso:FindFirstChildOfClass("ProximityPrompt")
         end
     end
 end
 
--- cek marshmallow bag
-local function isBag(tool)
-    return tool:IsA("Tool") and tool.Name:find("Marshmallow")
+-- cari Marshmallow Bag
+local function getBag()
+    for _, tool in pairs(backpack:GetChildren()) do
+        if tool:IsA("Tool") and tool.Name:find("Marshmallow") then
+            return tool
+        end
+    end
 end
 
--- auto sell loop
+-- loop auto sell
 local function autoSellLoop()
+
     while selling do
-        
-        local prompt = getPrompt()
-        local char = player.Character
-        local hum = char and char:FindFirstChildOfClass("Humanoid")
 
-        if prompt and hum then
-            for _, tool in pairs(backpack:GetChildren()) do
-                
-                if isBag(tool) then
-                    
-                    -- equip bag
-                    hum:EquipTool(tool)
+        local bag = getBag()
 
-                    task.wait(0.4)
-
-                    -- trigger npc
-                    if fireproximityprompt then
-                        fireproximityprompt(prompt, 1)
-                    else
-                        prompt:InputHoldBegin()
-                        task.wait(prompt.HoldDuration)
-                        prompt:InputHoldEnd()
-                    end
-
-                    task.wait(0.7)
-
-                end
-
-            end
+        if not bag then
+            selling = false
+            autoSell.Text = "AUTO SELL : OFF"
+            break
         end
 
-        task.wait(1)
+        local character = player.Character
+        local hum = character and character:FindFirstChildOfClass("Humanoid")
+
+        if hum then
+            -- equip Marshmallow Bag
+            hum:EquipTool(bag)
+        end
+
+        task.wait(0.3)
+
+        local prompt = getPrompt()
+
+        if prompt then
+            -- tekan Interact 0.5 detik
+            prompt:InputHoldBegin()
+            task.wait(0.5)
+            prompt:InputHoldEnd()
+        end
+
+        task.wait(0.3)
 
     end
+
 end
 
+-- tombol GUI
 autoSell.MouseButton1Click:Connect(function()
 
     selling = not selling
+
     autoSell.Text = selling and "AUTO SELL : ON" or "AUTO SELL : OFF"
 
     if selling then
