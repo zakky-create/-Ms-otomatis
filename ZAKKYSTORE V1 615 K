@@ -479,58 +479,67 @@ end)
 -- AUTO SELL
 
 local selling = false
-local remote = game:GetService("MemoryStoreService"):WaitForChild("Hyphon_Check")
+
+local function getPrompt()
+
+    local npc = workspace.NPCs:FindFirstChild("Lamont Bell")
+
+    if npc then
+        return npc:FindFirstChildWhichIsA("ProximityPrompt", true)
+    end
+
+end
 
 local function getBag()
 
-	for _,tool in pairs(backpack:GetChildren()) do
-		if tool:IsA("Tool") and tool.Name:lower():find("marshmallow") then
-			return tool
-		end
-	end
+    for _,tool in pairs(backpack:GetChildren()) do
+        if tool:IsA("Tool") and tool.Name:lower():find("marshmallow") then
+            return tool
+        end
+    end
 
 end
 
 local function autoSellLoop()
 
-	while selling do
+    while selling do
 
-		local bag = getBag()
+        local bag = getBag()
 
-		if bag then
+        if bag then
 
-			local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+            local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
 
-			if hum then
-				hum:EquipTool(bag)
-			end
+            if hum then
+                hum:EquipTool(bag)
+            end
 
-			task.wait(0.3)
+            task.wait(0.3)
 
-			-- tekan interact npc
-			pcall(function()
-				remote:FireServer()
-			end)
+            local prompt = getPrompt()
 
-		end
+            if prompt then
+                prompt.KeyboardKeyCode = Enum.KeyCode.E
+                fireproximityprompt(prompt,0.5)
+            end
 
-		task.wait(0.5)
+        end
 
-	end
+        task.wait(0.6)
+
+    end
 
 end
 
 
 autoSell.MouseButton1Click:Connect(function()
 
-	selling = not selling
+    selling = not selling
+    autoSell.Text = selling and "AUTO SELL : ON" or "AUTO SELL : OFF"
 
-	if selling then
-		autoSell.Text = "AUTO SELL : ON"
-		task.spawn(autoSellLoop)
-	else
-		autoSell.Text = "AUTO SELL : OFF"
-	end
+    if selling then
+        task.spawn(autoSellLoop)
+    end
 
 end)
 
