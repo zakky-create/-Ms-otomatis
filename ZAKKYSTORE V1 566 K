@@ -476,81 +476,74 @@ end
 
 end)
 
--- AUTO SELL (Keyboard E System)
-
-local player = game.Players.LocalPlayer
-local backpack = player:WaitForChild("Backpack")
+-- AUTO SELL
 
 local selling = false
 
--- cari ProximityPrompt Lamont Bell
 local function getPrompt()
-    local npc = workspace.NPCs:FindFirstChild("Lamont Bell")
-    if npc then
-        local torso = npc:FindFirstChild("UpperTorso")
-        if torso then
-            return torso:FindFirstChildOfClass("ProximityPrompt")
-        end
-    end
+
+	local npc = workspace.NPCs:FindFirstChild("Lamont Bell")
+
+	if npc then
+		local torso = npc:FindFirstChild("UpperTorso")
+		if torso then
+			return torso:FindFirstChildOfClass("ProximityPrompt")
+		end
+	end
+
 end
 
--- cari Marshmallow Bag
 local function getBag()
-    for _, tool in pairs(backpack:GetChildren()) do
-        if tool:IsA("Tool") and tool.Name:find("Marshmallow") then
-            return tool
-        end
-    end
+
+	for _,tool in pairs(backpack:GetChildren()) do
+		if tool:IsA("Tool") and string.find(tool.Name,"Marshmallow") then
+			return tool
+		end
+	end
+
 end
 
--- loop auto sell
 local function autoSellLoop()
 
-    while selling do
+	while selling do
 
-        local bag = getBag()
+		local bag = getBag()
 
-        if not bag then
-            selling = false
-            autoSell.Text = "AUTO SELL : OFF"
-            break
-        end
+		if not bag then
+			selling = false
+			autoSell.Text = "AUTO SELL : OFF"
+			break
+		end
 
-        local character = player.Character
-        local hum = character and character:FindFirstChildOfClass("Humanoid")
+		local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
 
-        if hum then
-            -- equip Marshmallow Bag
-            hum:EquipTool(bag)
-        end
+		if hum then
+			hum:EquipTool(bag)
+		end
 
-        task.wait(0.3)
+		task.wait(0.4)
 
-        local prompt = getPrompt()
+		local prompt = getPrompt()
 
-        if prompt then
-            -- tekan Interact 0.5 detik
-            prompt:InputHoldBegin()
-            task.wait(0.5)
-            prompt:InputHoldEnd()
-        end
+		if prompt then
+			fireproximityprompt(prompt)
+		end
 
-        task.wait(0.3)
+		task.wait(0.6)
 
-    end
+	end
 
 end
 
--- tombol GUI
 autoSell.MouseButton1Click:Connect(function()
 
-    selling = not selling
+	selling = not selling
 
-    autoSell.Text = selling and "AUTO SELL : ON" or "AUTO SELL : OFF"
+	autoSell.Text = selling and "AUTO SELL : ON" or "AUTO SELL : OFF"
 
-    if selling then
-        task.spawn(autoSellLoop)
-    end
+	if selling then
+		task.spawn(autoSellLoop)
+	end
 
 end)
 
