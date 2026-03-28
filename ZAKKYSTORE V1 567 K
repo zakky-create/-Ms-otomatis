@@ -485,10 +485,7 @@ local function getPrompt()
 	local npc = workspace.NPCs:FindFirstChild("Lamont Bell")
 
 	if npc then
-		local torso = npc:FindFirstChild("UpperTorso")
-		if torso then
-			return torso:FindFirstChildOfClass("ProximityPrompt")
-		end
+		return npc:FindFirstChildWhichIsA("ProximityPrompt", true)
 	end
 
 end
@@ -499,6 +496,16 @@ local function getBag()
 		if tool:IsA("Tool") and string.find(tool.Name,"Marshmallow") then
 			return tool
 		end
+	end
+
+end
+
+local function pressInteract(prompt)
+
+	if prompt then
+		prompt:InputHoldBegin()
+		task.wait(0.5)
+		prompt:InputHoldEnd()
 	end
 
 end
@@ -521,13 +528,11 @@ local function autoSellLoop()
 			hum:EquipTool(bag)
 		end
 
-		task.wait(0.4)
+		task.wait(0.3)
 
 		local prompt = getPrompt()
 
-		if prompt then
-			fireproximityprompt(prompt)
-		end
+		pressInteract(prompt)
 
 		task.wait(0.6)
 
@@ -538,7 +543,6 @@ end
 autoSell.MouseButton1Click:Connect(function()
 
 	selling = not selling
-
 	autoSell.Text = selling and "AUTO SELL : ON" or "AUTO SELL : OFF"
 
 	if selling then
