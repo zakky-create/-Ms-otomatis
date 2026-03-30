@@ -1,0 +1,115 @@
+-- AUTO SELL GUI (DRAG HP)
+
+local player = game.Players.LocalPlayer
+local backpack = player:WaitForChild("Backpack")
+local UIS = game:GetService("UserInputService")
+
+local selling = false
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Parent = game.CoreGui
+
+local frame = Instance.new("Frame")
+frame.Parent = gui
+frame.Size = UDim2.new(0,200,0,60)
+frame.Position = UDim2.new(0.4,0,0.4,0)
+frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+
+local button = Instance.new("TextButton")
+button.Parent = frame
+button.Size = UDim2.new(1,0,1,0)
+button.Text = "AUTO SELL : OFF"
+button.TextColor3 = Color3.new(1,1,1)
+button.BackgroundTransparency = 1
+
+-- DRAG HP
+local dragging = false
+local dragInput
+local dragStart
+local startPos
+
+frame.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = input.Position
+		startPos = frame.Position
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+frame.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.Touch then
+		dragInput = input
+	end
+end)
+
+UIS.InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		local delta = input.Position - dragStart
+		frame.Position = UDim2.new(
+			startPos.X.Scale,
+			startPos.X.Offset + delta.X,
+			startPos.Y.Scale,
+			startPos.Y.Offset + delta.Y
+		)
+	end
+end)
+
+-- PROXIMITY PROMPT
+local prompt = workspace.Folders.NPCs["Lamont Bell"].UpperTorso.ProximityPrompt
+
+-- CARI BAG
+local function getBag()
+	for _,tool in pairs(backpack:GetChildren()) do
+		if tool:IsA("Tool") and string.find(tool.Name,"Marshmallow") then
+			return tool
+		end
+	end
+end
+
+-- AUTO SELL
+local function autoSell()
+
+	while selling do
+
+		local bag = getBag()
+
+		if bag then
+			local hum = player.Character:FindFirstChildOfClass("Humanoid")
+
+			if hum then
+				hum:EquipTool(bag)
+			end
+
+			task.wait(0.3)
+
+			fireproximityprompt(prompt,0.5)
+		end
+
+		task.wait(0.7)
+
+	end
+
+end
+
+-- BUTTON
+button.MouseButton1Click:Connect(function()
+
+	selling = not selling
+
+	if selling then
+		button.Text = "AUTO SELL : ON"
+		task.spawn(autoSell)
+	else
+		button.Text = "AUTO SELL : OFF"
+	end
+
+end)
+
+
