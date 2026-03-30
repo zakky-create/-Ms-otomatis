@@ -1,0 +1,78 @@
+local player = game.Players.LocalPlayer
+local backpack = player:WaitForChild("Backpack")
+
+local selling = false
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Parent = player.PlayerGui
+
+local frame = Instance.new("Frame")
+frame.Parent = gui
+frame.Size = UDim2.new(0,200,0,80)
+frame.Position = UDim2.new(0.4,0,0.4,0)
+frame.BackgroundColor3 = Color3.fromRGB(40,40,40)
+
+local button = Instance.new("TextButton")
+button.Parent = frame
+button.Size = UDim2.new(1,0,1,0)
+button.Text = "AUTO SELL : OFF"
+button.TextScaled = true
+button.BackgroundColor3 = Color3.fromRGB(60,60,60)
+button.TextColor3 = Color3.new(1,1,1)
+
+-- ProximityPrompt
+local prompt = workspace.Folders.NPCs["Lamont Bell"].UpperTorso.ProximityPrompt
+
+-- cari Marshmallow Bag
+local function getBag()
+
+	for _,tool in pairs(backpack:GetChildren()) do
+		if tool:IsA("Tool") and string.find(tool.Name,"Marshmallow") then
+			return tool
+		end
+	end
+
+end
+
+-- AUTO SELL LOOP
+local function autoSell()
+
+	while selling do
+
+		local bag = getBag()
+
+		if bag then
+
+			local hum = player.Character:FindFirstChildOfClass("Humanoid")
+
+			if hum then
+				hum:EquipTool(bag)
+			end
+
+			task.wait(0.3)
+
+			fireproximityprompt(prompt,0.5)
+
+		end
+
+		task.wait(1)
+
+	end
+
+end
+
+-- tombol ON OFF
+button.Activated:Connect(function()
+
+	selling = not selling
+
+	if selling then
+		button.Text = "AUTO SELL : ON"
+		task.spawn(autoSell)
+	else
+		button.Text = "AUTO SELL : OFF"
+	end
+
+end)
+
