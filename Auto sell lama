@@ -1,0 +1,54 @@
+local player = game.Players.LocalPlayer
+local backpack = player:WaitForChild("Backpack")
+
+local prompt = workspace.Folders.NPCs["Lamont Bell"].UpperTorso.ProximityPrompt
+
+-- GUI
+local gui = Instance.new("ScreenGui", game.CoreGui)
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0,200,0,80)
+frame.Position = UDim2.new(0.4,0,0.4,0)
+frame.BackgroundColor3 = Color3.fromRGB(40,40,40)
+frame.Active = true
+frame.Draggable = true
+
+local button = Instance.new("TextButton", frame)
+button.Size = UDim2.new(1,0,1,0)
+button.Text = "AUTO SELL : OFF"
+button.TextScaled = true
+button.BackgroundColor3 = Color3.fromRGB(70,70,70)
+button.TextColor3 = Color3.new(1,1,1)
+
+-- SYSTEM
+local selling = false
+
+button.MouseButton1Click:Connect(function()
+
+    selling = not selling
+    button.Text = selling and "AUTO SELL : ON" or "AUTO SELL : OFF"
+
+    while selling do
+
+        for _,tool in pairs(backpack:GetChildren()) do
+
+            if tool:IsA("Tool") and string.find(tool.Name,"Marshmallow") then
+
+                player.Character.Humanoid:EquipTool(tool)
+                task.wait(0.4)
+
+                prompt:InputHoldBegin()
+                task.wait(0.5)
+                prompt:InputHoldEnd()
+
+                task.wait(0.7)
+
+            end
+
+        end
+
+            task.wait(0.5)
+
+    end
+
+end)
