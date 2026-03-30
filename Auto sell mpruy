@@ -1,0 +1,61 @@
+local player = game.Players.LocalPlayer
+local backpack = player:WaitForChild("Backpack")
+
+local prompt = workspace.Folders.NPCs["Lamont Bell"].UpperTorso.ProximityPrompt
+
+local enabled = false
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0,200,0,80)
+frame.Position = UDim2.new(0.4,0,0.4,0)
+frame.BackgroundColor3 = Color3.fromRGB(40,40,40)
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(1,0,1,0)
+button.Text = "AUTO SELL : OFF"
+button.TextScaled = true
+button.Parent = frame
+
+button.MouseButton1Click:Connect(function()
+	enabled = not enabled
+	button.Text = enabled and "AUTO SELL : ON" or "AUTO SELL : OFF"
+end)
+
+-- cari Marshmallow Bag
+local function getBag()
+	for _,tool in pairs(backpack:GetChildren()) do
+		if tool:IsA("Tool") and tool.Name:find("Marshmallow") then
+			return tool
+		end
+	end
+end
+
+-- loop
+task.spawn(function()
+	while true do
+		task.wait(0.7)
+
+		if enabled then
+
+			local bag = getBag()
+
+			if bag then
+				player.Character.Humanoid:EquipTool(bag)
+				task.wait(0.2)
+
+				fireproximityprompt(prompt)
+			end
+
+		end
+	end
+end)
+
+
