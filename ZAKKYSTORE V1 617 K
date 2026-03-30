@@ -485,20 +485,25 @@ local function getPrompt()
     local npc = workspace.NPCs:FindFirstChild("Lamont Bell")
 
     if npc then
-        return npc:FindFirstChildWhichIsA("ProximityPrompt", true)
+        local torso = npc:FindFirstChild("UpperTorso")
+        if torso then
+            return torso:FindFirstChildOfClass("ProximityPrompt")
+        end
     end
 
 end
 
+
 local function getBag()
 
     for _,tool in pairs(backpack:GetChildren()) do
-        if tool:IsA("Tool") and tool.Name:lower():find("marshmallow") then
+        if tool:IsA("Tool") and tool.Name:find("Marshmallow") then
             return tool
         end
     end
 
 end
+
 
 local function autoSellLoop()
 
@@ -514,18 +519,21 @@ local function autoSellLoop()
                 hum:EquipTool(bag)
             end
 
-            task.wait(0.3)
+            task.wait(0.4)
 
             local prompt = getPrompt()
 
             if prompt then
-                prompt.KeyboardKeyCode = Enum.KeyCode.E
                 fireproximityprompt(prompt,0.5)
             end
 
+        else
+            -- kalau bag habis
+            selling = false
+            autoSell.Text = "AUTO SELL : OFF"
         end
 
-        task.wait(0.6)
+        task.wait(0.7)
 
     end
 
