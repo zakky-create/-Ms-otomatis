@@ -480,60 +480,61 @@ end)
 
 local selling = false
 
-local function getPrompt()
+local function getSellPrompt()
 
-    local npc = workspace.NPCs:FindFirstChild("Lamont Bell")
+    local npcFolder = workspace:FindFirstChild("Folders")
+    if not npcFolder then return end
 
-    if npc then
-        local torso = npc:FindFirstChild("UpperTorso")
-        if torso then
-            return torso:FindFirstChildOfClass("ProximityPrompt")
-        end
-    end
+    local npcs = npcFolder:FindFirstChild("NPCs")
+    if not npcs then return end
+
+    local lamont = npcs:FindFirstChild("Lamont Bell")
+    if not lamont then return end
+
+    local torso = lamont:FindFirstChild("UpperTorso")
+    if not torso then return end
+
+    return torso:FindFirstChildOfClass("ProximityPrompt")
 
 end
 
 
-local function getBag()
-
-    for _,tool in pairs(backpack:GetChildren()) do
-        if tool:IsA("Tool") and tool.Name:find("Marshmallow") then
-            return tool
-        end
-    end
-
+local function isMarshmallow(name)
+    return string.find(name,"Marshmallow")
 end
 
 
 local function autoSellLoop()
 
+    local prompt = getSellPrompt()
+
     while selling do
 
-        local bag = getBag()
+        for _,tool in pairs(backpack:GetChildren()) do
 
-        if bag then
+            if not selling then return end
 
-            local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+            if tool:IsA("Tool") and isMarshmallow(tool.Name) then
 
-            if hum then
-                hum:EquipTool(bag)
+                local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+
+                if hum then
+                    hum:EquipTool(tool)
+                end
+
+                task.wait(0.4)
+
+                if prompt then
+                    fireproximityprompt(prompt)
+                end
+
+                task.wait(1)
+
             end
 
-            task.wait(0.4)
-
-            local prompt = getPrompt()
-
-            if prompt then
-                fireproximityprompt(prompt,0.5)
-            end
-
-        else
-            -- kalau bag habis
-            selling = false
-            autoSell.Text = "AUTO SELL : OFF"
         end
 
-        task.wait(0.7)
+        task.wait(1)
 
     end
 
@@ -543,6 +544,7 @@ end
 autoSell.MouseButton1Click:Connect(function()
 
     selling = not selling
+
     autoSell.Text = selling and "AUTO SELL : ON" or "AUTO SELL : OFF"
 
     if selling then
