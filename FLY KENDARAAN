@@ -1,0 +1,110 @@
+-- VEHICLE FLY SCRIPT
+
+local player = game.Players.LocalPlayer
+local flying = false
+local speed = 120
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Parent = player.PlayerGui
+
+local frame = Instance.new("Frame")
+frame.Parent = gui
+frame.Size = UDim2.new(0,200,0,100)
+frame.Position = UDim2.new(0.5,-100,0.5,-50)
+frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+frame.Active = true
+frame.Draggable = true
+
+local title = Instance.new("TextLabel")
+title.Parent = frame
+title.Size = UDim2.new(1,0,0,30)
+title.BackgroundTransparency = 1
+title.Text = "VEHICLE FLY"
+title.TextColor3 = Color3.new(1,1,1)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+
+local button = Instance.new("TextButton")
+button.Parent = frame
+button.Size = UDim2.new(0.9,0,0,40)
+button.Position = UDim2.new(0.05,0,0,40)
+button.Text = "FLY : OFF"
+button.BackgroundColor3 = Color3.fromRGB(60,60,60)
+button.TextColor3 = Color3.new(1,1,1)
+button.Font = Enum.Font.GothamBold
+button.TextSize = 14
+
+
+-- FLY FUNCTION
+local bodyVelocity
+local bodyGyro
+
+local function startFly()
+
+    local char = player.Character
+    if not char then return end
+
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+
+    bodyVelocity = Instance.new("BodyVelocity")
+    bodyVelocity.MaxForce = Vector3.new(9e9,9e9,9e9)
+    bodyVelocity.Parent = root
+
+    bodyGyro = Instance.new("BodyGyro")
+    bodyGyro.MaxTorque = Vector3.new(9e9,9e9,9e9)
+    bodyGyro.Parent = root
+
+    while flying do
+
+        local cam = workspace.CurrentCamera
+        bodyVelocity.Velocity = cam.CFrame.LookVector * speed
+        bodyGyro.CFrame = cam.CFrame
+
+        task.wait()
+
+    end
+
+end
+
+
+-- NOCLIP
+game:GetService("RunService").Stepped:Connect(function()
+
+    if flying then
+        local char = player.Character
+        if char then
+            for _,v in pairs(char:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    v.CanCollide = false
+                end
+            end
+        end
+    end
+
+end)
+
+
+-- BUTTON
+button.MouseButton1Click:Connect(function()
+
+    flying = not flying
+
+    if flying then
+        button.Text = "FLY : ON"
+        task.spawn(startFly)
+    else
+        button.Text = "FLY : OFF"
+
+        if bodyVelocity then
+            bodyVelocity:Destroy()
+        end
+
+        if bodyGyro then
+            bodyGyro:Destroy()
+        end
+    end
+
+end)
+
