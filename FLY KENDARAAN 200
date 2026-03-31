@@ -1,0 +1,135 @@
+-- VEHICLE FLY SYSTEM + GUI (HP SUPPORT)
+
+local player = game.Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Parent = game.CoreGui
+
+local frame = Instance.new("Frame")
+frame.Parent = gui
+frame.Size = UDim2.new(0,200,0,200)
+frame.Position = UDim2.new(0.8,0,0.6,0)
+frame.BackgroundTransparency = 0.3
+frame.BackgroundColor3 = Color3.fromRGB(20,20,20)
+
+local function createButton(name,pos)
+	local btn = Instance.new("TextButton")
+	btn.Parent = frame
+	btn.Size = UDim2.new(0,60,0,60)
+	btn.Position = pos
+	btn.Text = name
+	btn.BackgroundColor3 = Color3.fromRGB(40,40,40)
+	btn.TextColor3 = Color3.new(1,1,1)
+	return btn
+end
+
+local W = createButton("W",UDim2.new(0.33,0,0,0))
+local A = createButton("A",UDim2.new(0,0,0.33,0))
+local S = createButton("S",UDim2.new(0.33,0,0.66,0))
+local D = createButton("D",UDim2.new(0.66,0,0.33,0))
+
+-- VEHICLE FLY
+local flying = false
+local speed = 60
+local bodyVelocity
+
+local function getVehicle()
+	local humanoid = char:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		return humanoid.SeatPart
+	end
+end
+
+local function startFly()
+
+	local vehicle = getVehicle()
+	if not vehicle then return end
+
+	flying = true
+
+	bodyVelocity = Instance.new("BodyVelocity")
+	bodyVelocity.MaxForce = Vector3.new(1e6,1e6,1e6)
+	bodyVelocity.Parent = vehicle
+
+	while flying and vehicle.Parent do
+		wait()
+
+		local move = Vector3.new()
+
+		if W.Active then
+			move = move + workspace.CurrentCamera.CFrame.LookVector
+		end
+
+		if S.Active then
+			move = move - workspace.CurrentCamera.CFrame.LookVector
+		end
+
+		if A.Active then
+			move = move - workspace.CurrentCamera.CFrame.RightVector
+		end
+
+		if D.Active then
+			move = move + workspace.CurrentCamera.CFrame.RightVector
+		end
+
+		bodyVelocity.Velocity = move * speed
+	end
+
+end
+
+-- BUTTON EVENTS
+
+W.MouseButton1Down:Connect(function()
+	W.Active = true
+end)
+
+W.MouseButton1Up:Connect(function()
+	W.Active = false
+end)
+
+A.MouseButton1Down:Connect(function()
+	A.Active = true
+end)
+
+A.MouseButton1Up:Connect(function()
+	A.Active = false
+end)
+
+S.MouseButton1Down:Connect(function()
+	S.Active = true
+end)
+
+S.MouseButton1Up:Connect(function()
+	S.Active = false
+end)
+
+D.MouseButton1Down:Connect(function()
+	D.Active = true
+end)
+
+D.MouseButton1Up:Connect(function()
+	D.Active = false
+end)
+
+-- START FLY LOOP
+
+task.spawn(function()
+	while wait(1) do
+		if getVehicle() then
+			startFly()
+		end
+	end
+end)
+
+-- Noclip
+game:GetService("RunService").Stepped:Connect(function()
+	if flying then
+		for _,v in pairs(char:GetDescendants()) do
+			if v:IsA("BasePart") then
+				v.CanCollide = false
+			end
+		end
+	end
+end)
