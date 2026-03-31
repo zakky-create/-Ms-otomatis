@@ -3,6 +3,29 @@
 local player = game.Players.LocalPlayer
 local char = player.Character or player.CharacterAdded:Wait()
 
+-- ADMIN SYSTEM
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- MASUKKAN USER ID ADMIN
+local ADMIN_IDS = {
+    9482202285
+}
+
+local function isAdmin()
+    for _,id in pairs(ADMIN_IDS) do
+        if player.UserId == id then
+            return true
+        end
+    end
+    return false
+end
+
+-- kalau bukan admin script tidak jalan
+if not isAdmin() then
+    return
+end
+
 -- GUI
 local gui = Instance.new("ScreenGui")
 gui.Parent = game.CoreGui
