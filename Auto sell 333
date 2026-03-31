@@ -1,0 +1,47 @@
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local prompt = workspace.Folders.NPCs["Lamont Bell"].UpperTorso.ProximityPrompt
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "AutoSellGui"
+gui.Parent = playerGui
+gui.ResetOnSpawn = false
+
+local frame = Instance.new("Frame")
+frame.Parent = gui
+frame.Size = UDim2.new(0,200,0,80)
+frame.Position = UDim2.new(0.4,0,0.4,0)
+frame.BackgroundColor3 = Color3.fromRGB(40,40,40)
+frame.Active = true
+frame.Draggable = true
+
+local button = Instance.new("TextButton")
+button.Parent = frame
+button.Size = UDim2.new(1,0,1,0)
+button.Text = "AUTO SELL : OFF"
+button.TextScaled = true
+button.BackgroundColor3 = Color3.fromRGB(80,80,80)
+button.TextColor3 = Color3.new(1,1,1)
+
+local selling = false
+
+button.MouseButton1Click:Connect(function()
+
+    selling = not selling
+    button.Text = selling and "AUTO SELL : ON" or "AUTO SELL : OFF"
+
+    while selling do
+
+        prompt:InputHoldBegin()
+        task.wait(0.5)
+        prompt:InputHoldEnd()
+
+        task.wait(1)
+
+    end
+
+end)
+
+
