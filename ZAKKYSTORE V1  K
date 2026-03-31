@@ -58,6 +58,47 @@ farmPage.Position = UDim2.new(0,0,0,70)
 farmPage.BackgroundTransparency = 1
 farmPage.Visible = true
 
+-- BUY AMOUNT INPUT
+
+local BuyAmount = 1
+local MAX_BUY = 100
+
+local buyLabel = Instance.new("TextLabel",farmPage)
+buyLabel.Size = UDim2.new(0.5,0,0,25)
+buyLabel.Position = UDim2.new(0.05,0,0,90)
+buyLabel.BackgroundTransparency = 1
+buyLabel.Text = "BUY AMOUNT :"
+buyLabel.TextColor3 = Color3.new(1,1,1)
+buyLabel.Font = Enum.Font.GothamBold
+buyLabel.TextSize = 14
+buyLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+local buyBox = Instance.new("TextBox",farmPage)
+buyBox.Size = UDim2.new(0.3,0,0,25)
+buyBox.Position = UDim2.new(0.65,0,0,90)
+buyBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
+buyBox.TextColor3 = Color3.new(1,1,1)
+buyBox.Text = "1"
+buyBox.ClearTextOnFocus = false
+buyBox.Font = Enum.Font.GothamBold
+buyBox.TextSize = 14
+
+Instance.new("UICorner",buyBox)
+
+buyBox.FocusLost:Connect(function()
+
+    local num = tonumber(buyBox.Text)
+
+    if num then
+        BuyAmount = math.clamp(num,1,100)
+    else
+        BuyAmount = 1
+    end
+
+    buyBox.Text = tostring(BuyAmount)
+
+end)
+
 local tpPage = Instance.new("Frame")
 tpPage.Parent = frame
 tpPage.Size = UDim2.new(1,0,1,-70)
@@ -134,30 +175,7 @@ bag.Parent = farmPage
 bag.Position = UDim2.new(0.05,0,0,65)
 bag.Text = "👜 Marshmallow Bag: 0"
 
--- SLIDER
-local sliderBar = Instance.new("Frame",farmPage)
-sliderBar.Position = UDim2.new(0.05,0,0,90)
-sliderBar.Size = UDim2.new(0.9,0,0,6)
-sliderBar.BackgroundColor3 = Color3.fromRGB(60,60,60)
 
-local sliderFill = Instance.new("Frame",sliderBar)
-sliderFill.Size = UDim2.new(0,0,1,0)
-sliderFill.BackgroundColor3 = Color3.fromRGB(0,170,255)
-
-local sliderButton = Instance.new("Frame",sliderBar)
-sliderButton.Size = UDim2.new(0,18,0,18)
-sliderButton.Position = UDim2.new(0,-9,0.5,-9)
-sliderButton.BackgroundColor3 = Color3.fromRGB(0,170,255)
-sliderButton.Active = true
-
-Instance.new("UICorner",sliderButton)
-
-local amountLabel = Instance.new("TextLabel",farmPage)
-amountLabel.Position = UDim2.new(0.05,0,0,105)
-amountLabel.Size = UDim2.new(0.9,0,0,20)
-amountLabel.BackgroundTransparency = 1
-amountLabel.Text = "BUY AMOUNT : 1"
-amountLabel.TextColor3 = Color3.new(1,1,1)
 
 -- FARM BUTTON
 local autoFarm = makeButton(farmPage,"AUTO FARM : OFF",130)
@@ -275,55 +293,6 @@ if espEnabled then
 else
 	clearESP()
 end
-
-end)
-
--- BUY AMOUNT SYSTEM
-local UIS = game:GetService("UserInputService")
-
-local dragging = false
-local BuyAmount = 1
-local maxBuy = 100
-
-local function updateSlider(x)
-
-local barPos = sliderBar.AbsolutePosition.X
-local barSize = sliderBar.AbsoluteSize.X
-
-local percent = math.clamp((x - barPos)/barSize,0,1)
-
-sliderFill.Size = UDim2.new(percent,0,1,0)
-sliderButton.Position = UDim2.new(percent,-9,0.5,-9)
-
-BuyAmount = math.floor(1 + (maxBuy-1)*percent + 0.5)
-
-amountLabel.Text = "BUY AMOUNT : "..BuyAmount
-
-end
-
-sliderBar.InputBegan:Connect(function(input)
-
-if input.UserInputType == Enum.UserInputType.MouseButton1
-or input.UserInputType == Enum.UserInputType.Touch then
-
-dragging = true
-updateSlider(input.Position.X)
-
-end
-
-end)
-
-UIS.InputChanged:Connect(function(input)
-
-if dragging then
-updateSlider(input.Position.X)
-end
-
-end)
-
-UIS.InputEnded:Connect(function()
-
-dragging = false
 
 end)
 
