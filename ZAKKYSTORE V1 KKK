@@ -522,11 +522,10 @@ autoSell.MouseButton1Click:Connect(function()
 
 end)
 
--- TELEPORT
-local TweenService = game:GetService("TweenService")
+-- TELEPORT LANGSUNG
 
 local NPC = Vector3.new(510,4,600)
-local APT1 = Vector3.new(1202,3,-182)
+local APT1 = Vector3.new(1203,4,-181)
 
 local function getSeat()
 
@@ -556,18 +555,10 @@ local function teleport(pos)
             local newPos = part.Position + offset
 
             -- menghadap BARAT
-            local newCFrame = CFrame.lookAt(
+            part.CFrame = CFrame.lookAt(
                 newPos,
                 newPos + Vector3.new(-1,0,0)
             )
-
-            local tween = TweenService:Create(
-                part,
-                TweenInfo.new(2),
-                {CFrame = newCFrame}
-            )
-
-            tween:Play()
 
         end
 
