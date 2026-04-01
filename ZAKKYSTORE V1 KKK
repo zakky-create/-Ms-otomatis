@@ -213,28 +213,6 @@ local function setup(char)
     highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
     highlight.Parent = char
 
-	local bill = Instance.new("BillboardGui")  
-	bill.Size = UDim2.new(4,0,6,0)  
-	bill.Adornee = hrp  
-	bill.AlwaysOnTop = true  
-	bill.MaxDistance = 10000  
-
-	local function line(size,pos)  
-		local l = Instance.new("Frame")  
-		l.Size = size  
-		l.Position = pos  
-		l.BackgroundColor3 = Color3.fromRGB(255,0,0)  
-		l.BorderSizePixel = 0  
-		l.Parent = bill  
-	end  
-
-	line(UDim2.new(1,0,0,2),UDim2.new(0,0,0,0))  
-	line(UDim2.new(1,0,0,2),UDim2.new(0,0,1,-2))  
-	line(UDim2.new(0,2,1,0),UDim2.new(0,0,0,0))  
-	line(UDim2.new(0,2,1,0),UDim2.new(1,-2,0,0))  
-
-	bill.Parent = char  
-
 	local nameGui = Instance.new("BillboardGui")  
 	nameGui.Size = UDim2.new(0,150,0,40)  
 	nameGui.Adornee = hrp  
