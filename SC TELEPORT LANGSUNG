@@ -1,0 +1,114 @@
+-- TELEPORT GUI SYSTEM
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+--------------------------------------------------
+-- KOORDINAT
+--------------------------------------------------
+
+local NPC = Vector3.new(510,4,600)
+local APT1 = Vector3.new(1202,3,-182)
+
+--------------------------------------------------
+-- GUI
+--------------------------------------------------
+
+local gui = Instance.new("ScreenGui")
+gui.Parent = game.CoreGui
+gui.ResetOnSpawn = false
+
+local frame = Instance.new("Frame")
+frame.Parent = gui
+frame.Size = UDim2.new(0,200,0,120)
+frame.Position = UDim2.new(0.75,0,0.5,0)
+frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
+frame.Active = true
+frame.Draggable = true
+
+Instance.new("UICorner",frame)
+
+local title = Instance.new("TextLabel")
+title.Parent = frame
+title.Size = UDim2.new(1,0,0,30)
+title.BackgroundTransparency = 1
+title.Text = "TELEPORT PANEL"
+title.TextColor3 = Color3.new(1,1,1)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+
+--------------------------------------------------
+-- BUTTON FUNCTION
+--------------------------------------------------
+
+local function makeButton(text,y)
+
+	local btn = Instance.new("TextButton")
+	btn.Parent = frame
+	btn.Size = UDim2.new(0.9,0,0,30)
+	btn.Position = UDim2.new(0.05,0,0,y)
+	btn.BackgroundColor3 = Color3.fromRGB(40,40,40)
+	btn.TextColor3 = Color3.new(1,1,1)
+	btn.Text = text
+	btn.Font = Enum.Font.GothamBold
+	btn.TextSize = 14
+	
+	Instance.new("UICorner",btn)
+
+	return btn
+
+end
+
+local tpNPC = makeButton("Teleport NPC",40)
+local tpAPT1 = makeButton("Teleport APT1",75)
+
+--------------------------------------------------
+-- VEHICLE DETECTOR
+--------------------------------------------------
+
+local function getSeat()
+
+	local char = player.Character
+	if not char then return end
+
+	local humanoid = char:FindFirstChildOfClass("Humanoid")
+
+	if humanoid and humanoid.SeatPart then
+		return humanoid.SeatPart
+	end
+
+end
+
+--------------------------------------------------
+-- TELEPORT FUNCTION
+--------------------------------------------------
+
+local function teleport(pos)
+
+	local seat = getSeat()
+	if not seat then return end
+
+	local vehicle = seat.Parent
+
+	-- arah UTARA
+	local cf = CFrame.lookAt(pos + Vector3.new(0,3,0), pos + Vector3.new(0,3,-1))
+
+	if vehicle.PrimaryPart then
+		vehicle:SetPrimaryPartCFrame(cf)
+	else
+		seat.CFrame = cf
+	end
+
+end
+
+--------------------------------------------------
+-- BUTTON EVENTS
+--------------------------------------------------
+
+tpNPC.MouseButton1Click:Connect(function()
+	teleport(NPC)
+end)
+
+tpAPT1.MouseButton1Click:Connect(function()
+	teleport(APT1)
+end)
