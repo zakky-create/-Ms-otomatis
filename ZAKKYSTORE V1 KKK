@@ -205,6 +205,12 @@ local function setup(char)
 	local hum = char:WaitForChild("Humanoid",5)  
 	if not hrp then return end  
 
+    for _,v in pairs(char:GetChildren()) do
+    if v:IsA("BillboardGui") or v:IsA("Highlight") then
+        v:Destroy()
+    end
+end
+
     -- 3D ESP (Highlight)
     local highlight = Instance.new("Highlight")
     highlight.FillTransparency = 1
