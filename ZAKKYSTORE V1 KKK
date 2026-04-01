@@ -523,56 +523,65 @@ autoSell.MouseButton1Click:Connect(function()
 end)
 
 -- TELEPORT
+local TweenService = game:GetService("TweenService")
+
 local NPC = Vector3.new(510,4,600)
 local APT1 = Vector3.new(1202,3,-182)
 
 local function getSeat()
 
-local char = player.Character
-if not char then return end
+    local char = player.Character
+    if not char then return end
 
-local humanoid = char:FindFirstChildOfClass("Humanoid")
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
 
-if humanoid and humanoid.SeatPart then
-return humanoid.SeatPart
-end
+    if humanoid and humanoid.SeatPart then
+        return humanoid.SeatPart
+    end
 
 end
 
 local function teleport(pos)
 
-local seat = getSeat()
+    local seat = getSeat()
+    if not seat then return end
 
-if seat then
+    local vehicle = seat.Parent
+    local offset = pos - seat.Position
 
-local vehicle = seat.Parent
+    for _,part in pairs(vehicle:GetDescendants()) do
 
-for _,part in pairs(vehicle:GetDescendants()) do
+        if part:IsA("BasePart") then
 
-if part:IsA("BasePart") then
+            local newPos = part.Position + offset
 
-local tween = TweenService:Create(
-part,
-TweenInfo.new(2),
-{CFrame = part.CFrame + (pos - seat.Position)}
-)
+            -- menghadap BARAT
+            local newCFrame = CFrame.lookAt(
+                newPos,
+                newPos + Vector3.new(-1,0,0)
+            )
 
-tween:Play()
+            local tween = TweenService:Create(
+                part,
+                TweenInfo.new(2),
+                {CFrame = newCFrame}
+            )
+
+            tween:Play()
+
+        end
+
+    end
 
 end
 
-end
-
-end
-
-end
 
 tpNPC.MouseButton1Click:Connect(function()
-teleport(NPC)
+    teleport(NPC)
 end)
 
 tpAPT1.MouseButton1Click:Connect(function()
-teleport(APT1)
+    teleport(APT1)
 end)
 
 -- ITEM GUI UPDATE
