@@ -1,0 +1,165 @@
+-- ADMIN VEHICLE FLY (HP FRIENDLY)
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+
+-------------------------------------------------
+-- ADMIN ID
+-------------------------------------------------
+
+local ADMIN_IDS = {
+    9482202285
+}
+
+local function isAdmin()
+    for _,id in pairs(ADMIN_IDS) do
+        if player.UserId == id then
+            return true
+        end
+    end
+    return false
+end
+
+if not isAdmin() then return end
+
+-------------------------------------------------
+-- GUI
+-------------------------------------------------
+
+local gui = Instance.new("ScreenGui",game.CoreGui)
+
+local frame = Instance.new("Frame",gui)
+frame.Size = UDim2.new(0,200,0,200)
+frame.Position = UDim2.new(0.75,0,0.6,0)
+frame.BackgroundColor3 = Color3.fromRGB(20,20,20)
+frame.BackgroundTransparency = 0.2
+
+local function makeBtn(text,pos)
+
+local b = Instance.new("TextButton",frame)
+b.Size = UDim2.new(0,60,0,60)
+b.Position = pos
+b.Text = text
+b.BackgroundColor3 = Color3.fromRGB(40,40,40)
+b.TextColor3 = Color3.new(1,1,1)
+
+return b
+
+end
+
+local W = makeBtn("W",UDim2.new(0.33,0,0,0))
+local A = makeBtn("A",UDim2.new(0,0,0.33,0))
+local S = makeBtn("S",UDim2.new(0.33,0,0.66,0))
+local D = makeBtn("D",UDim2.new(0.66,0,0.33,0))
+
+-------------------------------------------------
+-- CONTROL
+-------------------------------------------------
+
+local key = {W=false,A=false,S=false,D=false}
+
+local function hold(btn,name)
+
+btn.MouseButton1Down:Connect(function()
+key[name] = true
+end)
+
+btn.MouseButton1Up:Connect(function()
+key[name] = false
+end)
+
+end
+
+hold(W,"W")
+hold(A,"A")
+hold(S,"S")
+hold(D,"D")
+
+-------------------------------------------------
+-- VEHICLE SYSTEM
+-------------------------------------------------
+
+local speed = 70
+local bv
+local bg
+
+local function getSeat()
+
+local hum = char:FindFirstChildOfClass("Humanoid")
+
+if hum then
+return hum.SeatPart
+end
+
+end
+
+RunService.RenderStepped:Connect(function()
+
+local seat = getSeat()
+
+if not seat then
+bv=nil
+bg=nil
+return
+end
+
+if not bv then
+
+bv = Instance.new("BodyVelocity")
+bv.MaxForce = Vector3.new(20000,20000,20000)
+bv.Parent = seat
+
+bg = Instance.new("BodyGyro")
+bg.MaxTorque = Vector3.new(20000,20000,20000)
+bg.P = 5000
+bg.Parent = seat
+
+end
+
+local cam = workspace.CurrentCamera
+local move = Vector3.new()
+
+if key.W then
+move += cam.CFrame.LookVector
+end
+
+if key.S then
+move -= cam.CFrame.LookVector
+end
+
+if key.A then
+move -= cam.CFrame.RightVector
+end
+
+if key.D then
+move += cam.CFrame.RightVector
+end
+
+bv.Velocity = move * speed
+bg.CFrame = cam.CFrame
+
+end)
+
+-------------------------------------------------
+-- NOCLIP
+-------------------------------------------------
+
+RunService.Stepped:Connect(function()
+
+local hum = char:FindFirstChildOfClass("Humanoid")
+
+if hum and hum.SeatPart then
+
+for _,v in pairs(char:GetDescendants()) do
+if v:IsA("BasePart") then
+v.CanCollide = false
+end
+end
+
+end
+
+end)
+
