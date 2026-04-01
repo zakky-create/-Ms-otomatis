@@ -546,23 +546,16 @@ local function teleport(pos)
     if not seat then return end
 
     local vehicle = seat.Parent
-    local offset = pos - seat.Position
+    local cf = CFrame.lookAt(
+    pos + Vector3.new(0,3,0),
+    pos + Vector3.new(0,3,-1)
+)
 
-    for _,part in pairs(vehicle:GetDescendants()) do
-
-        if part:IsA("BasePart") then
-
-            local newPos = part.Position + offset
-
-            -- menghadap BARAT
-            part.CFrame = CFrame.lookAt(
-                newPos,
-                newPos + Vector3.new(-1,0,0)
-            )
-
-        end
-
-    end
+if vehicle.PrimaryPart then
+    vehicle:SetPrimaryPartCFrame(cf)
+else
+    seat.CFrame = cf
+end
 
 end
 
