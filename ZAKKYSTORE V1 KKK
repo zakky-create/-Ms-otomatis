@@ -534,23 +534,25 @@ end
 
 local function teleport(pos)
 
-    local seat = getSeat()
-    if not seat then return end
+	local seat = getSeat()
+	if not seat then return end
 
-    local vehicle = seat.Parent
-    local cf = CFrame.lookAt(
-    pos + Vector3.new(0,3,0),
-    pos + Vector3.new(0,3,-1)
-)
+	local vehicle = seat.Parent
 
-if vehicle.PrimaryPart then
-    vehicle:SetPrimaryPartCFrame(cf)
-else
-    seat.CFrame = cf
+	local targetCF = CFrame.lookAt(pos + Vector3.new(0,3,0), pos + Vector3.new(0,3,-1))
+
+	local part = vehicle.PrimaryPart or seat
+
+	local tweenInfo = TweenInfo.new(
+		3, -- waktu perjalanan (detik)
+		Enum.EasingStyle.Linear,
+		Enum.EasingDirection.Out
+	)
+
+	local tween = TweenService:Create(part, tweenInfo, {CFrame = targetCF})
+	tween:Play()
+
 end
-
-end
-
 
 tpNPC.MouseButton1Click:Connect(function()
     teleport(NPC)
