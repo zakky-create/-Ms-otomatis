@@ -516,24 +516,7 @@ end)
 
 -- TELEPORT LANGSUNG
 
-local NPC = Vector3.new(510,4,600)
-local APT1 = Vector3.new(1203,4,-181)
-
 local TweenService = game:GetService("TweenService")
-
-local function getSeat()
-
-    local char = player.Character
-    if not char then return end
-
-    local humanoid = char:FindFirstChildOfClass("Humanoid")
-
-    if humanoid and humanoid.SeatPart then
-        return humanoid.SeatPart
-    end
-
-end
-
 
 local function teleport(pos)
 
@@ -542,16 +525,15 @@ local function teleport(pos)
 
     local vehicle = seat.Parent
 
-    -- arah utara
     local targetCF = CFrame.lookAt(
         pos + Vector3.new(0,3,0),
-        pos + Vector3.new(0,3,-1)
+        pos + Vector3.new(0,3,-1) -- arah utara
     )
 
     for _,part in pairs(vehicle:GetDescendants()) do
         if part:IsA("BasePart") then
 
-            local offset = part.CFrame:ToObjectSpace(seat.CFrame)
+            local offset = seat.CFrame:ToObjectSpace(part.CFrame)
 
             local tween = TweenService:Create(
                 part,
@@ -563,9 +545,7 @@ local function teleport(pos)
 
         end
     end
-
 end
-
 
 tpNPC.MouseButton1Click:Connect(function()
     teleport(NPC)
