@@ -516,7 +516,6 @@ end)
 
 -- TELEPORT LANGSUNG
 
-local TweenService = game:GetService("TweenService")
 local player = game.Players.LocalPlayer
 
 local NPC = Vector3.new(510,4,600)
@@ -544,33 +543,24 @@ local function teleport(pos)
 	local vehicle = seat:FindFirstAncestorOfClass("Model")
 	if not vehicle then return end
 
-	-- jika PrimaryPart belum ada
-	if not vehicle.PrimaryPart then
-		vehicle.PrimaryPart = seat
-	end
-
-	local part = vehicle.PrimaryPart
+	local part = vehicle.PrimaryPart or seat
 
 	local targetCF = CFrame.lookAt(
 		pos + Vector3.new(0,3,0),
-		pos
+		pos + Vector3.new(0,3,-1) -- arah utara
 	)
 
-	local tweenInfo = TweenInfo.new(
-		3,
-		Enum.EasingStyle.Linear,
-		Enum.EasingDirection.Out
-	)
-
-	local tween = TweenService:Create(part, tweenInfo, {CFrame = targetCF})
-	tween:Play()
+	part.CFrame = targetCF
 
 end
 
+
+-- tombol teleport ke NPC
 tpNPC.MouseButton1Click:Connect(function()
     teleport(NPC)
 end)
 
+-- tombol teleport ke apartemen
 tpAPT1.MouseButton1Click:Connect(function()
     teleport(APT1)
 end)
