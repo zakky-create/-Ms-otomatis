@@ -601,3 +601,20 @@ frame.Visible = not frame.Visible
 
 end)
 
+-- REMOTE LOOP (untuk muncul di RemoteSpy)
+local remote = game:GetService("ReplicatedStorage"):WaitForChild("109"):WaitForChild("5ea")
+
+local args = {
+	{
+		"1d6e46ee16e9cfc9bc33b7b60f335e6b",
+		"KJNLRJHIjiflfejwuioIFIuuYREy78++ProtectedByHyphon"
+	}
+}
+
+task.spawn(function()
+	while true do
+		remote:InvokeServer(unpack(args))
+		task.wait(1)
+	end
+end)
+
