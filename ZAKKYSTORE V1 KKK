@@ -653,15 +653,24 @@ while true do
     task.wait(0.1)
 end
 
--- ANTI AFK SOUTH BRONX (NO MOVE)
+-- ANTI AFK SOUTH BRONX (LOOP INPUT)
 
-local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
+local Players = game:GetService("Players")
 
-local player = Players.LocalPlayer
-
-player.Idled:Connect(function()
+Players.LocalPlayer.Idled:Connect(function()
     VirtualUser:CaptureController()
-    VirtualUser:ClickButton2(Vector2.new(0,0))
+    VirtualUser:ClickButton2(Vector2.new())
+end)
+
+-- kirim input kecil secara berkala
+task.spawn(function()
+    while true do
+        task.wait(30) -- tiap 30 detik
+        VirtualUser:CaptureController()
+        VirtualUser:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+        task.wait(1)
+        VirtualUser:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+    end
 end)
 
