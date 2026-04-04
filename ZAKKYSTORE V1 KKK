@@ -516,6 +516,9 @@ end)
 
 -- TELEPORT LANGSUNG
 
+local TweenService = game:GetService("TweenService")
+local player = game.Players.LocalPlayer
+
 local NPC = Vector3.new(510,4,600)
 local APT1 = Vector3.new(1203,4,-181)
 
@@ -532,19 +535,29 @@ local function getSeat()
 
 end
 
+
 local function teleport(pos)
 
 	local seat = getSeat()
 	if not seat then return end
 
-	local vehicle = seat.Parent
+	local vehicle = seat:FindFirstAncestorOfClass("Model")
+	if not vehicle then return end
 
-	local targetCF = CFrame.lookAt(pos + Vector3.new(0,3,0), pos + Vector3.new(0,3,-1))
+	-- jika PrimaryPart belum ada
+	if not vehicle.PrimaryPart then
+		vehicle.PrimaryPart = seat
+	end
 
-	local part = vehicle.PrimaryPart or seat
+	local part = vehicle.PrimaryPart
+
+	local targetCF = CFrame.lookAt(
+		pos + Vector3.new(0,3,0),
+		pos
+	)
 
 	local tweenInfo = TweenInfo.new(
-		3, -- waktu perjalanan (detik)
+		3,
 		Enum.EasingStyle.Linear,
 		Enum.EasingDirection.Out
 	)
