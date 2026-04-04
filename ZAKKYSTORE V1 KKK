@@ -516,8 +516,8 @@ end)
 
 -- TELEPORT LANGSUNG
 
-local NPC = Vector3.new(523,3,615)
-local APT1 = Vector3.new(1202,3,-182)
+local NPC = Vector3.new(510,4,600)
+local APT1 = Vector3.new(1203,4,-181)
 
 local TweenService = game:GetService("TweenService")
 
