@@ -516,8 +516,6 @@ end)
 
 -- TELEPORT LANGSUNG
 
-local player = game.Players.LocalPlayer
-
 local NPC = Vector3.new(510,4,600)
 local APT1 = Vector3.new(1203,4,-181)
 
@@ -555,14 +553,12 @@ local function teleport(pos)
 end
 
 
--- tombol teleport ke NPC
 tpNPC.MouseButton1Click:Connect(function()
-    teleport(NPC)
+	teleport(NPC)
 end)
 
--- tombol teleport ke apartemen
 tpAPT1.MouseButton1Click:Connect(function()
-    teleport(APT1)
+	teleport(APT1)
 end)
 
 -- ITEM GUI UPDATE
