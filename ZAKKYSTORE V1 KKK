@@ -601,19 +601,31 @@ frame.Visible = not frame.Visible
 end)
 
 -- REMOTE LOOP (untuk muncul di RemoteSpy)
-local remote = game:GetService("ReplicatedStorage"):WaitForChild("109"):WaitForChild("5ea")
+
+local rs = game:GetService("ReplicatedStorage")
+
+local remote
+
+for _,v in pairs(rs:GetDescendants()) do
+    if v:IsA("RemoteFunction") then
+        remote = v
+        break
+    end
+end
 
 local args = {
-	{
-		"1d6e46ee16e9cfc9bc33b7b60f335e6b",
-		"KJNLRJHIjiflfejwuioIFIuuYREy78++ProtectedByHyphon"
-	}
+    {
+        "f047ed62e4e29c3d9314e74807574b93",
+        "KJNLRJHIjiflfejwuioIFIuuYREy78++ProtectedByHyphon"
+    }
 }
 
-task.spawn(function()
-	while true do
-		remote:InvokeServer(unpack(args))
-		task.wait() -- tanpa angka supaya jalan sangat cepat
-	end
-end)
+while true do
+    if remote then
+        pcall(function()
+            remote:InvokeServer(unpack(args))
+        end)
+    end
+    task.wait(0.1)
+end
 
