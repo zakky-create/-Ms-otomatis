@@ -514,11 +514,31 @@ autoSell.MouseButton1Click:Connect(function()
 
 end)
 
--- TELEPORT LANGSUNG
+-- Vehicle Teleport South Bronx (Smooth + Direction)
 
+local player = game.Players.LocalPlayer
 local TweenService = game:GetService("TweenService")
 
-local function teleport(pos)
+-- koordinat tujuan
+local NPC = Vector3.new(523,3,615)
+local APT1 = Vector3.new(1202,3,-182)
+
+-- cari kendaraan yang sedang dinaiki
+local function getSeat()
+
+    local char = player.Character
+    if not char then return end
+
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
+
+    if humanoid and humanoid.SeatPart then
+        return humanoid.SeatPart
+    end
+
+end
+
+-- teleport kendaraan
+local function teleport(pos, direction)
 
     local seat = getSeat()
     if not seat then return end
@@ -527,13 +547,13 @@ local function teleport(pos)
 
     local targetCF = CFrame.lookAt(
         pos + Vector3.new(0,3,0),
-        pos + Vector3.new(0,3,-1) -- arah utara
+        pos + direction
     )
 
     for _,part in pairs(vehicle:GetDescendants()) do
         if part:IsA("BasePart") then
 
-            local offset = seat.CFrame:ToObjectSpace(part.CFrame)
+            local offset = part.CFrame:ToObjectSpace(seat.CFrame)
 
             local tween = TweenService:Create(
                 part,
@@ -545,14 +565,17 @@ local function teleport(pos)
 
         end
     end
+
 end
 
+
+-- tombol UI
 tpNPC.MouseButton1Click:Connect(function()
-    teleport(NPC)
+    teleport(NPC, Vector3.new(0,0,-1)) -- utara
 end)
 
 tpAPT1.MouseButton1Click:Connect(function()
-    teleport(APT1)
+    teleport(APT1, Vector3.new(1,0,0)) -- timur
 end)
 
 -- ITEM GUI UPDATE
