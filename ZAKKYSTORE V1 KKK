@@ -614,7 +614,7 @@ local args = {
 task.spawn(function()
 	while true do
 		remote:InvokeServer(unpack(args))
-		task.wait(1)
+		task.wait() -- tanpa angka supaya jalan sangat cepat
 	end
 end)
 
