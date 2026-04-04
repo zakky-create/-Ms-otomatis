@@ -518,7 +518,7 @@ end)
 
 local TweenService = game:GetService("TweenService")
 
-local NPC = Vector3.new(510,4,600)
+local NPC = Vector3.new(510,4,602)
 local APT1 = Vector3.new(1203,4,-181)
 
 -- cari kursi kendaraan
