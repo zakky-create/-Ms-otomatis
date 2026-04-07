@@ -237,7 +237,7 @@ end
 
 	nameGui.Parent = char  
 
-	espList[targetplayer] = {bill,nameGui}  
+	espList[targetplayer] = {highlight,nameGui}  
 
 	RunService.RenderStepped:Connect(function()  
 		if espEnabled and hum and hum.Parent then  
@@ -284,16 +284,16 @@ if espEnabled then
 	createESP(p)
   end)
 
-	end)
-
 else
-	clearESP()
+	
+    clearESP()
 
     if playerAddedConnection then
 		playerAddedConnection:Disconnect()
 		playerAddedConnection = nil
 	end
-end
+
+  end
 
 end)
 
@@ -667,7 +667,6 @@ end
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
-local player = Players.LocalPlayer
 local cam = workspace.CurrentCamera
 
 RunService.RenderStepped:Connect(function()
@@ -688,7 +687,6 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
-local player = game.Players.LocalPlayer
 local char = player.Character or player.CharacterAdded:Wait()
 
 while true do
