@@ -194,8 +194,10 @@ local RunService = game:GetService("RunService")
 
 local espEnabled = false
 local espList = {}
+local playerAddedConnection
 
 local function createESP(targetplayer)
+  if not espEnabled then return end
 
 if targetplayer == player then return end  
 
@@ -278,12 +280,19 @@ if espEnabled then
 		end
 	end
 
-	Players.PlayerAdded:Connect(function(p)
-		createESP(p)
+  playerAddedConnection = Players.PlayerAdded:Connect(function(p)
+	createESP(p)
+  end)
+
 	end)
 
 else
 	clearESP()
+
+    if playerAddedConnection then
+		playerAddedConnection:Disconnect()
+		playerAddedConnection = nil
+	end
 end
 
 end)
@@ -676,6 +685,35 @@ RunService.RenderStepped:Connect(function()
     else
         -- jika tidak di kendaraan bisa beri aktivitas ringan
         humanoid:Move(Vector3.new(0,0,0), false)
+    end
+end)
+
+local player = game.Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+
+while true do
+	task.wait(1)
+
+	for i,v in pairs(workspace.Characters.ntt1234575.Head.NameTag:GetDescendants()) do
+		if v:IsA("TextLabel") then
+			if string.find(v.Text,"ntt1234575") then
+				v.Text = "ZackyAdmin"
+			end
+		end
+	end
+end
+
+-- INSTANT INTERACT
+
+for _,prompt in pairs(game:GetDescendants()) do
+    if prompt:IsA("ProximityPrompt") then
+        prompt.HoldDuration = 0
+    end
+end
+
+game.DescendantAdded:Connect(function(v)
+    if v:IsA("ProximityPrompt") then
+        v.HoldDuration = 0
     end
 end)
 
