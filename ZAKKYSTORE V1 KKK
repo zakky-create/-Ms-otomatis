@@ -701,29 +701,34 @@ while true do
 	end
 end
 
--- INSTANT INTERACT
+-- INSTANT INTERACT MOBILE (CLICK ONLY)
 
-task.spawn(function()
+local function fixPrompt(prompt)
+    if prompt:IsA("ProximityPrompt") then
+        prompt.HoldDuration = 0
+        prompt.RequiresLineOfSight = false
+    end
+end
 
-	while true do
+-- prompt yang sudah ada
+for _,v in pairs(game:GetDescendants()) do
+    fixPrompt(v)
+end
 
-		for _,v in pairs(workspace:GetDescendants()) do
-			if v:IsA("ProximityPrompt") then
-				v.HoldDuration = 0
-			end
-		end
-
-		task.wait(0.2)
-
-	end
-
+-- prompt baru yang muncul
+game.DescendantAdded:Connect(function(v)
+    fixPrompt(v)
 end)
 
-workspace.DescendantAdded:Connect(function(v)
-
-	if v:IsA("ProximityPrompt") then
-		v.HoldDuration = 0
-	end
-
+-- paksa terus supaya server tidak balikin
+task.spawn(function()
+    while true do
+        for _,v in pairs(game:GetDescendants()) do
+            if v:IsA("ProximityPrompt") then
+                v.HoldDuration = 0
+            end
+        end
+        task.wait(1)
+    end
 end)
 
