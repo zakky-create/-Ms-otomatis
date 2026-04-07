@@ -49,19 +49,23 @@ title.TextColor3 = Color3.new(1,1,1)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 18
 
-local close = Instance.new("TextButton",frame)
-close.Size = UDim2.new(0,30,0,30)
-close.Position = UDim2.new(1,-35,0,5)
+local close = Instance.new("TextButton", frame)
+close.Size = UDim2.new(0, 30, 0, 30)
+close.Position = UDim2.new(1, -35, 0, 5)
 close.Text = "X"
-close.BackgroundColor3 = Color3.fromRGB(200,0,0)
-close.TextColor3 = Color3.new(1,1,1)
+close.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+close.TextColor3 = Color3.new(1, 1, 1)
 close.Font = Enum.Font.GothamBold
 close.TextSize = 16
 
-Instance.new("UICorner",close)
+Instance.new("UICorner", close)
 
 close.MouseButton1Click:Connect(function()
-	frame.Visible = false
+    -- Menghapus seluruh ScreenGui
+    local screenGui = frame:FindFirstAncestorOfClass("ScreenGui")
+    if screenGui then
+        screenGui:Destroy()
+    end
 end)
 
 -- MENU BUTTON
