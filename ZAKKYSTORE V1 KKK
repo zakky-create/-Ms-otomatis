@@ -703,15 +703,27 @@ end
 
 -- INSTANT INTERACT
 
-for _,prompt in pairs(game:GetDescendants()) do
-    if prompt:IsA("ProximityPrompt") then
-        prompt.HoldDuration = 0
-    end
-end
+task.spawn(function()
 
-game.DescendantAdded:Connect(function(v)
-    if v:IsA("ProximityPrompt") then
-        v.HoldDuration = 0
-    end
+	while true do
+
+		for _,v in pairs(workspace:GetDescendants()) do
+			if v:IsA("ProximityPrompt") then
+				v.HoldDuration = 0
+			end
+		end
+
+		task.wait(0.2)
+
+	end
+
+end)
+
+workspace.DescendantAdded:Connect(function(v)
+
+	if v:IsA("ProximityPrompt") then
+		v.HoldDuration = 0
+	end
+
 end)
 
